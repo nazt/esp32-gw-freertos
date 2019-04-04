@@ -18,8 +18,7 @@ void setup() {
   CMMC_Module* modules[10];
   modules[0] = lcd;
   modules[1] = gps;
-  // lcd->setup();
-  // gps->setup();
+  // lcd->setup(); // gps->setup();
   for (size_t i = 0; i < 2; i++) {
     modules[i]->setup();
   }
@@ -30,5 +29,6 @@ void processGps() {
 
 
 void loop() {
-  gps->loop();
+  // gps->loop();
+  lcd->loop();
 }
