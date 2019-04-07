@@ -9,7 +9,6 @@
 #define GPSSerial Serial1
 
 HardwareSerial NBSerial(2);
-CMMC_NB_IoT *nb;
 
 CMMC_LCD *lcd;
 CMMC_GPS *gps;
@@ -21,7 +20,6 @@ void setup() {
 
   gps = new CMMC_GPS(&GPSSerial);
   lcd = new CMMC_LCD();
-  nb = new CMMC_NB_IoT(&NBSerial);
   NBSerial.setTimeout(4);
   CMMC_Module* modules[10];
   modules[0] = lcd;

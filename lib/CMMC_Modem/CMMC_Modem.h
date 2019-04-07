@@ -3,13 +3,15 @@
 
 #include <Arduino.h>
 #include <CMMC_Module.h>
-#include <U8g2lib.h>
-
+#include <CMMC_NB_IoT.h>
 
 class CMMC_Modem: public CMMC_Module{
   protected:
+    CMMC_NB_IoT *nb;
+    Stream *_modemSerial;
+    int isNbConnected = 1;
   public:
-    CMMC_Modem();
+    CMMC_Modem(Stream*);
     void hello();
     void setup();
     void loop();
