@@ -26,6 +26,7 @@ class CMMC_LCD: public CMMC_Module{
   public:
     CMMC_LCD();
     // virtual void config(CMMC_System *os, AsyncWebServer* server) = 0;
+    void hello();
     void setup();
     void loop();
     void configLoop();

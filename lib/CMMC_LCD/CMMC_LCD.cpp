@@ -18,12 +18,21 @@ void CMMC_LCD::setup() {
 }
 
 void CMMC_LCD::loop() {
-  paintScreen();
+  hello();
+  // paintScreen();
 }
 
 const char* formatedNumber(char* buffer, int n) {
   sprintf(buffer, "%3d", n);
   return buffer;
+}
+
+void CMMC_LCD::hello() {
+  u8g2->clearBuffer();          // clear the internal memory
+  u8g2->setFont(u8g2_font_ncenB08_tr); // choose a suitable font
+  // u8g2->drawStr(40, 10, "Position");
+  u8g2->drawStr(0, 20, "It's a test.");
+  u8g2->sendBuffer();          // transfer internal memory to the display
 }
 
 void CMMC_LCD::paintScreen() {
