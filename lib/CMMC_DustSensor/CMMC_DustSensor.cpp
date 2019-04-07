@@ -1,14 +1,14 @@
-#include "CMMC_Modem.h"
+#include "CMMC_DustSensor.h"
 
 
-CMMC_Modem::CMMC_Modem(Stream*)   {
+CMMC_DustSensor::CMMC_DustSensor(Stream*)   {
 }
 
-void CMMC_Modem::configLoop() {
+void CMMC_DustSensor::configLoop() {
   yield();
 }
 
-void CMMC_Modem::configSetup() {
+void CMMC_DustSensor::configSetup() {
   yield();
 }
 
@@ -16,7 +16,7 @@ void updateStatus(String s) {
 
 }
 
-void CMMC_Modem::setup() {
+void CMMC_DustSensor::setup() {
   nb = new CMMC_NB_IoT(this->_modemSerial);
   nb->setDebugStream(&Serial);
   nb->onDeviceReboot([]() {
@@ -47,7 +47,7 @@ void CMMC_Modem::setup() {
     delay(10);
   });
 
-  static CMMC_Modem *that;
+  static CMMC_DustSensor *that;
   that = this;
   nb->onConnected([]() {
     updateStatus("NB-IoT Connected.");
@@ -59,6 +59,6 @@ void CMMC_Modem::setup() {
   });
 }
 
-void CMMC_Modem::loop() {
+void CMMC_DustSensor::loop() {
   nb->loop();
 }
