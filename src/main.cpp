@@ -4,6 +4,7 @@
 #include <CMMC_NB_IoT.h>
 #include <HardwareSerial.h>
 #include <CMMC_Modem.h>
+#include <CMMC_DustSensor.h>
 
 HardwareSerial GPSSerial(1);
 HardwareSerial NBSerial(2);
