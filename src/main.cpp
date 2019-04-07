@@ -12,20 +12,24 @@ HardwareSerial NBSerial(2);
 
 CMMC_LCD *lcd;
 CMMC_GPS *gps;
+CMMC_Modem *modem;
 
 void setup() {
   Serial.begin(115200);
   GPSSerial.begin(9600, SERIAL_8N1, 12 /*rx*/, 15 /* tx */);
   NBSerial.begin(9600, SERIAL_8N1, 27 /*rx*/, 26 /* tx */);
+  NBSerial.setTimeout(4);
 
   gps = new CMMC_GPS(&GPSSerial);
   lcd = new CMMC_LCD();
-  NBSerial.setTimeout(4);
+
   CMMC_Module* modules[10];
+
   modules[0] = lcd;
   modules[1] = gps;
+  modules[2] = modem;
   // lcd->setup(); // gps->setup();
-  for (size_t i = 0; i < 2; i++) {
+  for (size_t i = 0; i < 3; i++) {
     modules[i]->setup();
   }
 }
