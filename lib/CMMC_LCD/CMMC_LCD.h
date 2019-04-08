@@ -18,6 +18,15 @@ class CMMC_LCD: public CMMC_Module{
   float  batt_percent;
   int analogValue;
   bool gpsNoSignal = 1;
+  int rebootCount = 0;
+  int nbSentOk = 0;
+  int keepAliveSent = 0;
+  int pArrIdx = 0;
+  int status = 0;
+  String latC;
+  String lngC;
+  String sta_mac;
+  String softap_mac;
   protected:
     // char path[20];
     // String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);
@@ -31,6 +40,7 @@ class CMMC_LCD: public CMMC_Module{
     void configSetup();
     void paintScreen();
     void displayLogo();
+    const char* formatedNumber(char* buffer, int n);
 };
 
 #endif

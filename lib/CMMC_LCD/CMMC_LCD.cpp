@@ -22,18 +22,20 @@ void CMMC_LCD::loop() {
   paintScreen();
 }
 
-const char* formatedNumber(char* buffer, int n) {
+const char* CMMC_LCD::formatedNumber(char* buffer, int n) {
   sprintf(buffer, "%3d", n);
   return buffer;
 }
 
 void CMMC_LCD::hello() {
-  u8g2->clearBuffer();          // clear the internal memory
-  u8g2->setFont(u8g2_font_ncenB08_tr); // choose a suitable font
-  // u8g2->drawStr(40, 10, "Position");
-  u8g2->drawStr(0, 20, "It's a test.");
-  u8g2->sendBuffer();          // transfer internal memory to the display
+  // u8g2->clearBuffer();          // clear the internal memory
+  // u8g2->setFont(u8g2_font_ncenB08_tr); // choose a suitable font
+  // // u8g2->drawStr(40, 10, "Position");
+  // u8g2->drawStr(0, 20, "It's a test.");
+  // u8g2->sendBuffer();       latC   // transfer internal memory to the display
+  this->displayLogo();
 }
+
 
 void CMMC_LCD::paintScreen() {
   // Serial.printf("page = %d\r\n", page);
@@ -60,36 +62,36 @@ void CMMC_LCD::paintScreen() {
         u8g2->setCursor(5, 15 + (1 * lineSpacing));
         u8g2->print("Keep Alive Packet");
         u8g2->setCursor(80 + 5, 15 + (1 * lineSpacing));
-        // u8g2->print(formatedNumber(numBuffer, keepAliveSent));
+        u8g2->print(formatedNumber(numBuffer, keepAliveSent));
 
 
-        // u8g2->setCursor(5, 20 + (2 * lineSpacing));
-        // u8g2->print("NB-IoT Packet Sent");
-        // u8g2->setCursor(80 + 5, 20 + (2 * lineSpacing));
-        // u8g2->print(formatedNumber(numBuffer, nbSentOk));
-        //
-        // u8g2->setCursor(5, 25 + (3 * lineSpacing));
-        // u8g2->print("Reboot");
-        // u8g2->setCursor(80 + 5, 25 + (3 * lineSpacing));
-        // u8g2->print(formatedNumber(numBuffer, rebootCount));
-        //
-        // u8g2->setCursor(5, 30 + (4 * lineSpacing));
-        // u8g2->print("uptime ");
-        //
-        // char uptimeBuffer[40];
-        // // sprintf(uptimeBuffer, "%dd,%02dh,%02dm,%02ds", day() - 1, hour(), minute(), second());
-        // u8g2->setCursor(40 + 5, 30 + (4 * lineSpacing));
-        // u8g2->print(uptimeBuffer);
+        u8g2->setCursor(5, 20 + (2 * lineSpacing));
+        u8g2->print("NB-IoT Packet Sent");
+        u8g2->setCursor(80 + 5, 20 + (2 * lineSpacing));
+        u8g2->print(formatedNumber(numBuffer, nbSentOk));
+
+        u8g2->setCursor(5, 25 + (3 * lineSpacing));
+        u8g2->print("Reboot");
+        u8g2->setCursor(80 + 5, 25 + (3 * lineSpacing));
+        u8g2->print(formatedNumber(numBuffer, rebootCount));
+
+        u8g2->setCursor(5, 30 + (4 * lineSpacing));
+        u8g2->print("uptime ");
+
+        char uptimeBuffer[40];
+        // sprintf(uptimeBuffer, "%dd,%02dh,%02dm,%02ds", day() - 1, hour(), minute(), second());
+        u8g2->setCursor(40 + 5, 30 + (4 * lineSpacing));
+        u8g2->print(uptimeBuffer);
 
 
         char statusBuffer[60];
 
-        // sprintf(statusBuffer, "Status: (Queue=%d)", pArrIdx);
+        sprintf(statusBuffer, "Status: (Queue=%d)", pArrIdx);
         u8g2->setCursor(5, 40 + (5 * lineSpacing));
         u8g2->print(statusBuffer);
 
         u8g2->setCursor(5, 45 + (6 * lineSpacing));
-        // u8g2->print(status);
+        u8g2->print(status);
 
         // u8g2->setFont(u8g2_font_p01type_tn);
         // u8g2->setFont(u8g2_font_micro_tr);
@@ -109,9 +111,9 @@ void CMMC_LCD::paintScreen() {
       // u8g2->print("It's a swiss arm");
       u8g2->setCursor(5, 20);
       if (!gpsNoSignal) {
-        // u8g2->print(latC);
-        // u8g2->print(",");
-        // u8g2->print(lngC);
+        u8g2->print(latC);
+        u8g2->print(",");
+        u8g2->print(lngC);
       }
       else {
         if (millis() % 2) {
@@ -124,19 +126,19 @@ void CMMC_LCD::paintScreen() {
 
       u8g2->setCursor(5, 30);
       u8g2->print("STA MAC ");
-      // u8g2->print(sta_mac);
+      u8g2->print(sta_mac);
 
       u8g2->setCursor(5, 40);
       u8g2->print(" AP MAC ");
-      // u8g2->print(softap_mac);
+      u8g2->print(softap_mac);
 
       u8g2->setCursor(5, 50);
       u8g2->print("PEER=");
-      // u8g2->print(peerCount);
+      u8g2->print(peerCount);
       u8g2->print(" ");
       // u8g2->setCursor(5, 60);
       u8g2->print("MSG QUEUE=");
-      // u8g2->print(pArrIdx);
+      u8g2->print(pArrIdx);
 
       u8g2->setCursor(5, 60);
       u8g2->print("ANALOG=");
@@ -152,7 +154,6 @@ void CMMC_LCD::paintScreen() {
     } while (u8g2->nextPage());
   }
 }
-
 
 
 void CMMC_LCD::displayLogo() {

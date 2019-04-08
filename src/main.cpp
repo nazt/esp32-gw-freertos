@@ -21,17 +21,17 @@ void setup() {
   NBSerial.begin(9600, SERIAL_8N1, 26 /*rx*/, 27 /* tx */);
   NBSerial.setTimeout(4);
 
-  modules[0] = lcd = new CMMC_LCD();
+  lcd = new CMMC_LCD();
+  modules[0] = lcd;
   modules[1] = new CMMC_Modem(&NBSerial);
   modules[2] = new CMMC_GPS(&Serial1);
   modules[3] = new CMMC_DustSensor(&Serial1);
 
   for (size_t i = 0; i < MODULE_SIZE; i++) {
     modules[i]->setup();
-    }
-}
-
-void processGps() {
+  }
+  
+  lcd->hello();
 
 }
 
