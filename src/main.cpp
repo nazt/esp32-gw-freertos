@@ -28,7 +28,7 @@ void setup() {
 
   for (size_t i = 0; i < MODULE_SIZE; i++) {
     modules[i]->setup();
-  }
+    }
 }
 
 void processGps() {

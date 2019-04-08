@@ -20,7 +20,7 @@ void updateStatus(String s) {
 void CMMC_Modem::setup() {
   Serial.println("setup modem..");
   pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
+  digitalWrite(13, HIGH);
   nb = new CMMC_NB_IoT(this->_modemSerial);
   nb->setDebugStream(&Serial);
   nb->onDeviceReboot([]() {

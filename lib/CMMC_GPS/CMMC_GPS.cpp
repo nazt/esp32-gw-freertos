@@ -29,7 +29,7 @@ void CMMC_GPS::loop() {
     // }
   }
   Serial.printf("wait GPS_SERIAL for %lums\r\n", millis() - ms);
-  delay(50);
+  delay(200);
   while (serial->available() > 0) {
     char c = serial->read();
     if (gps.encode(c)) {
@@ -52,6 +52,7 @@ void CMMC_GPS::loop() {
         strcat(latlngC, latC);
         strcat(latlngC, ",");
         strcat(latlngC, lngC);
+        Serial.println(latlngC);
          if (gps.time.isUpdated()) {
             Serial.print(F("TIME:  "));
             Serial.print(gps.time.hour()+7 % 24);
@@ -68,7 +69,7 @@ void CMMC_GPS::loop() {
         strcat(latlngC, "0.0000");
         strcat(latlngC, ",");
         strcat(latlngC, "0.0000");
-        // Serial.println(F("INVALID GPS DATA"));
+        Serial.println(F("INVALID GPS DATA"));
         delay(10);
       }
     }

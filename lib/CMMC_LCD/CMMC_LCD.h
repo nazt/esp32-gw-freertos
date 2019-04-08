@@ -17,7 +17,6 @@ class CMMC_LCD: public CMMC_Module{
   float  batt_raw;
   float  batt_percent;
   int analogValue;
-
   bool gpsNoSignal = 1;
   protected:
     // char path[20];
@@ -31,7 +30,7 @@ class CMMC_LCD: public CMMC_Module{
     void configLoop();
     void configSetup();
     void paintScreen();
-    // void configWebServer();
+    void displayLogo();
 };
 
 #endif

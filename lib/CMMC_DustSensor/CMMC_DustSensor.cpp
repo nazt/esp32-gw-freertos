@@ -27,7 +27,7 @@ void CMMC_DustSensor::loop() {
     delay(1);
   }
   Serial.printf("wait DustSensor_SERIAL for %lums\r\n", millis() - ms);
-  delay(50);
+  delay(200);
   this->readDustSensor();
 }
 
@@ -57,6 +57,7 @@ void CMMC_DustSensor::readDustSensor() {
 
         pm25 = ( ( pm25High * 256.0 ) + pm25Low ) / 10.0;
         pm10 = ( ( pm10High * 256.0 ) + pm10Low ) / 10.0;
+        Serial.println("check sum is valid.");
       }
     }
 
@@ -64,7 +65,7 @@ void CMMC_DustSensor::readDustSensor() {
 
     pm25_array[dustIdx] = pm25;
     pm10_array[dustIdx] = pm10;
-    Serial.printf("pm10=%f\r\n", pm10);
+    // Serial.printf("pm10=%f\r\n", pm10);
 
     if (dustIdx < MAX_ARRAY) {
       dust_average25 = median(pm25_array, dustIdx + 1);
@@ -74,6 +75,9 @@ void CMMC_DustSensor::readDustSensor() {
       dust_average25 = median(pm25_array, MAX_ARRAY);
       dust_average10 = median(pm10_array, MAX_ARRAY);
     }
+
+    Serial.println(dust_average25);
+    Serial.println(dust_average10);
 
 
     dust_counter++;

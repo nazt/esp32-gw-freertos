@@ -1,4 +1,5 @@
 #include "CMMC_LCD.h"
+#include "logo.h"
 
 
 CMMC_LCD::CMMC_LCD() {
@@ -18,8 +19,7 @@ void CMMC_LCD::setup() {
 }
 
 void CMMC_LCD::loop() {
-  hello();
-  // paintScreen();
+  paintScreen();
 }
 
 const char* formatedNumber(char* buffer, int n) {
@@ -151,4 +151,41 @@ void CMMC_LCD::paintScreen() {
 
     } while (u8g2->nextPage());
   }
+}
+
+
+
+void CMMC_LCD::displayLogo() {
+  // u8g2->firstPage();
+  // do
+  // {
+  //   u8g2->drawXBM(0, 0, 64, 64, qr);
+  //   // u8g2->setFont(u8g2_font_logisoso16_tr);
+  //   // u8g2->setCursor(36, 28);
+  //   // u8g2->print("NB-IoT");
+  //
+  //   // u8g2->setCursor(36, 46);
+  //   // u8g2->setFont(u8g2_font_10x20_te);
+  //   // u8g2->print("");
+  //   // u8g2->print(String("BRIDGE"));
+  // } while (u8g2->nextPage());
+
+  u8g2->firstPage();
+  do
+  {
+    // u8g2->drawXBM(0, 0, 40, 32, cat);
+    u8g2->setFont(u8g2_font_logisoso16_tr);
+    u8g2->setCursor(44, 24);
+    // u8g2->print("  Dustboy");
+
+    u8g2->setCursor(35, 26);
+    u8g2->print("NB-IoT");
+    u8g2->setCursor(25, 50);
+    u8g2->print("Gateway.");
+
+    u8g2->setCursor(40, 46);
+    u8g2->setFont(u8g2_font_10x20_te);
+    // u8g2->print("Starting...");
+  } while (u8g2->nextPage());
+  delay(2000);
 }
