@@ -1,6 +1,7 @@
 #include "CMMC_DustSensor.h"
 #include "utils.hpp"
-CMMC_DustSensor::CMMC_DustSensor(Stream*)   {
+CMMC_DustSensor::CMMC_DustSensor(HardwareSerial* s)   {
+  this->_serial = s;
 }
 
 void CMMC_DustSensor::configLoop() {
@@ -11,28 +12,35 @@ void CMMC_DustSensor::configSetup() {
   yield();
 }
 
-void updateStatus(String s) {
-
-}
-
 void CMMC_DustSensor::setup() {
 
 }
 
 void CMMC_DustSensor::loop() {
+  this->_serial->begin(9600, SERIAL_8N1, 33 /*rx*/, 32 /* tx */);
+  uint32_t ms = millis();
+  // Serial.printf("COUNT=%lu\r\n", ms);
+  while(!this->_serial->available()) {
+    // if (millis() - ms > 2000) {
+    //   break;
+    // }
+    delay(1);
+  }
+  Serial.printf("wait DustSensor_SERIAL for %lums\r\n", millis() - ms);
+  delay(50);
   this->readDustSensor();
 }
 
 unsigned int dust_counter = 0;
-
 void CMMC_DustSensor::readDustSensor() {
   uint8_t mData = 0;
   uint8_t mPkt[10] = {0};
   uint8_t mCheck = 0;
+
   while ( this->_serial->available() > 0 ) {
     for ( int i = 0; i < 10; ++i ) {
       mPkt[i] = this->_serial->read();
-      //      lcd.print( mPkt[i], HEX );
+      // Serial.println( mPkt[i], HEX );
     }
     if ( 0xC0 == mPkt[1] ) {
       // Read dust density.
@@ -56,6 +64,7 @@ void CMMC_DustSensor::readDustSensor() {
 
     pm25_array[dustIdx] = pm25;
     pm10_array[dustIdx] = pm10;
+    Serial.printf("pm10=%f\r\n", pm10);
 
     if (dustIdx < MAX_ARRAY) {
       dust_average25 = median(pm25_array, dustIdx + 1);

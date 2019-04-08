@@ -4,9 +4,10 @@
 #include <Arduino.h>
 #include <TinyGPS++.h>
 #include <CMMC_Module.h>
+#include <HardwareSerial.h>
 
 class CMMC_GPS: public CMMC_Module{
-  Stream *serial;
+  HardwareSerial *serial;
   TinyGPSPlus gps;
   char latC[20];
   char lngC[20];
@@ -16,7 +17,7 @@ class CMMC_GPS: public CMMC_Module{
     // char path[20];
     // String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);
   public:
-    CMMC_GPS(Stream*);
+    CMMC_GPS(HardwareSerial*);
     // virtual void config(CMMC_System *os, AsyncWebServer* server) = 0;
     void setup();
     void loop();

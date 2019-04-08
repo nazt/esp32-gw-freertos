@@ -5,28 +5,26 @@
 #include <HardwareSerial.h>
 #include <CMMC_Modem.h>
 #include <CMMC_DustSensor.h>
+#include <CMMC_DustSensor.h>
 
-HardwareSerial GPSSerial(1);
 HardwareSerial NBSerial(2);
-HardwareSerial DustSerial(3);
 
 CMMC_LCD *lcd;
 CMMC_GPS *gps;
 CMMC_Modem *modem;
 
-const int MODULE_SIZE = 3;
+const int MODULE_SIZE = 4 ;
 CMMC_Module* modules[10];
 
 void setup() {
   Serial.begin(115200);
-  GPSSerial.begin(9600, SERIAL_8N1, 12 /*rx*/, 15 /* tx */);
-  NBSerial.begin(9600, SERIAL_8N1, 27 /*rx*/, 26 /* tx */);
-  DustSerial.begin(9600, SERIAL_8N1, 32/*rx*/, 33 /* tx */);
+  NBSerial.begin(9600, SERIAL_8N1, 26 /*rx*/, 27 /* tx */);
   NBSerial.setTimeout(4);
 
   modules[0] = lcd = new CMMC_LCD();
-  modules[1] = new CMMC_GPS(&GPSSerial);
-  modules[2] = new CMMC_Modem(&NBSerial);
+  modules[1] = new CMMC_Modem(&NBSerial);
+  modules[2] = new CMMC_GPS(&Serial1);
+  modules[3] = new CMMC_DustSensor(&Serial1);
 
   for (size_t i = 0; i < MODULE_SIZE; i++) {
     modules[i]->setup();

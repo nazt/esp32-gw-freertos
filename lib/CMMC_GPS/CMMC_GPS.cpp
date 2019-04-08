@@ -1,7 +1,7 @@
 #include "CMMC_GPS.h"
 
 
-CMMC_GPS::CMMC_GPS(Stream *s) {
+CMMC_GPS::CMMC_GPS(HardwareSerial *s) {
   this->serial = s;
 }
 
@@ -18,6 +18,18 @@ void CMMC_GPS::setup() {
 }
 
 void CMMC_GPS::loop() {
+  this->serial->begin(9600, SERIAL_8N1, 12 /*rx*/, 15 /* tx */);
+  this->serial->flush();
+  uint32_t ms = millis();
+  // Serial.printf("COUNT=%lu\r\n", ms);
+  while(!this->serial->available()) {
+    delay(1);
+    // if (millis() - ms > 2000) {
+    //   break;
+    // }
+  }
+  Serial.printf("wait GPS_SERIAL for %lums\r\n", millis() - ms);
+  delay(50);
   while (serial->available() > 0) {
     char c = serial->read();
     if (gps.encode(c)) {
@@ -29,14 +41,6 @@ void CMMC_GPS::loop() {
       // Serial.printf("minute=%d\r\n", gps.time.minute()); // Minute (0-59) (u8)
       // Serial.printf("second=%d\r\n", gps.time.second()); // Second (0-59) (u8)
       // Serial.printf("centisecond=%d\r\n", gps.time.centisecond()); // 100ths of a second (0-99) (u8)
-     if (gps.time.isUpdated()) {
-        Serial.print(F("TIME:  "));
-        Serial.print(gps.time.hour()+7 % 24);
-        Serial.print(F(":"));
-        Serial.print(gps.time.minute());
-        Serial.print(F(":"));
-        Serial.println(gps.time.second());
-      }
 
       if (gps.location.isValid()) {
         gpsNoSignal = 0;
@@ -48,6 +52,14 @@ void CMMC_GPS::loop() {
         strcat(latlngC, latC);
         strcat(latlngC, ",");
         strcat(latlngC, lngC);
+         if (gps.time.isUpdated()) {
+            Serial.print(F("TIME:  "));
+            Serial.print(gps.time.hour()+7 % 24);
+            Serial.print(F(":"));
+            Serial.print(gps.time.minute());
+            Serial.print(F(":"));
+            Serial.println(gps.time.second());
+          }
       }
       else
       {
@@ -56,7 +68,8 @@ void CMMC_GPS::loop() {
         strcat(latlngC, "0.0000");
         strcat(latlngC, ",");
         strcat(latlngC, "0.0000");
-        Serial.println(F("INVALID GPS DATA"));
+        // Serial.println(F("INVALID GPS DATA"));
+        delay(10);
       }
     }
   }

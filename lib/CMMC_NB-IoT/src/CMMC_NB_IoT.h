@@ -33,11 +33,11 @@ class CMMC_NB_IoT
       char imsi[60];
     } DeviceInfo;
 
-    void setDebugStream(Stream* stream) { _diagStream = stream; }
+    void setDebugStream(Stream* stream);
 
     typedef void(*deviceInfoCb_t)(DeviceInfo);
     ~CMMC_NB_IoT();
-    void begin(Stream *s = 0, uint8_t timeout = 5);
+    void begin(Stream *s = 0, uint8_t timeout = 2);
     void onDeviceInfo(deviceInfoCb_t cb);
     void onDeviceReady(voidCb_t cb);
     void onConnecting(voidCb_t cb);

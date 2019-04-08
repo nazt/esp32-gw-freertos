@@ -1,7 +1,10 @@
 #include "CMMC_NB_IoT.h"
 
-#define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
-#define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
+// #define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
+// #define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
+
+#define debugPrintLn(...) { Serial.println(__VA_ARGS__); }
+#define debugPrint(...) { Serial.print(__VA_ARGS__); }
 // #ifdef CMMC_DEBUG
 // #warning "Debug mode is ON"
 // #else
@@ -11,7 +14,7 @@
 
 #define TIMEOUT_5s 5
 #define TIMEOUT_10s 10
-#define SILENT 1
+#define SILENT 0
 
 void array_to_string(byte array[], unsigned int len, char buffer[])
 {
@@ -26,6 +29,7 @@ void array_to_string(byte array[], unsigned int len, char buffer[])
 }
 
 CMMC_NB_IoT::CMMC_NB_IoT(Stream *s) {
+  Serial.println("ENTER CONSTRUCTURE...");
   this->_modemSerial = s;
   this->_user_onDeviceReboot_cb = [](void) -> void { };
   this->_user_onConnecting_cb = [](void) -> void { };
@@ -83,6 +87,10 @@ char* CMMC_NB_IoT::getDeviceIP() {
   return buffer;
 }
 
+void CMMC_NB_IoT::setDebugStream(Stream *stream) {
+  _diagStream = stream;
+}
+
 void CMMC_NB_IoT::queryDeviceInfo() {
   while (!callCommand(F("AT+CGSN=1"), TIMEOUT_5s, 5, this->deviceInfo.imei));
   while (!callCommand(F("AT+CGMR"), TIMEOUT_5s, 5, this->deviceInfo.firmware));
@@ -96,7 +104,7 @@ void CMMC_NB_IoT::begin(Stream *s, uint8_t timeout) {
   }
   s->setTimeout(timeout);
   debugPrintLn("Debug mode is ON");
-  while (!callCommand(F("AT"), TIMEOUT_10s));
+  while (!callCommand(F("AT"), TIMEOUT_5s));
   this->_user_onDeviceReady_cb();
 }
 

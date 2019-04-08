@@ -5,7 +5,6 @@
 #include <CMMC_Module.h>
 #include <U8g2lib.h>
 
-
 class CMMC_LCD: public CMMC_Module{
   uint32_t counter = 0;
   uint32_t sentCnt = 0;

@@ -3,12 +3,10 @@
 
 #include <Arduino.h>
 #include <CMMC_Module.h>
-#include <CMMC_NB_IoT.h>
 #define MAX_ARRAY 120
 class CMMC_DustSensor: public CMMC_Module{
   protected:
-    CMMC_NB_IoT *nb;
-    Stream *_serial;
+    HardwareSerial *_serial;
     int isNbConnected = 1;
     float pm25; //เก็บฝุ่น pm2.5
     float pm10; //เก็บฝุ่น pm10
@@ -19,13 +17,12 @@ class CMMC_DustSensor: public CMMC_Module{
     float pm25_array[MAX_ARRAY] = { 0.0 };
     float pm10_array[MAX_ARRAY] = { 0.0 };
   public:
-    CMMC_DustSensor(Stream*);
+    CMMC_DustSensor(HardwareSerial*);
     void hello();
     void setup();
     void loop();
     void configLoop();
     void configSetup();
-    void paintScreen();
     void readDustSensor();
 };
 

@@ -1,7 +1,8 @@
 #include "CMMC_Modem.h"
 
 
-CMMC_Modem::CMMC_Modem(Stream*)   {
+CMMC_Modem::CMMC_Modem(Stream* s)   {
+  this->_modemSerial = s;
 }
 
 void CMMC_Modem::configLoop() {
@@ -13,10 +14,13 @@ void CMMC_Modem::configSetup() {
 }
 
 void updateStatus(String s) {
-
+  Serial.println(s);
 }
 
 void CMMC_Modem::setup() {
+  Serial.println("setup modem..");
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
   nb = new CMMC_NB_IoT(this->_modemSerial);
   nb->setDebugStream(&Serial);
   nb->onDeviceReboot([]() {
@@ -57,6 +61,9 @@ void CMMC_Modem::setup() {
     that->nb->createUdpSocket("103.20.205.85", 5683, UDPConfig::ENABLE_RECV);
     that->isNbConnected = 1;
   });
+
+  nb->hello();
+  nb->rebootModule();
 }
 
 void CMMC_Modem::loop() {
