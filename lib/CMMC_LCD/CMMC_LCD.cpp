@@ -56,6 +56,11 @@ void CMMC_LCD::paintScreen() {
       //   // u8g2->setCursor(110, 6);
       //   u8g2->drawGlyph(90, 9, 64+8+3);
       // }
+
+      // u8g2->setFont(u8g2_font_micro_tr);
+      // u8g2->setCursor(50, 7);
+      // u8g2->print(modem->getStatus());
+
       u8g2->setFont(u8g2_font_p01type_tn);
       u8g2->setCursor(110, 7);
       // u8g2->print(ntpModule->getTimeString());
@@ -75,7 +80,11 @@ void CMMC_LCD::paintScreen() {
         u8g2->setCursor(logoMargin+12, 27+1);
         u8g2->print("NB-IoT");
 
-        u8g2->setCursor(logoMargin+12, 35+1);
+        u8g2->setFont(u8g2_font_micro_tr);
+        u8g2->setCursor(logoMargin+50, 27+1);
+        u8g2->print(modem->getStatus());
+
+        // u8g2->setCursor(logoMargin+12, 35+1);
         // u8g2->print("station");
 
         u8g2->setFont(u8g2_font_logisoso16_tf);

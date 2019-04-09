@@ -53,13 +53,18 @@ void CMMC_Modem::setup() {
   static int counter;
   counter = 0;
   nb->onConnecting([]() {
-    counter = (counter+1) % 2;
-    that->updateStatus(String(counter) + " Attaching to NB-IoT...");
+    counter = (counter+1) % 3;
+    // String t = "Attching";
+    String t = "";
+    for (size_t i = 0; i < counter; i++) {
+      t+= String(".");
+    }
+    that->updateStatus(t);
     delay(100);
   });
 
   nb->onConnected([]() {
-    that->updateStatus("NB-IoT Connected.");
+    that->updateStatus("Connected.");
     Serial.print("[user] NB-IoT Network connected at (");
     Serial.print(millis());
     Serial.println("ms)");
