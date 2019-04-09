@@ -12,8 +12,6 @@ class CMMC_RTC: public CMMC_Module{
     void loop();
     void configLoop();
     void configSetup();
-    void paintScreen();
-    void displayLogo();
 };
 
 #endif
