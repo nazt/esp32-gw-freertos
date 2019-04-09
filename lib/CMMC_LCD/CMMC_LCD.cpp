@@ -38,124 +38,120 @@ void CMMC_LCD::hello() {
 
 
 void CMMC_LCD::paintScreen() {
-  // Serial.printf("page = %d\r\n", page);
-  if (page == 0) {
-    u8g2->firstPage();
-    int factor = micros() % 6;
+  u8g2->firstPage();
+    int factor = micros()%6;
     factor = +0;
-    static int count = 0;
-    count++;
-    do {
-      int _pageIdx = 0;
+    // ntpModule->toggle = !ntpModule->toggle;
+    do
+    {
+      // if (sensorModule->soil_enable) {
+      //   u8g2->setFont(u8g2_font_open_iconic_thing_1x_t);
+      //   u8g2->drawGlyph(100, 9, 64+8+9);
+      // }
+      //
+      // if (sensorModule->two_temp_sensors) {
+      //   u8g2->setFont(u8g2_font_open_iconic_thing_1x_t);
+      //   // u8g2->setCursor(110, 6);
+      //   u8g2->drawGlyph(90, 9, 64+8+3);
+      // }
+
+      u8g2->setFont(u8g2_font_p01type_tn);
+      u8g2->setCursor(110, 7);
+      // u8g2->print(ntpModule->getTimeString());
+      u8g2->print("13:01");
+
       int marginLeft = 6;
-      if (_pageIdx == 0) {
+      if (page == 0) {
         int logoMargin = 40;
-        int lineSpacing = 2;
-        char numBuffer[20];
-        u8g2->setFont(u8g2_font_micro_tr);
-        // u8g2->setCursor(logoMargin+10, 16);
-        u8g2->setCursor(5, 10);
-        u8g2->print("Local Packet Recv");
-        u8g2->setCursor(80 + 5, 10);
-        u8g2->print(formatedNumber(numBuffer, packetRecv));
+        // u8g2->drawXBM(0,0,128,64, logo);
+        u8g2->drawXBM(5, 5, 40, 32, cat);
 
-        u8g2->setCursor(5, 15 + (1 * lineSpacing));
-        u8g2->print("Keep Alive Packet");
-        u8g2->setCursor(80 + 5, 15 + (1 * lineSpacing));
-        u8g2->print(formatedNumber(numBuffer, keepAliveSent));
+        u8g2->setFont(u8g2_font_siji_t_6x10);
+        u8g2->setCursor(logoMargin+10, 16);
+        u8g2->print("DustBoy 2.0");
 
+        u8g2->setFont(u8g2_font_siji_t_6x10);
+        u8g2->setCursor(logoMargin+12, 27);
+        u8g2->print("NB-IoT");
 
-        u8g2->setCursor(5, 20 + (2 * lineSpacing));
-        u8g2->print("NB-IoT Packet Sent");
-        u8g2->setCursor(80 + 5, 20 + (2 * lineSpacing));
-        u8g2->print(formatedNumber(numBuffer, nbSentOk));
+        u8g2->setCursor(logoMargin+12, 35);
+        // u8g2->print("station");
 
-        u8g2->setCursor(5, 25 + (3 * lineSpacing));
-        u8g2->print("Reboot");
-        u8g2->setCursor(80 + 5, 25 + (3 * lineSpacing));
-        u8g2->print(formatedNumber(numBuffer, rebootCount));
+        u8g2->setFont(u8g2_font_logisoso16_tf);
+        u8g2->setCursor(6+marginLeft, 60);
+        // u8g2->print(sensorModule->getTemperatureString(1));
+        // u8g2->print("30.0-");
+        // u8g2->print("°C");
 
-        u8g2->setCursor(5, 30 + (4 * lineSpacing));
-        u8g2->print("uptime ");
+        // u8g2->setFont(u8g2_font_open_iconic_all_2x_t);
+        // u8g2->drawGlyph(74, 60, 152);
+        // u8g2->setFont(u8g2_font_logisoso16_tf);
+        // u8g2->setCursor(85+marginLeft, 60);
+        // u8g2->print(sensorModule->getHumidityString(1));
+        // u8g2->print("%");
 
-        char uptimeBuffer[40];
-        // sprintf(uptimeBuffer, "%dd,%02dh,%02dm,%02ds", day() - 1, hour(), minute(), second());
-        u8g2->setCursor(40 + 5, 30 + (4 * lineSpacing));
-        u8g2->print(uptimeBuffer);
-
-
-        char statusBuffer[60];
-
-        sprintf(statusBuffer, "Status: (Queue=%d)", pArrIdx);
-        u8g2->setCursor(5, 40 + (5 * lineSpacing));
-        u8g2->print(statusBuffer);
-
-        u8g2->setCursor(5, 45 + (6 * lineSpacing));
-        u8g2->print(status);
-
-        // u8g2->setFont(u8g2_font_p01type_tn);
-        // u8g2->setFont(u8g2_font_micro_tr);
-
-        // u8g2->setFont(u8g2_font_unifont_t_symbols);
-        // // https://github.com/olikraus/u8g2/wiki/u8g2reference
-        u8g2->drawGlyph(0 + 4, 10, 9680 + count % 7);
-        // u8g2->setCursor(0, 7);
       }
+      else if (page == 1) {
+        u8g2->setFont(u8g2_font_pxplusibmcga_8u);
+        u8g2->setCursor(6, 10);
+        u8g2->print("HUMIDITY");
+
+        u8g2->setFont(u8g2_font_open_iconic_all_2x_t);
+        u8g2->drawGlyph(74, 30+2, 152);
+        u8g2->drawGlyph(74, 60, 152);
+
+        u8g2->setFont(u8g2_font_unifont_t_symbols);
+        u8g2->setCursor(6, 30-3+2);
+        u8g2->print("Sensor 1");
+
+        u8g2->setFont(u8g2_font_unifont_t_symbols);
+        u8g2->setCursor(6, 60-3+2-2);
+        u8g2->print("Sensor 2");
+
+
+        u8g2->setFont(u8g2_font_logisoso16_tf);
+        u8g2->setCursor(85+marginLeft, 30+2);
+        // u8g2->print(sensorModule->getHumidityString(1));
+        u8g2->print("%");
+
+        u8g2->setFont(u8g2_font_logisoso16_tf);
+        u8g2->setCursor(85+marginLeft, 60);
+        // u8g2->print(sensorModule->getHumidityString(2));
+        u8g2->print("%");
+      }
+      else if (page == 2) {
+        u8g2->setFont(u8g2_font_pxplusibmcga_8u);
+        u8g2->setCursor(2, 10);
+        u8g2->print("TEMPERATURE");
+
+        // u8g2->setFont(u8g2_font_open_iconic_all_2x_t);
+        // u8g2->drawGlyph(74, 30+2, 152);
+        // u8g2->drawGlyph(74, 60, 152);
+
+        u8g2->setFont(u8g2_font_unifont_t_symbols);
+        u8g2->setCursor(6, 30-3+2);
+        u8g2->print("Sensor 1");
+
+        u8g2->setFont(u8g2_font_unifont_t_symbols);
+        u8g2->setCursor(6, 60-3+2-2);
+        u8g2->print("Sensor 2");
+
+        u8g2->setFont(u8g2_font_logisoso16_tf);
+        u8g2->setCursor(70+marginLeft, 30+2);
+        // u8g2->print(sensorModule->getTemperature(1));
+        u8g2->setFont(u8g2_font_logisoso16_tf);
+        u8g2->print("°C");
+
+
+        u8g2->setFont(u8g2_font_logisoso16_tf);
+        u8g2->setCursor(70+marginLeft, 60);
+        // u8g2->print(sensorModule->getTemperature(2));
+        u8g2->setFont(u8g2_font_logisoso16_tf);
+        u8g2->print("°C");
+      }
+        // sensorModule->_pin0StateDirty = false;
     } while (u8g2->nextPage());
-  }
-  else if (page == 1) {
-    u8g2->firstPage();
-    do {
-      u8g2->setFont(u8g2_font_micro_tr);
-      u8g2->setCursor(5, 10);
-      // u8g2->print("It's a swiss arm");
-      u8g2->setCursor(5, 20);
-      if (!gpsNoSignal) {
-        u8g2->print(latC);
-        u8g2->print(",");
-        u8g2->print(lngC);
-      }
-      else {
-        if (millis() % 2) {
-          u8g2->print("Locating....");
-        }
-        else {
-          u8g2->print("Locating.");
-        }
-      }
-
-      u8g2->setCursor(5, 30);
-      u8g2->print("STA MAC ");
-      u8g2->print(sta_mac);
-
-      u8g2->setCursor(5, 40);
-      u8g2->print(" AP MAC ");
-      u8g2->print(softap_mac);
-
-      u8g2->setCursor(5, 50);
-      u8g2->print("PEER=");
-      u8g2->print(peerCount);
-      u8g2->print(" ");
-      // u8g2->setCursor(5, 60);
-      u8g2->print("MSG QUEUE=");
-      u8g2->print(pArrIdx);
-
-      u8g2->setCursor(5, 60);
-      u8g2->print("ANALOG=");
-      u8g2->print(analogValue);
-      u8g2->print(" ");
-      u8g2->print("BATT=");
-      u8g2->print(batt);
-      u8g2->print("v");
-      u8g2->print("(R=");
-      u8g2->print(batt_raw);
-      u8g2->print(")");
-
-    } while (u8g2->nextPage());
-  }
 }
-
-
 void CMMC_LCD::displayLogo() {
   // u8g2->firstPage();
   // do
@@ -179,14 +175,13 @@ void CMMC_LCD::displayLogo() {
     u8g2->setCursor(44, 24);
     // u8g2->print("  Dustboy");
 
-    u8g2->setCursor(35, 26);
+    u8g2->setCursor(10  , 26);
+    u8g2->print("DustBoy 2.0");
+    u8g2->setCursor(30, 50);
     u8g2->print("NB-IoT");
-    u8g2->setCursor(25, 50);
-    u8g2->print("Gateway.");
 
     u8g2->setCursor(40, 46);
     u8g2->setFont(u8g2_font_10x20_te);
     // u8g2->print("Starting...");
   } while (u8g2->nextPage());
-  delay(2000);
 }
