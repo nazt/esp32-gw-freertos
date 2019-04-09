@@ -13,26 +13,46 @@ CMMC_LCD *lcd;
 CMMC_GPS *gps;
 CMMC_Modem *modem;
 
-const int MODULE_SIZE = 4 ;
+const int MODULE_SIZE = 3;
+
 CMMC_Module* modules[10];
+void nbTask( void * parameter);
 
 void setup() {
   Serial.begin(115200);
-  NBSerial.begin(9600, SERIAL_8N1, 26 /*rx*/, 27 /* tx */);
-  NBSerial.setTimeout(4);
-
   lcd = new CMMC_LCD();
-  modules[0] = lcd;
-  modules[1] = new CMMC_Modem(&NBSerial);
-  modules[2] = new CMMC_GPS(&Serial1);
-  modules[3] = new CMMC_DustSensor(&Serial1);
-
-  for (size_t i = 0; i < MODULE_SIZE; i++) {
-    modules[i]->setup();
-  }
-  
+  lcd->setup();
   lcd->hello();
 
+  xTaskCreate(nbTask, "TaskTwo", 10000, /* Stack size in bytes. */
+                    NULL,             /* Parameter passed as input of the task */
+                    1,                /* Priority of the task. */
+                    NULL);
+
+  modules[0] = lcd;
+  modules[1] = new CMMC_GPS(&Serial1);
+  modules[2] = new CMMC_DustSensor(&Serial1);
+
+  for (size_t i = 1; i < MODULE_SIZE; i++) {
+    modules[i]->setup();
+  }
+
+  lcd->hello();
+  delay(2000);
+}
+
+void nbTask(void * parameter)
+{
+    NBSerial.begin(9600, SERIAL_8N1, 26 /*rx*/, 27 /* tx */);
+    NBSerial.setTimeout(4);
+    modem = new CMMC_Modem(&NBSerial);
+    modem->setup();
+    while (1) {
+      modem->loop();
+      delay(10);
+    }
+    Serial.println("Ending task 2");
+    vTaskDelete( NULL );
 }
 
 void loop() {

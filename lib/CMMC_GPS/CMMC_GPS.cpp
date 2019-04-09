@@ -69,8 +69,8 @@ void CMMC_GPS::loop() {
         strcat(latlngC, "0.0000");
         strcat(latlngC, ",");
         strcat(latlngC, "0.0000");
-        Serial.println(F("INVALID GPS DATA"));
-        delay(10);
+        // Serial.println(F("INVALID GPS DATA"));
+        // delay(100);
       }
     }
   }

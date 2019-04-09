@@ -64,7 +64,7 @@ class CMMC_NB_IoT
     CMMC_Interval _loopTimer;
     bool _deviceNeverConnected;
     Stream* _diagStream;
-    bool _disableDiag;
+    bool _disableDiag = false;
     DeviceInfo deviceInfo;
     deviceInfoCb_t _user_onDeviceInfo_cb;
     voidCb_t _user_onDeviceReady_cb;
@@ -132,9 +132,6 @@ class CMMC_NB_IoT
             delay(0);
           }
         }
-
-
-
         ~Udp() { };
       private:
         CMMC_NB_IoT *_modem;

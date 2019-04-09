@@ -1,10 +1,10 @@
 #include "CMMC_NB_IoT.h"
 
-// #define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
-// #define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
+#define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
+#define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
 
-#define debugPrintLn(...) { Serial.println(__VA_ARGS__); }
-#define debugPrint(...) { Serial.print(__VA_ARGS__); }
+// #define debugPrintLn(...) { Serial.println(__VA_ARGS__); }
+// #define debugPrint(...) { Serial.print(__VA_ARGS__); }
 // #ifdef CMMC_DEBUG
 // #warning "Debug mode is ON"
 // #else
