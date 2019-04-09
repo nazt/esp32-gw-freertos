@@ -1,7 +1,8 @@
 #include "CMMC_LCD.h"
 #include "logo.h"
 
-
+// extern CMMC_GPS *gps;
+// extern CMMC_GPS *gps;
 CMMC_LCD::CMMC_LCD() {
 }
 
@@ -36,7 +37,6 @@ void CMMC_LCD::hello() {
   this->displayLogo();
 }
 
-
 void CMMC_LCD::paintScreen() {
   u8g2->firstPage();
     int factor = micros()%6;
@@ -54,7 +54,6 @@ void CMMC_LCD::paintScreen() {
       //   // u8g2->setCursor(110, 6);
       //   u8g2->drawGlyph(90, 9, 64+8+3);
       // }
-
       u8g2->setFont(u8g2_font_p01type_tn);
       u8g2->setCursor(110, 7);
       // u8g2->print(ntpModule->getTimeString());
@@ -67,18 +66,23 @@ void CMMC_LCD::paintScreen() {
         u8g2->drawXBM(5, 5, 40, 32, cat);
 
         u8g2->setFont(u8g2_font_siji_t_6x10);
-        u8g2->setCursor(logoMargin+10, 16);
+        u8g2->setCursor(logoMargin+10, 16+1);
         u8g2->print("DustBoy 2.0");
 
         u8g2->setFont(u8g2_font_siji_t_6x10);
-        u8g2->setCursor(logoMargin+12, 27);
+        u8g2->setCursor(logoMargin+12, 27+1);
         u8g2->print("NB-IoT");
 
-        u8g2->setCursor(logoMargin+12, 35);
+        u8g2->setCursor(logoMargin+12, 35+1);
         // u8g2->print("station");
 
         u8g2->setFont(u8g2_font_logisoso16_tf);
-        u8g2->setCursor(6+marginLeft, 60);
+        u8g2->setCursor(6+marginLeft, 60+1);
+
+        u8g2->setFont(u8g2_font_p01type_tn);
+        u8g2->setCursor(40, 7);
+        // String latlng = "18.706064,98.981712";
+        // u8g2->print(latlng);
         // u8g2->print(sensorModule->getTemperatureString(1));
         // u8g2->print("30.0-");
         // u8g2->print("°C");
