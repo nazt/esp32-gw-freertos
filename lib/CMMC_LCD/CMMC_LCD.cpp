@@ -1,8 +1,10 @@
 #include "CMMC_LCD.h"
 #include "logo.h"
+#include <CMMC_Modem.h>
 
 // extern CMMC_GPS *gps;
 // extern CMMC_GPS *gps;
+extern CMMC_Modem *modem;
 CMMC_LCD::CMMC_LCD() {
 }
 
@@ -81,17 +83,19 @@ void CMMC_LCD::paintScreen() {
 
         u8g2->setFont(u8g2_font_p01type_tn);
         u8g2->setCursor(40, 7);
+
         // String latlng = "18.706064,98.981712";
         // u8g2->print(latlng);
-        // u8g2->print(sensorModule->getTemperatureString(1));
+        // u8g2->print(modem->getStatus());
         // u8g2->print("30.0-");
         // u8g2->print("°C");
 
         // u8g2->setFont(u8g2_font_open_iconic_all_2x_t);
         // u8g2->drawGlyph(74, 60, 152);
         // u8g2->setFont(u8g2_font_logisoso16_tf);
-        // u8g2->setCursor(85+marginLeft, 60);
-        // u8g2->print(sensorModule->getHumidityString(1));
+        u8g2->setCursor(marginLeft, 60);
+        u8g2->setFont(u8g2_font_siji_t_6x10);
+        u8g2->print(modem->getStatus());
         // u8g2->print("%");
 
       }

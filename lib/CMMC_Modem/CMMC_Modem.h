@@ -10,6 +10,8 @@ class CMMC_Modem: public CMMC_Module{
     CMMC_NB_IoT *nb;
     Stream *_modemSerial;
     int isNbConnected = 1;
+    String status;
+    void updateStatus(String s);
   public:
     CMMC_Modem(Stream*);
     void hello();
@@ -18,6 +20,8 @@ class CMMC_Modem: public CMMC_Module{
     void configLoop();
     void configSetup();
     void paintScreen();
+    String getStatus();
+
 };
 
 #endif

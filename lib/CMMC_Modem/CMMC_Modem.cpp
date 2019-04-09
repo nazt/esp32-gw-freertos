@@ -13,8 +13,9 @@ void CMMC_Modem::configSetup() {
   yield();
 }
 
-void updateStatus(String s) {
+void CMMC_Modem::updateStatus(String s) {
   Serial.println(s);
+  this->status = s;
 }
 
 void CMMC_Modem::setup() {
@@ -23,9 +24,11 @@ void CMMC_Modem::setup() {
   digitalWrite(13, HIGH);
   digitalWrite(13, LOW);
   nb = new CMMC_NB_IoT(this->_modemSerial);
+  static CMMC_Modem *that;
+  that = this;
   nb->setDebugStream(&Serial);
   nb->onDeviceReboot([]() {
-    updateStatus(F("[user] Device rebooted."));
+    that->updateStatus(F("[user] Device rebooted."));
   });
 
   nb->onDeviceReady([]() {
@@ -44,18 +47,19 @@ void CMMC_Modem::setup() {
   nb->onMessageArrived([](char *text, size_t len, uint8_t socketId, char* ip, uint16_t port) {
     char buffer[100];
     sprintf(buffer, "++ [recv:] socketId=%u, ip=%s, port=%u, len=%d bytes (%lums)", socketId, ip, port, len, millis());
-    updateStatus(buffer);
+    that->updateStatus(buffer);
   });
 
+  static int counter;
+  counter = 0;
   nb->onConnecting([]() {
-    updateStatus("Attaching to NB-IoT...");
-    delay(10);
+    counter = (counter+1) % 2;
+    that->updateStatus(String(counter) + " Attaching to NB-IoT...");
+    delay(100);
   });
 
-  static CMMC_Modem *that;
-  that = this;
   nb->onConnected([]() {
-    updateStatus("NB-IoT Connected.");
+    that->updateStatus("NB-IoT Connected.");
     Serial.print("[user] NB-IoT Network connected at (");
     Serial.print(millis());
     Serial.println("ms)");
@@ -69,4 +73,8 @@ void CMMC_Modem::setup() {
 
 void CMMC_Modem::loop() {
   nb->loop();
+}
+
+String CMMC_Modem::getStatus() {
+  return this->status;
 }
