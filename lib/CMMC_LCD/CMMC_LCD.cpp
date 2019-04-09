@@ -62,9 +62,9 @@ void CMMC_LCD::paintScreen() {
       // u8g2->print(modem->getStatus());
 
       u8g2->setFont(u8g2_font_p01type_tn);
-      u8g2->setCursor(110, 7);
+      u8g2->setCursor(60, 6);
       // u8g2->print(ntpModule->getTimeString());
-      u8g2->print("13:01");
+      u8g2->print("10/04/2560 13:01");
 
       int marginLeft = 6;
       if (page == 0) {
@@ -88,11 +88,10 @@ void CMMC_LCD::paintScreen() {
         // u8g2->print("station");
 
         u8g2->setFont(u8g2_font_logisoso16_tf);
-        u8g2->setCursor(6+marginLeft, 60+1);
+        // u8g2->setCursor(6+marginLeft, 60);
 
-        u8g2->setFont(u8g2_font_p01type_tn);
-        u8g2->setCursor(40, 7);
-
+        // u8g2->setFont(u8g2_font_p01type_tn);
+        // u8g2->setCursor(40, 7);
         // String latlng = "18.706064,98.981712";
         // u8g2->print(latlng);
         // u8g2->print(modem->getStatus());
@@ -102,9 +101,24 @@ void CMMC_LCD::paintScreen() {
         // u8g2->setFont(u8g2_font_open_iconic_all_2x_t);
         // u8g2->drawGlyph(74, 60, 152);
         // u8g2->setFont(u8g2_font_logisoso16_tf);
-        u8g2->setCursor(marginLeft, 60);
+        // u8g2->setCursor(marginLeft, 60);
         u8g2->setFont(u8g2_font_siji_t_6x10);
-        u8g2->print(modem->getStatus());
+        u8g2->setCursor(marginLeft, 50);
+        u8g2->print("PM10");
+        u8g2->setCursor(marginLeft, 62);
+        u8g2->print("PM2.5");
+
+
+        u8g2->setCursor(marginLeft+35, 50);
+        u8g2->print("999.88");
+        u8g2->setCursor(marginLeft+35, 62);
+        u8g2->print("45.49");
+
+        u8g2->setCursor(marginLeft+75, 50);
+        u8g2->print("ug/m3");
+        u8g2->setCursor(marginLeft+75, 62);
+        u8g2->print("ug/m3");
+
         // u8g2->print("%");
 
       }
