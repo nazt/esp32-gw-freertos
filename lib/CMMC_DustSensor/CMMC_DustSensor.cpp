@@ -21,9 +21,9 @@ void CMMC_DustSensor::loop() {
   uint32_t ms = millis();
   // Serial.printf("COUNT=%lu\r\n", ms);
   while(!this->_serial->available()) {
-    // if (millis() - ms > 2000) {
-    //   break;
-    // }
+    if (millis() - ms > 2000) {
+      break;
+    }
     delay(1);
   }
   Serial.printf("wait DustSensor_SERIAL for %lums\r\n", millis() - ms);

@@ -24,9 +24,9 @@ void CMMC_GPS::loop() {
   // Serial.printf("COUNT=%lu\r\n", ms);
   while(!this->serial->available()) {
     delay(1);
-    // if (millis() - ms > 2000) {
-    //   break;
-    // }
+    if (millis() - ms > 5000) {
+      break;
+    }
   }
   Serial.printf("wait GPS_SERIAL for %lums\r\n", millis() - ms);
   delay(200);

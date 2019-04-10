@@ -1,10 +1,11 @@
 #include "CMMC_LCD.h"
 #include "logo.h"
 #include <CMMC_Modem.h>
-
+#include <CMMC_RTC.h>
 // extern CMMC_GPS *gps;
 // extern CMMC_GPS *gps;
 extern CMMC_Modem *modem;
+extern CMMC_RTC *rtc;
 CMMC_LCD::CMMC_LCD() {
 }
 
@@ -64,7 +65,8 @@ void CMMC_LCD::paintScreen() {
       u8g2->setFont(u8g2_font_p01type_tn);
       u8g2->setCursor(60, 6);
       // u8g2->print(ntpModule->getTimeString());
-      u8g2->print("10/04/2560 13:01");
+      // u8g2->print("10/04/2560 13:01");
+      u8g2->print(rtc->getDateTimeString());
 
       int marginLeft = 6;
       if (page == 0) {

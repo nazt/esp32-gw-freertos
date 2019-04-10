@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <CMMC_Module.h>
 #include <U8g2lib.h>
+#include "RTClib.h"
+#include <CMMC_RTC.h>
 
 class CMMC_LCD: public CMMC_Module{
   uint32_t counter = 0;

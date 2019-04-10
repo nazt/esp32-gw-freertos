@@ -6,38 +6,45 @@
 #include <CMMC_Modem.h>
 #include <CMMC_DustSensor.h>
 #include <CMMC_DustSensor.h>
+#include <CMMC_RTC.h>
 
 HardwareSerial NBSerial(2);
 
 CMMC_LCD *lcd;
 CMMC_GPS *gps;
 CMMC_Modem *modem;
+CMMC_RTC *rtc;
 
-const int MODULE_SIZE = 3;
+const int MODULE_SIZE = 2;
 
 CMMC_Module* modules[10];
 void nbTask( void * parameter);
+void lcdTask( void * parameter);
 
 void setup() {
   Serial.begin(115200);
+  rtc = new CMMC_RTC();
   lcd = new CMMC_LCD();
   lcd->setup();
-  lcd->hello();
+  rtc->setup();
 
   xTaskCreate(nbTask, "TaskTwo", 10000, /* Stack size in bytes. */
                     NULL,             /* Parameter passed as input of the task */
                     1,                /* Priority of the task. */
                     NULL);
 
-  modules[0] = lcd;
-  modules[1] = new CMMC_GPS(&Serial1);
-  modules[2] = new CMMC_DustSensor(&Serial1);
+  xTaskCreate(lcdTask, "lcdTask", 10000, /* Stack size in bytes. */
+                    NULL,             /* Parameter passed as input of the task */
+                    1,                /* Priority of the task. */
+                    NULL);
+
+  modules[0] = new CMMC_GPS(&Serial1);
+  modules[1] = new CMMC_DustSensor(&Serial1);
 
   for (size_t i = 1; i < MODULE_SIZE; i++) {
     modules[i]->setup();
   }
 
-  lcd->hello();
   delay(2000);
 }
 
@@ -54,6 +61,18 @@ void nbTask(void * parameter)
     Serial.println("Ending task 2");
     vTaskDelete( NULL );
 }
+
+void lcdTask(void * parameter)
+{
+    lcd->hello();
+    while (1) {
+      rtc->loop();
+      lcd->loop();
+    }
+    Serial.println("Ending LCD Task");
+    vTaskDelete( NULL );
+}
+
 
 void loop() {
   for (size_t i = 0; i < MODULE_SIZE; i++) {
