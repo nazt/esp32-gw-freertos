@@ -9,10 +9,12 @@
 class CMMC_GPS: public CMMC_Module{
   HardwareSerial *serial;
   TinyGPSPlus gps;
-  char latC[20];
-  char lngC[20];
-  char latlngC[40];
+  char latC[40];
+  char lngC[40];
+  char latlngC[80];
   bool gpsNoSignal = 1;
+  uint32_t _lastSyncRtc = 0;
+  uint32_t _lastFetchLocation = 0;
   protected:
     // char path[20];
     // String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);

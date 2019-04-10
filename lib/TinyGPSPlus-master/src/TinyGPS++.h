@@ -87,7 +87,7 @@ public:
    uint8_t month();
    uint8_t day();
 
-   TinyGPSDate() : valid(false), updated(false), date(0)
+     TinyGPSDate() : valid(false), updated(false), date(0)
    {}
 
 private:

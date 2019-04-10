@@ -12,6 +12,8 @@ class CMMC_RTC: public CMMC_Module{
     RTC_DS1307 *rtc;
     char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     char dateTimeCharArrray[60];
+    uint32_t prev;
+    bool _ready = false;
   public:
     CMMC_RTC();
     void setup();
@@ -19,6 +21,7 @@ class CMMC_RTC: public CMMC_Module{
     void configLoop();
     void configSetup();
     String getDateTimeString();
+    void adjust(const DateTime& dt);
 };
 
 #endif

@@ -63,7 +63,7 @@ void CMMC_LCD::paintScreen() {
       // u8g2->print(modem->getStatus());
 
       u8g2->setFont(u8g2_font_p01type_tn);
-      u8g2->setCursor(60, 6);
+      u8g2->setCursor(50, 6);
       // u8g2->print(ntpModule->getTimeString());
       // u8g2->print("10/04/2560 13:01");
       u8g2->print(rtc->getDateTimeString());

@@ -13,6 +13,14 @@ void CMMC_DustSensor::configSetup() {
 }
 
 void CMMC_DustSensor::setup() {
+      // float pm25_array[MAX_ARRAY] = { 0.0 };
+      // float pm10_array[MAX_ARRAY] = { 0.0 };
+      Serial.println("CLEARING ARRAY FOR CMMC_DUST");
+      for (size_t i = 0; i < MAX_ARRAY; i++) {
+        pm25_array[i] = 0.0;
+        pm10_array[i] = 0.0;
+      }
+
 
 }
 
@@ -57,27 +65,32 @@ void CMMC_DustSensor::readDustSensor() {
 
         pm25 = ( ( pm25High * 256.0 ) + pm25Low ) / 10.0;
         pm10 = ( ( pm10High * 256.0 ) + pm10Low ) / 10.0;
+        Serial.println("================");
         Serial.println("check sum is valid.");
+        Serial.printf("PM10 = %f\r\n", pm10);
+        Serial.printf("PM2.5 = %f\r\n", pm25);
+        Serial.println("================");
+        dustIdx = dust_counter % MAX_ARRAY;
+
+        pm25_array[dustIdx] = pm25;
+        pm10_array[dustIdx] = pm10;
+        // Serial.printf("pm10=%f\r\n", pm10);
+
+        if (dustIdx < MAX_ARRAY) {
+          dust_average25 = median(pm25_array, dustIdx + 1);
+          dust_average10 = median(pm10_array, dustIdx + 1);
+        }
+        else {
+          dust_average25 = median(pm25_array, MAX_ARRAY);
+          dust_average10 = median(pm10_array, MAX_ARRAY);
+        }
+        Serial.println("===DUST===");
+        Serial.println(dust_average25);
+        Serial.println(dust_average10);
+        Serial.println("/===DUST===");
       }
     }
 
-    dustIdx = dust_counter % MAX_ARRAY;
-
-    pm25_array[dustIdx] = pm25;
-    pm10_array[dustIdx] = pm10;
-    // Serial.printf("pm10=%f\r\n", pm10);
-
-    if (dustIdx < MAX_ARRAY) {
-      dust_average25 = median(pm25_array, dustIdx + 1);
-      dust_average10 = median(pm10_array, dustIdx + 1);
-    }
-    else {
-      dust_average25 = median(pm25_array, MAX_ARRAY);
-      dust_average10 = median(pm10_array, MAX_ARRAY);
-    }
-
-    Serial.println(dust_average25);
-    Serial.println(dust_average10);
 
 
     dust_counter++;

@@ -29,7 +29,6 @@ void array_to_string(byte array[], unsigned int len, char buffer[])
 }
 
 CMMC_NB_IoT::CMMC_NB_IoT(Stream *s) {
-  Serial.println("ENTER CONSTRUCTURE...");
   this->_modemSerial = s;
   this->_user_onDeviceReboot_cb = [](void) -> void { };
   this->_user_onConnecting_cb = [](void) -> void { };

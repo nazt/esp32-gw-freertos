@@ -35,7 +35,7 @@ void setup() {
 
   xTaskCreate(lcdTask, "lcdTask", 10000, /* Stack size in bytes. */
                     NULL,             /* Parameter passed as input of the task */
-                    1,                /* Priority of the task. */
+                    2,                /* Priority of the task. */
                     NULL);
 
   modules[0] = new CMMC_GPS(&Serial1);

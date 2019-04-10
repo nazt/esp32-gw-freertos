@@ -18,10 +18,15 @@ void CMMC_RTC::configSetup() {
 
 void CMMC_RTC::setup() {
   this->rtc = new RTC_DS1307();
-  if (! rtc->begin()) {
+  prev = millis();
+  if (!rtc->begin()) {
+    _ready = false;
     Serial.println("RTC Fail to initialize.");
   }
   else {
+    _ready = true;
+    // rtc->adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
     Serial.println("RTC initialize OK.");
   }
 }
@@ -33,13 +38,16 @@ String CMMC_RTC::getDateTimeString() {
 }
 
 void CMMC_RTC::loop() {
+    if(!_ready) {
+      Serial.println("RTC FAILED.");
+      return;
+    }
+    if (millis() - prev >= 500) {
       DateTime now = rtc->now();
-      sprintf(dateTimeCharArrray, "%d/%d/%d %d:%d:%d",
-      now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second()
-    );
-
+      sprintf(dateTimeCharArrray, "%02u/%02u/%02u %02u:%02u:%02u",
+      now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second());
       Serial.println(dateTimeCharArrray);
-
+      delay(100);
       // Serial.print(now.year(), DEC);
       // Serial.print('/');
       // Serial.print(now.month(), DEC);
@@ -54,4 +62,11 @@ void CMMC_RTC::loop() {
       // Serial.print(':');
       // Serial.print(now.second(), DEC);
       // Serial.println();
+      prev = millis();
+  }
+}
+
+
+void CMMC_RTC::adjust(const DateTime& dt) {
+  rtc->adjust(dt);
 }

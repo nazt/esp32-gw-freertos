@@ -60,7 +60,7 @@ void CMMC_Modem::setup() {
       t+= String(".");
     }
     that->updateStatus(t);
-    delay(100);
+    delay(500);
   });
 
   nb->onConnected([]() {
