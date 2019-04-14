@@ -79,13 +79,12 @@ void CMMC_LCD::paintScreen() {
         u8g2->print("DustBoy 2.0");
 
         u8g2->setFont(u8g2_font_siji_t_6x10);
-        u8g2->setCursor(logoMargin+12, 27+1);
+        u8g2->setCursor(logoMargin+10, 27+1);
         u8g2->print("NB-IoT");
 
         u8g2->setFont(u8g2_font_micro_tr);
-        u8g2->setCursor(logoMargin+50, 27+1);
+        u8g2->setCursor(logoMargin+48, 27+1);
         u8g2->print(modem->getStatus());
-
         // u8g2->setCursor(logoMargin+12, 35+1);
         // u8g2->print("station");
 
@@ -206,13 +205,10 @@ void CMMC_LCD::displayLogo() {
     // u8g2->drawXBM(0, 0, 40, 32, cat);
     u8g2->setFont(u8g2_font_logisoso16_tr);
     u8g2->setCursor(44, 24);
-    // u8g2->print("  Dustboy");
-
     u8g2->setCursor(10  , 26);
     u8g2->print("DustBoy 2.0");
     u8g2->setCursor(30, 50);
     u8g2->print("NB-IoT");
-
     u8g2->setCursor(40, 46);
     u8g2->setFont(u8g2_font_10x20_te);
     // u8g2->print("Starting...");

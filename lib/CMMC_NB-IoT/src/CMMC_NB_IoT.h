@@ -1,7 +1,7 @@
 #ifndef CMMC_NB_IoT_H
 #define CMMC_NB_IoT_H
 
-#define CMMC_DEBUG 1
+#define CMMC_DEBUG 0
 #define SERIAL_BUFFER_SIZE 256
 
 #include <Arduino.h>
@@ -108,7 +108,7 @@ class CMMC_NB_IoT
             this->_modemSerial->write(t, 2);
             delayMicroseconds(1);
           }
-          Serial.println();
+          // Serial.println();
           this->_modemSerial->write('\r');
           String nbSerialBuffer = "@";
           int ct = 0;

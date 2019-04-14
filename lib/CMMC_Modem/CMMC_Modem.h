@@ -12,6 +12,7 @@ class CMMC_Modem: public CMMC_Module{
     int isNbConnected = 1;
     String status;
     void updateStatus(String s);
+    // void resetModem();
   public:
     CMMC_Modem(Stream*);
     void hello();

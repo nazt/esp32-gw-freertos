@@ -1,20 +1,22 @@
 #include "CMMC_NB_IoT.h"
 
-#define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
-#define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
-
 // #define debugPrintLn(...) { Serial.println(__VA_ARGS__); }
 // #define debugPrint(...) { Serial.print(__VA_ARGS__); }
-// #ifdef CMMC_DEBUG
-// #warning "Debug mode is ON"
-// #else
-// #define debugPrintLn(...)
-// #define debugPrint(...)
-// #endif
+#ifdef CMMC_DEBUG
+#warning "Debug mode is ON"
+#define debugPrintLn(...)
+#define debugPrint(...)
+
+  // #define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
+  // #define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
+#else
+#define debugPrintLn(...)
+#define debugPrint(...)
+#endif
 
 #define TIMEOUT_5s 5
 #define TIMEOUT_10s 10
-#define SILENT 0
+#define SILENT 1
 
 void array_to_string(byte array[], unsigned int len, char buffer[])
 {
@@ -135,10 +137,10 @@ void CMMC_NB_IoT::loop() {
       String response = this->_modemSerial->readStringUntil('\n');
       if (response.length() > 0) {
         response.trim();
-        Serial.println("===================");
-        Serial.println(response);
-        Serial.println(response.length());
-        Serial.println("===================");
+        // Serial.println("===================");
+        // Serial.println(response);
+        // Serial.println(response.length());
+        // Serial.println("===================");
       }
     }
   }
@@ -212,7 +214,7 @@ bool CMMC_NB_IoT::_writeCommand(String at, uint32_t timeoutS, char *outStr, bool
   uint32_t nextTimeout = startMs + (timeoutS * 1000L);
   bool reqSuccess = 0;
   if (!silent) {
-    debugPrint(">> ");
+    debugPrint("x> ");
     debugPrint(at.c_str());
   }
   this->_modemSerial->write(at.c_str(), at.length());

@@ -11,7 +11,7 @@ class CMMC_RTC: public CMMC_Module{
   protected:
     RTC_DS1307 *rtc;
     char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    char dateTimeCharArrray[60];
+    char dateTimeCharArrray[100];
     uint32_t prev;
     bool _ready = false;
   public:

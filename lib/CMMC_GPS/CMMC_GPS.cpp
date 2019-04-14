@@ -24,6 +24,7 @@ void CMMC_GPS::loop() {
   this->serial->begin(9600, SERIAL_8N1, 12 /*rx*/, 15 /* tx */);
   this->serial->flush();
   uint32_t ms = millis();
+  delay(20);
   // Serial.printf("COUNT=%lu\r\n", ms);
   while(!this->serial->available()) {
     delay(1);
@@ -74,7 +75,7 @@ void CMMC_GPS::loop() {
             // Serial.println(gps.time.second());
             // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
             if (!_lastSyncRtc || millis() - _lastSyncRtc > 5*60*1000) {
-              Serial.println("SYNC TIME WITH GPS!!!");
+              Serial.println("[[[SYNC TIME WITH GPS]]]!!!");
               rtc->adjust(DateTime(gps.date.year(), gps.date.month(), gps.date.day(),
               gps.time.hour()+7%24, gps.time.minute(), gps.time.second()));
               delay(200);

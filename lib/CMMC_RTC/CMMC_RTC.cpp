@@ -44,10 +44,11 @@ void CMMC_RTC::loop() {
     }
     if (millis() - prev >= 500) {
       DateTime now = rtc->now();
+      strcpy(dateTimeCharArrray, "");
       sprintf(dateTimeCharArrray, "%02u/%02u/%02u %02u:%02u:%02u",
       now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second());
-      Serial.println(dateTimeCharArrray);
-      delay(100);
+      // this->serial
+      // Serial.println(dateTimeCharArrray);
       // Serial.print(now.year(), DEC);
       // Serial.print('/');
       // Serial.print(now.month(), DEC);
@@ -64,6 +65,10 @@ void CMMC_RTC::loop() {
       // Serial.println();
       prev = millis();
   }
+    // if (millis() % 1000) {
+    //   Serial.println(dateTimeCharArrray);
+    // }
+
 }
 
 
