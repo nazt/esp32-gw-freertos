@@ -6,6 +6,10 @@
 // extern CMMC_GPS *gps;
 extern CMMC_Modem *modem;
 extern CMMC_RTC *rtc;
+
+String pm10Value = "999.88";
+String pm2_5Value = "45.49";
+
 CMMC_LCD::CMMC_LCD() {
 }
 
@@ -44,28 +48,10 @@ void CMMC_LCD::paintScreen() {
   u8g2->firstPage();
     int factor = micros()%6;
     factor = +0;
-    // ntpModule->toggle = !ntpModule->toggle;
     do
     {
-      // if (sensorModule->soil_enable) {
-      //   u8g2->setFont(u8g2_font_open_iconic_thing_1x_t);
-      //   u8g2->drawGlyph(100, 9, 64+8+9);
-      // }
-      //
-      // if (sensorModule->two_temp_sensors) {
-      //   u8g2->setFont(u8g2_font_open_iconic_thing_1x_t);
-      //   // u8g2->setCursor(110, 6);
-      //   u8g2->drawGlyph(90, 9, 64+8+3);
-      // }
-
-      // u8g2->setFont(u8g2_font_micro_tr);
-      // u8g2->setCursor(50, 7);
-      // u8g2->print(modem->getStatus());
-
       u8g2->setFont(u8g2_font_p01type_tn);
       u8g2->setCursor(50, 6);
-      // u8g2->print(ntpModule->getTimeString());
-      // u8g2->print("10/04/2560 13:01");
       u8g2->print(rtc->getDateTimeString());
 
       int marginLeft = 6;
@@ -85,120 +71,32 @@ void CMMC_LCD::paintScreen() {
         u8g2->setFont(u8g2_font_micro_tr);
         u8g2->setCursor(logoMargin+48, 27+1);
         u8g2->print(modem->getStatus());
-        // u8g2->setCursor(logoMargin+12, 35+1);
-        // u8g2->print("station");
-
         u8g2->setFont(u8g2_font_logisoso16_tf);
-        // u8g2->setCursor(6+marginLeft, 60);
-
-        // u8g2->setFont(u8g2_font_p01type_tn);
-        // u8g2->setCursor(40, 7);
-        // String latlng = "18.706064,98.981712";
-        // u8g2->print(latlng);
-        // u8g2->print(modem->getStatus());
-        // u8g2->print("30.0-");
-        // u8g2->print("°C");
-
-        // u8g2->setFont(u8g2_font_open_iconic_all_2x_t);
-        // u8g2->drawGlyph(74, 60, 152);
-        // u8g2->setFont(u8g2_font_logisoso16_tf);
-        // u8g2->setCursor(marginLeft, 60);
         u8g2->setFont(u8g2_font_siji_t_6x10);
         u8g2->setCursor(marginLeft, 50);
         u8g2->print("PM10");
         u8g2->setCursor(marginLeft, 62);
         u8g2->print("PM2.5");
 
-
         u8g2->setCursor(marginLeft+35, 50);
-        u8g2->print("999.88");
+        u8g2->print(pm10Value);
         u8g2->setCursor(marginLeft+35, 62);
-        u8g2->print("45.49");
+        u8g2->print(pm2_5Value);
 
         u8g2->setCursor(marginLeft+75, 50);
         u8g2->print("ug/m3");
         u8g2->setCursor(marginLeft+75, 62);
         u8g2->print("ug/m3");
-
         // u8g2->print("%");
-
       }
       else if (page == 1) {
-        u8g2->setFont(u8g2_font_pxplusibmcga_8u);
-        u8g2->setCursor(6, 10);
-        u8g2->print("HUMIDITY");
-
-        u8g2->setFont(u8g2_font_open_iconic_all_2x_t);
-        u8g2->drawGlyph(74, 30+2, 152);
-        u8g2->drawGlyph(74, 60, 152);
-
-        u8g2->setFont(u8g2_font_unifont_t_symbols);
-        u8g2->setCursor(6, 30-3+2);
-        u8g2->print("Sensor 1");
-
-        u8g2->setFont(u8g2_font_unifont_t_symbols);
-        u8g2->setCursor(6, 60-3+2-2);
-        u8g2->print("Sensor 2");
-
-
-        u8g2->setFont(u8g2_font_logisoso16_tf);
-        u8g2->setCursor(85+marginLeft, 30+2);
-        // u8g2->print(sensorModule->getHumidityString(1));
-        u8g2->print("%");
-
-        u8g2->setFont(u8g2_font_logisoso16_tf);
-        u8g2->setCursor(85+marginLeft, 60);
-        // u8g2->print(sensorModule->getHumidityString(2));
-        u8g2->print("%");
       }
       else if (page == 2) {
-        u8g2->setFont(u8g2_font_pxplusibmcga_8u);
-        u8g2->setCursor(2, 10);
-        u8g2->print("TEMPERATURE");
-
-        // u8g2->setFont(u8g2_font_open_iconic_all_2x_t);
-        // u8g2->drawGlyph(74, 30+2, 152);
-        // u8g2->drawGlyph(74, 60, 152);
-
-        u8g2->setFont(u8g2_font_unifont_t_symbols);
-        u8g2->setCursor(6, 30-3+2);
-        u8g2->print("Sensor 1");
-
-        u8g2->setFont(u8g2_font_unifont_t_symbols);
-        u8g2->setCursor(6, 60-3+2-2);
-        u8g2->print("Sensor 2");
-
-        u8g2->setFont(u8g2_font_logisoso16_tf);
-        u8g2->setCursor(70+marginLeft, 30+2);
-        // u8g2->print(sensorModule->getTemperature(1));
-        u8g2->setFont(u8g2_font_logisoso16_tf);
-        u8g2->print("°C");
-
-
-        u8g2->setFont(u8g2_font_logisoso16_tf);
-        u8g2->setCursor(70+marginLeft, 60);
-        // u8g2->print(sensorModule->getTemperature(2));
-        u8g2->setFont(u8g2_font_logisoso16_tf);
-        u8g2->print("°C");
       }
         // sensorModule->_pin0StateDirty = false;
     } while (u8g2->nextPage());
 }
 void CMMC_LCD::displayLogo() {
-  // u8g2->firstPage();
-  // do
-  // {
-  //   u8g2->drawXBM(0, 0, 64, 64, qr);
-  //   // u8g2->setFont(u8g2_font_logisoso16_tr);
-  //   // u8g2->setCursor(36, 28);
-  //   // u8g2->print("NB-IoT");
-  //
-  //   // u8g2->setCursor(36, 46);
-  //   // u8g2->setFont(u8g2_font_10x20_te);
-  //   // u8g2->print("");
-  //   // u8g2->print(String("BRIDGE"));
-  // } while (u8g2->nextPage());
-
   u8g2->firstPage();
   do
   {

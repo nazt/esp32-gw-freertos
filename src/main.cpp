@@ -12,7 +12,7 @@
 void verbose_print_reset_reason(RESET_REASON reason);
 void print_reset_reason(RESET_REASON reason);
 HardwareSerial NBSerial(2);
-RTC_DATA_ATTR int rebootCount = -1;
+RTC_DATA_ATTR static int rebootCount = -1;
 
 CMMC_LCD *lcd;
 CMMC_GPS *gps;
@@ -34,7 +34,7 @@ void setup() {
   Serial.print(">> CPU1 reset reason:");
   print_reset_reason(rtc_get_reset_reason(1));
   verbose_print_reset_reason(rtc_get_reset_reason(1));
-  
+
   rtc = new CMMC_RTC();
   lcd = new CMMC_LCD();
   lcd->setup();
