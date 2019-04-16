@@ -6,7 +6,6 @@
 #include <HardwareSerial.h>
 #include <CMMC_Modem.h>
 #include <CMMC_DustSensor.h>
-#include <CMMC_DustSensor.h>
 #include <CMMC_RTC.h>
 
 void verbose_print_reset_reason(RESET_REASON reason);
@@ -18,6 +17,7 @@ CMMC_LCD *lcd;
 CMMC_GPS *gps;
 CMMC_Modem *modem;
 CMMC_RTC *rtc;
+CMMC_DustSensor *dustSensor;
 
 const int MODULE_SIZE = 2;
 
@@ -37,25 +37,24 @@ void setup() {
 
   rtc = new CMMC_RTC();
   lcd = new CMMC_LCD();
-  lcd->setup();
-  rtc->setup();
-
-  xTaskCreate(nbTask, "TaskTwo", 10000, /* Stack size in bytes. */
-                    NULL,             /* Parameter passed as input of the task */
-                    1,                /* Priority of the task. */
-                    NULL);
-
   xTaskCreate(lcdTask, "lcdTask", 10000, /* Stack size in bytes. */
                     NULL,             /* Parameter passed as input of the task */
                     2,                /* Priority of the task. */
                     NULL);
 
-  modules[0] = new CMMC_GPS(&Serial1);
-  modules[1] = new CMMC_DustSensor(&Serial1);
+  dustSensor = new CMMC_DustSensor(&Serial1);
+
+  modules[0] = dustSensor;
+  modules[1] = new CMMC_GPS(&Serial1);
 
   for (size_t i = 1; i < MODULE_SIZE; i++) {
     modules[i]->setup();
   }
+
+  xTaskCreate(nbTask, "TaskTwo", 10000, /* Stack size in bytes. */
+                    NULL,             /* Parameter passed as input of the task */
+                    1,                /* Priority of the task. */
+                    NULL);
 }
 
 void nbTask(void * parameter)
@@ -75,10 +74,13 @@ void nbTask(void * parameter)
 
 void lcdTask(void * parameter)
 {
-    lcd->hello();
+    lcd->setup();
+    rtc->setup();
+    
     while (1) {
       rtc->loop();
       lcd->loop();
+      yield();
     }
     Serial.println("Ending LCD Task");
     vTaskDelete( NULL );

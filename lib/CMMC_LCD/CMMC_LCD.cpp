@@ -2,10 +2,12 @@
 #include "logo.h"
 #include <CMMC_Modem.h>
 #include <CMMC_RTC.h>
+#include <CMMC_DustSensor.h>
 // extern CMMC_GPS *gps;
 // extern CMMC_GPS *gps;
 extern CMMC_Modem *modem;
 extern CMMC_RTC *rtc;
+extern CMMC_DustSensor *dustSensor;
 
 String pm10Value = "999.88";
 String pm2_5Value = "45.49";
@@ -24,6 +26,7 @@ void CMMC_LCD::configSetup() {
 void CMMC_LCD::setup() {
   u8g2 = new U8G2_ST7920_128X64_F_SW_SPI(U8G2_R0, /* clock=*/ 18, /* MOSI=*/ 23, /* MISO=*/ 19);
   u8g2->begin();
+  hello();
 }
 
 void CMMC_LCD::loop() {
@@ -42,6 +45,7 @@ void CMMC_LCD::hello() {
   // u8g2->drawStr(0, 20, "It's a test.");
   // u8g2->sendBuffer();       latC   // transfer internal memory to the display
   this->displayLogo();
+  delay(1000);
 }
 
 void CMMC_LCD::paintScreen() {
@@ -79,9 +83,9 @@ void CMMC_LCD::paintScreen() {
         u8g2->print("PM2.5");
 
         u8g2->setCursor(marginLeft+35, 50);
-        u8g2->print(pm10Value);
+        u8g2->print(String(dustSensor->getPMValue(DustPM10)));
         u8g2->setCursor(marginLeft+35, 62);
-        u8g2->print(pm2_5Value);
+        u8g2->print(String(dustSensor->getPMValue(DustPM2_5)));
 
         u8g2->setCursor(marginLeft+75, 50);
         u8g2->print("ug/m3");

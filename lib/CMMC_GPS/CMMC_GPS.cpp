@@ -35,7 +35,7 @@ void CMMC_GPS::loop() {
   Serial.printf("wait GPS_SERIAL for %lums\r\n", millis() - ms);
   while (serial->available() > 0) {
     char c = serial->read();
-    Serial.print(".");
+    // Serial.print(".");
     if (gps.encode(c)) {
       // Serial.printf("year=%d\r\n", gps.date.year()); // Year (2000+) (u16)
       // Serial.printf("month=%d\r\n", gps.date.month()); // Month (1-12) (u8)
