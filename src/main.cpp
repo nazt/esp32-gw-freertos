@@ -76,7 +76,7 @@ void lcdTask(void * parameter)
 {
     lcd->setup();
     rtc->setup();
-    
+
     while (1) {
       rtc->loop();
       lcd->loop();

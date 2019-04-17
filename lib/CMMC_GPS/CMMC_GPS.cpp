@@ -74,10 +74,10 @@ void CMMC_GPS::loop() {
             // Serial.print(F(":"));
             // Serial.println(gps.time.second());
             // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
-            if (!_lastSyncRtc || millis() - _lastSyncRtc > 5*60*1000) {
+            if (!_lastSyncRtc || millis() - _lastSyncRtc > 5*1000) {
               Serial.println("[[[SYNC TIME WITH GPS]]]!!!");
-              rtc->adjust(DateTime(gps.date.year(), gps.date.month(), gps.date.day(),
-              gps.time.hour()+7%24, gps.time.minute(), gps.time.second()));
+              // rtc->adjust(DateTime(gps.date.year(), gps.date.month(), gps.date.day(),
+              // gps.time.hour()+7%24, gps.time.minute(), gps.time.second()));
               delay(200);
               _lastSyncRtc = millis();
             }

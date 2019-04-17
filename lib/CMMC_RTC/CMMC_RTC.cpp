@@ -37,6 +37,21 @@ String CMMC_RTC::getDateTimeString() {
   return String(dateTimeCharArrray);
 }
 
+String print_time(DateTime timestamp) {
+  char message[120];
+
+  int Year = timestamp.year();
+  int Month = timestamp.month();
+  int Day = timestamp.day();
+  int Hour = timestamp.hour();
+  int Minute = timestamp.minute();
+  int Second= timestamp.second();
+
+  sprintf(message, "%d-%d-%d %02d:%02d:%02d", Month,Day,Year,Hour,Minute,Second);
+
+  return message;
+}
+
 void CMMC_RTC::loop() {
     if(!_ready) {
       Serial.println("RTC FAILED.");
@@ -44,9 +59,10 @@ void CMMC_RTC::loop() {
     }
     if (millis() - prev >= 500) {
       DateTime now = rtc->now();
-      strcpy(dateTimeCharArrray, "");
-      sprintf(dateTimeCharArrray, "%02u/%02u/%02u %02u:%02u:%02u",
-      now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second());
+      strcpy(dateTimeCharArrray, print_time(now).c_str());
+      // sprintf(dateTimeCharArrray, "%02u/%02u/%02u %02u:%02u:%02u",
+      // now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second());
+      Serial.println(dateTimeCharArrray);
       // this->serial
       // Serial.println(dateTimeCharArrray);
       // Serial.print(now.year(), DEC);

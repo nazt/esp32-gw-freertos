@@ -27,9 +27,15 @@ void CMMC_LCD::setup() {
   u8g2 = new U8G2_ST7920_128X64_F_SW_SPI(U8G2_R0, /* clock=*/ 18, /* MOSI=*/ 23, /* MISO=*/ 19);
   u8g2->begin();
   hello();
+  pinMode(0, INPUT_PULLUP);
 }
 
 void CMMC_LCD::loop() {
+  int state = digitalRead(0);
+  if (state == LOW) {
+    page = ++page % (MAX_PAGE);
+    delay(100);
+  }
   paintScreen();
 }
 
@@ -62,7 +68,7 @@ void CMMC_LCD::paintScreen() {
       if (page == 0) {
         int logoMargin = 40;
         // u8g2->drawXBM(0,0,128,64, logo);
-        u8g2->drawXBM(5, 5, 40, 32, cat);
+        // u8g2->drawXBM(5, 5, 40, 32, cat);
 
         u8g2->setFont(u8g2_font_siji_t_6x10);
         u8g2->setCursor(logoMargin+10, 16+1);

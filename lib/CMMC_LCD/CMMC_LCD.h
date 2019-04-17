@@ -13,6 +13,7 @@ class CMMC_LCD: public CMMC_Module{
   uint8_t peerCount = 0;
   int packetRecv = 0;
   uint8_t page = 0;
+  const int MAX_PAGE = 3;
 
   U8G2_ST7920_128X64_F_SW_SPI *u8g2;
   float  batt;
