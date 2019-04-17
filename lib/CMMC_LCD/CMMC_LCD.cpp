@@ -71,7 +71,7 @@ void CMMC_LCD::paintScreen() {
       u8g2->print(rtc->getDateTimeString());
 
       int marginLeft = 6;
-      if (page == 1) {
+      if (page == 0) {
         int logoMargin = 40;
         // u8g2->drawXBM(0,0,128,64, logo);
         // u8g2->drawXBM(5, 5, 40, 32, cat);
@@ -105,7 +105,7 @@ void CMMC_LCD::paintScreen() {
         u8g2->print("ug/m3");
         // u8g2->print("%");
       }
-      else if (page == 0) {
+      else if (page == 1) {
         int logoMargin = 40;
         int lineSpacing = 2;
         char numBuffer[20];

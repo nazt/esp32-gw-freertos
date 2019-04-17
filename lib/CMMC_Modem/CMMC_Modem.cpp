@@ -94,7 +94,7 @@ void CMMC_Modem::loop() {
   nb->loop();
   static CMMC_Modem *that;
   that = this;
-  keepAliveInterval.every_ms(1000, []() {
+  keepAliveInterval.every_ms(5000, []() {
     static char jsonBuffer[1024];
     int pArrIdx = 0;
     uint32_t lastSentOkMillis = 0;
@@ -102,13 +102,14 @@ void CMMC_Modem::loop() {
     static char msgId[5];
     char latC[20];
     char lngC[20];
-    char latlngC[40];
+    char latlngC[60];
+    strcpy(latlngC, "18.7858225,98.9765983");
 
     uint8_t currentSleepTimeMinuteByte = 30;
     uint32_t msAfterESPNowRecv = millis();
 
     IPAddress ip = IPAddress(103, 20, 205, 85);
-    uint8_t _buffer[1300];
+    uint8_t _buffer[2000];
     float  batt;
     float  batt_raw;
     float  batt_percent;
@@ -119,11 +120,13 @@ void CMMC_Modem::loop() {
     uint32_t uptime_s =  millis() / 1000;
     Serial.println("KEEP ALIVE INTERAL...");
     printf(">> CASE; keep alive..\n");
+    
     sprintf(jsonBuffer, "{\"loc\":\"%s\",\"reset\":%d,\"type\":%d,\"uptime_s\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\"}", latlngC, rebootCount, TYPE_KEEP_ALIVE, uptime_s, ESP.getFreeHeap(), String(batt).c_str(), ct++, currentSleepTimeMinuteByte, "X");
+
     uint16_t buflen = generate(_buffer, ip, 5683, "NBIoT/" AIS_TOKEN, COAP_CON,
                                COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
     Serial.println(jsonBuffer);
-    that->sendPacket((uint8_t*)_buffer, buflen);
+    // that->sendPacket((uint8_t*)_buffer, buflen);
   });
 
   // while (true) {

@@ -44,10 +44,11 @@ void CMMC_DustSensor::_calculateDustAverage() {
     dust_average25 = median(pm25_array, MAX_ARRAY);
     dust_average10 = median(pm10_array, MAX_ARRAY);
   }
-  // Serial.println("===DUST===");
-  // Serial.println(dust_average25);
-  // Serial.println(dust_average10);
-  // Serial.println("/===DUST===");
+  Serial.print("===DUST=== ");
+  Serial.print(dust_average25);
+  Serial.print(",");
+  Serial.print(dust_average10);
+  Serial.println(" /===DUST===");
 
   dustIdx++;
 }
@@ -67,10 +68,10 @@ void CMMC_DustSensor::loop() {
   Serial.printf("wait DustSensor_SERIAL for %lums\r\n", millis() - ms);
   delay(200);
 
-  dustIdx = dust_counter % MAX_ARRAY;
-  pm10_array[dustIdx] = 500+random(millis()) % 499;
-  pm25_array[dustIdx] = random(millis())%100;
-  _calculateDustAverage();
+  // dustIdx = dust_counter % MAX_ARRAY;
+  // pm10_array[dustIdx] = 500+random(millis()) % 499;
+  // pm25_array[dustIdx] = random(millis())%100;
+  // _calculateDustAverage();
   this->readDustSensor();
 }
 
@@ -82,8 +83,9 @@ void CMMC_DustSensor::readDustSensor() {
   while ( this->_serial->available() > 0 ) {
     for ( int i = 0; i < 10; ++i ) {
       mPkt[i] = this->_serial->read();
-      // Serial.println( mPkt[i], HEX );
+      // Serial.print( mPkt[i], HEX );
     }
+    // Serial.println();
     if ( 0xC0 == mPkt[1] ) {
       // Read dust density.
       // Check
@@ -110,9 +112,9 @@ void CMMC_DustSensor::readDustSensor() {
         pm10_array[dustIdx] = pm10;
         // Serial.printf("pm10=%f\r\n", pm10);
         _calculateDustAverage();
+        dust_counter++;
       }
     }
-    dust_counter++;
     this->_serial->flush();
   }
 }
