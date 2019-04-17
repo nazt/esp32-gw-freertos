@@ -13,6 +13,7 @@ class CMMC_Modem: public CMMC_Module{
     String status;
     void updateStatus(String s);
     // void resetModem();
+    void sendPacket(uint8_t *text, int buflen);
   public:
     CMMC_Modem(Stream*);
     void hello();
