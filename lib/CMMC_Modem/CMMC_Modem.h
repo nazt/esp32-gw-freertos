@@ -9,7 +9,7 @@ class CMMC_Modem: public CMMC_Module{
   protected:
     CMMC_NB_IoT *nb;
     Stream *_modemSerial;
-    int isNbConnected = 1;
+    int isNbConnected = 0;
     String status;
     void updateStatus(String s);
     // void resetModem();

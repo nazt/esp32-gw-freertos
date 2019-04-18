@@ -32,8 +32,8 @@ void CMMC_Modem::setup() {
   this->status = "Initializing Modem.";
 
   pinMode(13, OUTPUT);
-  digitalWrite(13, HIGH);
   digitalWrite(13, LOW);
+  digitalWrite(13, HIGH);
 
   Serial.println("Initializing CMMC NB-IoT");
   nb = new CMMC_NB_IoT(this->_modemSerial);
@@ -103,7 +103,7 @@ void CMMC_Modem::loop() {
     char latC[20];
     char lngC[20];
     char latlngC[60];
-    strcpy(latlngC, "18.7858225,98.9765983");
+    strcpy(latlngC, "00.0000000,00.0000000");
 
     uint8_t currentSleepTimeMinuteByte = 30;
     uint32_t msAfterESPNowRecv = millis();
@@ -120,13 +120,16 @@ void CMMC_Modem::loop() {
     uint32_t uptime_s =  millis() / 1000;
     Serial.println("KEEP ALIVE INTERAL...");
     printf(">> CASE; keep alive..\n");
-    
+
     sprintf(jsonBuffer, "{\"loc\":\"%s\",\"reset\":%d,\"type\":%d,\"uptime_s\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\"}", latlngC, rebootCount, TYPE_KEEP_ALIVE, uptime_s, ESP.getFreeHeap(), String(batt).c_str(), ct++, currentSleepTimeMinuteByte, "X");
 
-    uint16_t buflen = generate(_buffer, ip, 5683, "NBIoT/" AIS_TOKEN, COAP_CON,
+    uint16_t buflen = generate(_buffer, ip, 5683, ("NBIoT/" AIS_TOKEN), COAP_CON,
                                COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
-    Serial.println(jsonBuffer);
-    // that->sendPacket((uint8_t*)_buffer, buflen);
+    Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
+    Serial.printf("      len = %d\r\n", buflen);
+    // Serial.printf("   buffer = %s\r\n", _buffer);
+    that->sendPacket((uint8_t*)_buffer, buflen);
+    delay(1000);
   });
 
   // while (true) {
@@ -150,16 +153,15 @@ void CMMC_Modem::loop() {
 }
 
 void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
+  if (!isNbConnected) {
+    Serial.println("NB IoT is Connected.");
+    return;
+  }
+  Serial.println("NB OK?");
+
   int rt = 0;
   uint8_t buffer[buflen];
   memcpy(buffer, text, buflen);
-  // char buffer[buflen*2+1];
-  // bzero(buffer, strlen(buffer));
-  //  for (int x = 0; x < buflen*2; x+= 2) {
-  //   sprintf(buffer[x], "%02x", text[x]);
-  // }
-  // Serial.printf("buflen=%d, ", buflen);
-  // Serial.println(buffer);
   while (true) {
     updateStatus("dispatching queue...");
     if (nb->sendMessageHex(buffer, buflen, 0)) {
