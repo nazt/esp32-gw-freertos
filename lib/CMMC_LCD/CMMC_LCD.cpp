@@ -73,7 +73,7 @@ void CMMC_LCD::paintScreen() {
       int marginLeft = 6;
       if (page == 0) {
         int logoMargin = 40;
-        // u8g2->drawXBM(0,0,128,64, logo);
+        u8g2->drawXBM(7,0,30, 36, logo);
         // u8g2->drawXBM(5, 5, 40, 32, cat);
 
         u8g2->setFont(u8g2_font_siji_t_6x10);

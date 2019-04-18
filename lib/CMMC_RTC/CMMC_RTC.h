@@ -14,6 +14,7 @@ class CMMC_RTC: public CMMC_Module{
     char dateTimeCharArrray[100];
     uint32_t prev;
     bool _ready = false;
+    bool _rtc_locked = false;
   public:
     CMMC_RTC();
     void setup();

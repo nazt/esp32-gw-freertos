@@ -57,12 +57,14 @@ void CMMC_RTC::loop() {
       Serial.println("RTC FAILED.");
       return;
     }
-    if (millis() - prev >= 500) {
+    if (!_rtc_locked && (millis() - prev >= 500)) {
       DateTime now = rtc->now();
-      strcpy(dateTimeCharArrray, print_time(now).c_str());
+      if (now.year() > 2000) { // work around
+        strcpy(dateTimeCharArrray, print_time(now).c_str());
+      }
       // sprintf(dateTimeCharArrray, "%02u/%02u/%02u %02u:%02u:%02u",
       // now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second());
-      Serial.println(dateTimeCharArrray);
+      // Serial.println(dateTimeCharArrray);
       // this->serial
       // Serial.println(dateTimeCharArrray);
       // Serial.print(now.year(), DEC);
@@ -80,14 +82,14 @@ void CMMC_RTC::loop() {
       // Serial.print(now.second(), DEC);
       // Serial.println();
       prev = millis();
+      Serial.println(dateTimeCharArrray);
   }
-    // if (millis() % 1000) {
-    //   Serial.println(dateTimeCharArrray);
-    // }
 
 }
 
 
 void CMMC_RTC::adjust(const DateTime& dt) {
+  _rtc_locked = true;
   rtc->adjust(dt);
+  _rtc_locked = false;
 }

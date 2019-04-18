@@ -91,11 +91,7 @@ void loop() {
   for (size_t i = 0; i < MODULE_SIZE; i++) {
     modules[i]->loop();
   }
-  Serial.printf("rebootCount = %lu\r\n", rebootCount);
-  // NBSerial.write(at.c_str(), 2);
-  // NBSerial.write('\r');
-  // String response =  NBSerial.readStringUntil('\n');
-  // Serial.println(response);
+  // Serial.printf("rebootCount = %lu\r\n", rebootCount);
 }
 
 
