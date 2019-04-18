@@ -64,14 +64,8 @@ void CMMC_DustSensor::loop() {
     }
     delay(1);
   }
-
   Serial.printf("wait DustSensor_SERIAL for %lums\r\n", millis() - ms);
   delay(200);
-
-  // dustIdx = dust_counter % MAX_ARRAY;
-  // pm10_array[dustIdx] = 500+random(millis()) % 499;
-  // pm25_array[dustIdx] = random(millis())%100;
-  // _calculateDustAverage();
   this->readDustSensor();
 }
 

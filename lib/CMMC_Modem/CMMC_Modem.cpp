@@ -32,8 +32,8 @@ void CMMC_Modem::setup() {
   this->status = "Initializing Modem.";
 
   pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
   digitalWrite(13, HIGH);
+  digitalWrite(13, LOW);
 
   Serial.println("Initializing CMMC NB-IoT");
   nb = new CMMC_NB_IoT(this->_modemSerial);
@@ -67,7 +67,7 @@ void CMMC_Modem::setup() {
   static int counter;
   counter = 0;
   nb->onConnecting([]() {
-    counter = (counter + 1) % 3;
+    counter = (counter + 1) % 4;
     // String t = "Attching";
     String t = "";
     for (size_t i = 0; i < counter; i++) {
@@ -131,25 +131,6 @@ void CMMC_Modem::loop() {
     that->sendPacket((uint8_t*)_buffer, buflen);
     delay(1000);
   });
-
-  // while (true) {
-  // updateStatus("dispatching queue...");
-  // if (nb.sendMessageHex(buffer, buflen, 0)) {
-  //   updateStatus(">> [ais] socket0: send ok.");
-  //   lastSentOkMillis = millis();
-  //   nbSentOk++;
-  //   delay(100);
-  //   break;
-  // }
-  // else {
-  //   updateStatus(">> [ais] socket0: send failed.");
-  //   if (++rt > 5) {
-  //     delay(100);
-  //     ESP.deepSleep(1e6);
-  //     delay(100);
-  //     break;
-  //   }
-  // }
 }
 
 void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
@@ -157,22 +138,19 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
     Serial.println("NB IoT is Connected.");
     return;
   }
-  Serial.println("NB OK?");
-
   int rt = 0;
   uint8_t buffer[buflen];
   memcpy(buffer, text, buflen);
   while (true) {
     updateStatus("dispatching queue...");
     if (nb->sendMessageHex(buffer, buflen, 0)) {
-      updateStatus(">> [ais] socket0: send ok.");
+      updateStatus(">> send ok.");
       lastSentOkMillis = millis();
-      // nbSentOk++;
       delay(100);
       break;
     }
     else {
-      updateStatus(">> [ais] socket0: send failed.");
+      updateStatus(">> send failed.");
       if (++rt > 5) {
         delay(100);
         ESP.deepSleep(1e6);
