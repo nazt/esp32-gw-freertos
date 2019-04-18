@@ -59,7 +59,7 @@ void CMMC_RTC::loop() {
     }
     if (!_rtc_locked && (millis() - prev >= 500)) {
       DateTime now = rtc->now();
-      if (now.year() > 2000) { // work around
+      if (now.year() > 2000 && now.year() <= 2021) { // work around
         strcpy(dateTimeCharArrray, print_time(now).c_str());
       }
       // sprintf(dateTimeCharArrray, "%02u/%02u/%02u %02u:%02u:%02u",
@@ -84,7 +84,6 @@ void CMMC_RTC::loop() {
       prev = millis();
       Serial.println(dateTimeCharArrray);
   }
-
 }
 
 
