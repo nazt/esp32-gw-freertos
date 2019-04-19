@@ -47,9 +47,13 @@ String print_time(DateTime timestamp) {
   int Minute = timestamp.minute();
   int Second= timestamp.second();
 
-  sprintf(message, "%d-%d-%d %02d:%02d:%02d", Month,Day,Year,Hour,Minute,Second);
+  sprintf(message, "%d/%d/%d %02d:%02d:%02d", Day, Month,Year,Hour,Minute,Second);
 
   return message;
+}
+
+uint32_t CMMC_RTC::getCurrentTimestamp() {
+  return _now.unixtime();
 }
 
 void CMMC_RTC::loop() {
@@ -59,7 +63,9 @@ void CMMC_RTC::loop() {
     }
     if (!_rtc_locked && (millis() - prev >= 500)) {
       DateTime now = rtc->now();
+      // Serial.println(now.unixtime());
       if (now.year() > 2000 && now.year() <= 2021) { // work around
+        _now = now;
         strcpy(dateTimeCharArrray, print_time(now).c_str());
       }
       // sprintf(dateTimeCharArrray, "%02u/%02u/%02u %02u:%02u:%02u",
@@ -82,7 +88,7 @@ void CMMC_RTC::loop() {
       // Serial.print(now.second(), DEC);
       // Serial.println();
       prev = millis();
-      Serial.println(dateTimeCharArrray);
+      // Serial.println(dateTimeCharArrray);
   }
 }
 

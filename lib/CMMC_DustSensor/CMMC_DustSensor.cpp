@@ -44,13 +44,12 @@ void CMMC_DustSensor::_calculateDustAverage() {
     dust_average25 = median(pm25_array, MAX_ARRAY);
     dust_average10 = median(pm10_array, MAX_ARRAY);
   }
-  Serial.print("===DUST=== ");
+  Serial.println("=== DUST AVERAGE === ");
   Serial.print(dust_average25);
   Serial.print(",");
-  Serial.print(dust_average10);
-  Serial.println(" /===DUST===");
-
-  dustIdx++;
+  Serial.println(dust_average10);
+  // Serial.println();
+  Serial.println("/=== DUST ===");
 }
 
 void CMMC_DustSensor::loop() {
@@ -59,12 +58,12 @@ void CMMC_DustSensor::loop() {
   // Serial.printf("COUNT=%lu\r\n", ms);
   while(!this->_serial->available()) {
     if (millis() - ms > 2000) {
-      Serial.println("DUST SENSOR TIMEOUT...");
+      Serial.println("WAITING.. DUST SENSOR TIMEOUT...");
       break;
     }
     delay(1);
   }
-  Serial.printf("wait DustSensor_SERIAL for %lums\r\n", millis() - ms);
+  // Serial.printf("wait DustSensor_SERIAL for %lums\r\n", millis() - ms);
   delay(200);
   this->readDustSensor();
 }
@@ -93,20 +92,26 @@ void CMMC_DustSensor::readDustSensor() {
         uint8_t pm10Low   = mPkt[4];
         uint8_t pm10High  = mPkt[5];
 
-        pm25 = ( ( pm25High * 256.0 ) + pm25Low ) / 10.0;
-        pm10 = ( ( pm10High * 256.0 ) + pm10Low ) / 10.0;
+        float pm25 = ( ( pm25High * 256.0 ) + pm25Low ) / 10.0;
+        float pm10 = ( ( pm10High * 256.0 ) + pm10Low ) / 10.0;
+
+        dustIdx = dust_counter % MAX_ARRAY;
         Serial.println("================");
         Serial.println("check sum is valid.");
-        Serial.printf("PM10 = %f\r\n", pm10);
-        Serial.printf("PM2.5 = %f\r\n", pm25);
+        Serial.printf("[RAW PM10] = %f\r\n", pm10);
+        Serial.printf("[RAW PM2.5] = %f\r\n", pm25);
+        Serial.printf("counter = %lu\r\n", dust_counter);
+        Serial.printf("dustIDX= %lu\r\n", dustIdx);
         Serial.println("================");
-        dustIdx = dust_counter % MAX_ARRAY;
 
         pm25_array[dustIdx] = pm25;
         pm10_array[dustIdx] = pm10;
         // Serial.printf("pm10=%f\r\n", pm10);
         _calculateDustAverage();
         dust_counter++;
+      }
+      else {
+        Serial.println("check sum [invalid].");
       }
     }
     this->_serial->flush();

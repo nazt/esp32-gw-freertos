@@ -6,6 +6,7 @@
 #include <CMMC_Module.h>
 #include <HardwareSerial.h>
 
+static char _bufferLatLng[100];
 class CMMC_GPS: public CMMC_Module{
   HardwareSerial *serial;
   TinyGPSPlus gps;
@@ -25,6 +26,7 @@ class CMMC_GPS: public CMMC_Module{
     void loop();
     void configLoop();
     void configSetup();
+    String getLocation();
     // void configWebServer();
 };
 

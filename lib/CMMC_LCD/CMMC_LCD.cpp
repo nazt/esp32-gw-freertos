@@ -18,6 +18,7 @@ uint32_t sentCnt = 0;
 uint8_t peerCount = 0;
 int packetRecv = 0;
 int count = 0;
+
 CMMC_LCD::CMMC_LCD() {
 }
 
@@ -67,12 +68,12 @@ void CMMC_LCD::paintScreen() {
     do
     {
       u8g2->setFont(u8g2_font_p01type_tn);
-      u8g2->setCursor(50, 6);
+      u8g2->setCursor(60, 6);
       u8g2->print(rtc->getDateTimeString());
 
       int marginLeft = 6;
       if (page == 0) {
-        int logoMargin = 40;
+        int logoMargin = 36;
         u8g2->drawXBM(7,0,30, 36, logo);
         // u8g2->drawXBM(5, 5, 40, 32, cat);
 

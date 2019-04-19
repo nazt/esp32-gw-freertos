@@ -4,6 +4,32 @@
 #include <Arduino.h>
 #include <CMMC_Module.h>
 #include <CMMC_NB_IoT.h>
+#include <TinyGPS++.h>
+#include <CMMC_GPS.h>
+
+typedef enum {
+  TYPE_KEEP_ALIVE = 1,
+  TYPE_SENSOR_NODE
+} DATA_COAP_TYPE;
+
+extern char sta_mac[18];
+extern char softap_mac[18];
+
+typedef struct{
+  float  batt = 0;
+  float  batt_raw = 0;
+  float  batt_percent = 0;
+  float pm10;
+  float pm2_5;
+  int analogValue;
+  uint32_t uptime_s;
+  uint32_t unixtime;
+  uint32_t rebootCount = 0;
+  char latlngC[80];
+  // DateTime dt;
+  unsigned int ct = 1;
+  DATA_COAP_TYPE packet_type;
+} Data;
 
 class CMMC_Modem: public CMMC_Module{
   protected:
@@ -11,29 +37,16 @@ class CMMC_Modem: public CMMC_Module{
     Stream *_modemSerial;
     int isNbConnected = 0;
     String status;
+    uint32_t nbSentCounter = 1;
     void updateStatus(String s);
     // void resetModem();
     void sendPacket(uint8_t *text, int buflen);
 
-    // CMMC_PACKET_T pArr[60];
-    int pArrIdx = 0;
-    uint32_t lastSentOkMillis = 0;
-    unsigned int ct = 1;
-    static char msgId[5];
-    IPAddress ip = IPAddress(103, 20, 205, 85);
-    uint8_t _buffer[1300];
-    float  batt;
-    float  batt_raw;
-    float  batt_percent;
-    int analogValue;
     CMMC_Interval keepAliveInterval;
-    char latC[20];
-    char lngC[20];
-    char latlngC[40];
+    xQueueHandle xQueue;
+    uint32_t lastSentOkMillis = 0;
 
-    uint8_t currentSleepTimeMinuteByte = 30;
-    uint32_t msAfterESPNowRecv = millis();
-
+    void receiveTask( void * parameter  );
   public:
     CMMC_Modem(Stream*);
     void hello();

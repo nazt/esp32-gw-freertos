@@ -10,12 +10,11 @@ typedef enum {
 }  dustType_t;
 
 
-class CMMC_DustSensor: public CMMC_Module{
+class CMMC_DustSensor: public CMMC_Module {
   protected:
     HardwareSerial *_serial;
-    int isNbConnected = 1;
-    float pm25; //เก็บฝุ่น pm2.5
-    float pm10; //เก็บฝุ่น pm10
+    // float pm25; //เก็บฝุ่น pm2.5
+    // float pm10; //เก็บฝุ่น pm10
     float dust_average25 = 0; //เก็บค่าเฉลี่ยฝุ่น pm2.5
     float dust_average10 = 0; //เก็บค่าเฉลี่ยฝุ่น pm10
     float temperature_c,  humidity_percent_rh = 0;

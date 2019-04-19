@@ -1,14 +1,22 @@
+#include <Wire.h>
+#include <RTClib.h>
 #include "CMMC_Modem.h"
+#include "CMMC_DustSensor.h"
+#include <CMMC_RTC.h>
+
 // #define AIS_TOKEN "12dee170-4a4b-11e9-96dd-9fb5d8a71344" // devstation
 #define AIS_TOKEN "76d514f0-217f-11e9-a028-9771a15972bf" // nat-devstation
 #include "coap.h"
 #include "coap-helper.h"
+static QueueHandle_t xQueueMain;
+
+
+IPAddress aisip = IPAddress(103, 20, 205, 85);
 RTC_DATA_ATTR int rebootCount = -1;
-void sendPacket(uint8_t *text, int buflen);
-enum {
-  TYPE_KEEP_ALIVE = 1,
-  TYPE_SENSOR_NODE
-} DATA_COAP_TYPE;
+
+extern CMMC_DustSensor *dustSensor;
+extern CMMC_GPS *gps;
+extern CMMC_RTC *rtc;
 
 CMMC_Modem::CMMC_Modem(Stream* s)   {
   this->_modemSerial = s;
@@ -30,10 +38,25 @@ void CMMC_Modem::updateStatus(String s) {
 void CMMC_Modem::setup() {
   Serial.println("setup modem..");
   this->status = "Initializing Modem.";
+  // pinMode(13, INPUT);
+  // while(1) {
+  //   Serial.println(digitalRead(13));
+  // }
 
+  #define TRUE_NB_IOT_CONF 1
+  // #define AIS_NB_IOT_CONF 1
+
+  #ifdef TRUE_NB_IOT_CONF
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
+  digitalWrite(13, HIGH);
+  #endif
+
+  #ifdef AIS_NB_IOT_CONF
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
   digitalWrite(13, LOW);
+  #endif
 
   Serial.println("Initializing CMMC NB-IoT");
   nb = new CMMC_NB_IoT(this->_modemSerial);
@@ -67,75 +90,122 @@ void CMMC_Modem::setup() {
   static int counter;
   counter = 0;
   nb->onConnecting([]() {
-    counter = (counter + 1) % 4;
+    counter = (counter + 1) % 3;
     // String t = "Attching";
     String t = "";
-    for (size_t i = 0; i < counter; i++) {
+    for (size_t i = 0; i <= counter; i++) {
       t += String(".");
     }
     that->updateStatus(t);
     delay(500);
   });
 
-  nb->onConnected([]() {
+  nb->onConnected([](void * parameter ) {
     that->updateStatus("Connected.");
     Serial.print("[user] NB-IoT Network connected at (");
     Serial.print(millis());
     Serial.println("ms)");
     that->nb->createUdpSocket("103.20.205.85", 5683, UDPConfig::ENABLE_RECV);
     that->isNbConnected = 1;
+    // BaseType_t xStatus;
+    // /* time to block the task until the queue has free space */
+    // const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
+    // /* create data to send */
+    // int element = 1;
+    // /* send data to front of the queue */
+    // xStatus = xQueueSendToFront( xQueueMain, &element, xTicksToWait );
   });
 
   nb->hello();
   nb->rebootModule();
+  this->xQueue = xQueueCreate(20, sizeof(Data));
+  xTaskCreate([&](void * parameter) -> void {
+    /* keep the status of receiving data */
+    BaseType_t xStatus;
+    // /* time to block the task until data is available */
+    const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
+    Data data;
+
+    static char jsonBuffer[1024];
+    uint8_t _buffer[2000];
+
+    for (;;) {
+      /* receive data from the queue */
+      // if (!that->isNbConnected) {
+      //   continue;
+      // }
+      xStatus = xQueueReceive( that->xQueue, &data, xTicksToWait );
+      bzero(_buffer, sizeof(_buffer));
+      if (xStatus == pdPASS) {
+        /* print the data to terminal */
+        Serial.print("receiveTask got data: ");
+        Serial.print("packet type = ");
+        Serial.println(data.packet_type);
+        if (data.packet_type == TYPE_KEEP_ALIVE) {
+          Serial.println(">>> TYPE_KEEP_ALIVE");
+          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"loc\":\"%s\",\"reset\":%d,\"type\":%d,\"uptime_s\":%lu,\"unixtime\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\"}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(), data.latlngC, data.rebootCount, TYPE_KEEP_ALIVE, data.uptime_s, data.unixtime,  ESP.getFreeHeap(), String(data.batt).c_str(), data.ct++, 0, "X");
+
+          Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
+          // Serial.printf("   buffer = %s\r\n", _buffer);
+          uint16_t buflen = generate(_buffer, aisip, 5683, ("NBIoT/" AIS_TOKEN),
+          COAP_CON, COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
+          Serial.printf("      len = %d\r\n", buflen);
+          that->sendPacket((uint8_t*)_buffer, buflen);
+        }
+      }
+      else {
+        // Serial.println("QQQQ");
+      }
+    }
+    vTaskDelete( NULL );
+  },           /* Task function. */
+  "receiveTask",        /* name of task. */
+  10000,                    /* Stack size of task */
+  NULL,                     /* parameter of the task */
+  1,                        /* priority of the task */
+  NULL);                    /* Task handle to keep track of created task */
+
 }
 
 void CMMC_Modem::loop() {
   nb->loop();
   static CMMC_Modem *that;
   that = this;
-  keepAliveInterval.every_ms(5000, []() {
-    static char jsonBuffer[1024];
-    int pArrIdx = 0;
-    uint32_t lastSentOkMillis = 0;
-    unsigned int ct = 1;
-    static char msgId[5];
-    char latC[20];
-    char lngC[20];
-    char latlngC[60];
-    strcpy(latlngC, "00.0000000,00.0000000");
-
-    uint8_t currentSleepTimeMinuteByte = 30;
-    uint32_t msAfterESPNowRecv = millis();
-
-    IPAddress ip = IPAddress(103, 20, 205, 85);
-    uint8_t _buffer[2000];
-    float  batt;
-    float  batt_raw;
-    float  batt_percent;
-    int analogValue;
-    CMMC_Interval keepAliveInterval;
-
-    bzero(_buffer, sizeof(_buffer));
-    uint32_t uptime_s =  millis() / 1000;
+  keepAliveInterval.every_ms(5*1000, []() {
     Serial.println("KEEP ALIVE INTERAL...");
     printf(">> CASE; keep alive..\n");
-
-    sprintf(jsonBuffer, "{\"loc\":\"%s\",\"reset\":%d,\"type\":%d,\"uptime_s\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\"}", latlngC, rebootCount, TYPE_KEEP_ALIVE, uptime_s, ESP.getFreeHeap(), String(batt).c_str(), ct++, currentSleepTimeMinuteByte, "X");
-
-    uint16_t buflen = generate(_buffer, ip, 5683, ("NBIoT/" AIS_TOKEN), COAP_CON,
-                               COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
-    Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
-    Serial.printf("      len = %d\r\n", buflen);
-    // Serial.printf("   buffer = %s\r\n", _buffer);
-    that->sendPacket((uint8_t*)_buffer, buflen);
-    delay(1000);
+    BaseType_t xStatus;
+    const TickType_t xTicksToWait = pdMS_TO_TICKS(300);
+    // String(dustSensor->getPMValue(DustPM2_5)));
+    Data data;
+    data.packet_type = TYPE_KEEP_ALIVE;
+    data.ct = that->nbSentCounter++;
+    data.pm10 = dustSensor->getPMValue(DustPM10);
+    data.pm2_5 = dustSensor->getPMValue(DustPM2_5);
+    data.uptime_s = millis() / 1000;
+    data.unixtime = rtc->getCurrentTimestamp();
+    strcpy(data.latlngC, gps->getLocation().c_str());
+    Serial.println("> sendTask2 is sending data");
+    xStatus = xQueueSendToFront(that->xQueue, &data, xTicksToWait);
+    if ( xStatus == pdPASS ) {
+      Serial.println("ENQUEUE!!!");
+    }
+    else {
+      Serial.println("FAIL TO ENQUEUE.");
+    }
+      // BaseType_t xStatusMain;
+      // /* time to block the task until the queue has free space */
+      // const TickType_t xTicksToWaitMain = pdMS_TO_TICKS(100);
+      // /* create data to send */
+      // int element = 1;
+      // /* send data to front of the queue */
+      // xStatusMain = xQueueSendToFront( xQueueMain, &element, xTicksToWaitMain );
   });
 }
 
 void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
   if (!isNbConnected) {
-    Serial.println("NB IoT is Connected.");
+    Serial.println("NB IoT is not connected! skipped.");
     return;
   }
   int rt = 0;

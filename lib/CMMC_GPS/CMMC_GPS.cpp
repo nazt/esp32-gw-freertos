@@ -12,12 +12,22 @@ void CMMC_GPS::configLoop() {
   yield();
 }
 
+String CMMC_GPS::getLocation() {
+  Serial.println("GPS getLocation()");
+  return String(_bufferLatLng);
+  // char x[100];
+  // strcpy(x, this->_bufferLatLng);
+  // sprintf(x, "%s", this->_bufferLatLng);
+}
+
 void CMMC_GPS::configSetup() {
   yield();
 }
 
 void CMMC_GPS::setup() {
   Serial.println("SETING UP FROM GPS..");
+  strcpy(latlngC, "00.0000,00.0000");
+  strcpy(_bufferLatLng, "00.0000,00.0000");
 }
 
 void CMMC_GPS::loop() {
@@ -25,14 +35,14 @@ void CMMC_GPS::loop() {
   this->serial->flush();
   uint32_t ms = millis();
   delay(20);
-  // Serial.printf("COUNT=%lu\r\n", ms);
   while(!this->serial->available()) {
     delay(1);
     if (millis() - ms > 5000) {
+      Serial.println("GPS_SERIAL timeout!!!");
       break;
     }
   }
-  Serial.printf("wait GPS_SERIAL for %lums\r\n", millis() - ms);
+  // Serial.printf("wait GPS_SERIAL for %lums\r\n", millis() - ms);
   while (serial->available() > 0) {
     char c = serial->read();
     if (gps.encode(c)) {
@@ -48,7 +58,9 @@ void CMMC_GPS::loop() {
               strcat(latlngC, latC);
               strcat(latlngC, ",");
               strcat(latlngC, lngC);
-              Serial.println(latlngC);
+              // Serial.println(latlngC);
+              strcpy(_bufferLatLng, latlngC);
+              // Serial.println()
               this->_lastFetchLocation = millis();
         }
 
@@ -64,10 +76,7 @@ void CMMC_GPS::loop() {
       else
       {
         gpsNoSignal = 1;
-        strcpy(latlngC, "");
-        strcat(latlngC, "0.0000");
-        strcat(latlngC, ",");
-        strcat(latlngC, "0.0000");
+        strcpy(latlngC, "00.0000,00.0000");
       }
     }
   }

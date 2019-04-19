@@ -15,6 +15,7 @@ class CMMC_RTC: public CMMC_Module{
     uint32_t prev;
     bool _ready = false;
     bool _rtc_locked = false;
+    DateTime _now;
   public:
     CMMC_RTC();
     void setup();
@@ -23,6 +24,7 @@ class CMMC_RTC: public CMMC_Module{
     void configSetup();
     String getDateTimeString();
     void adjust(const DateTime& dt);
+    uint32_t getCurrentTimestamp();
 };
 
 #endif

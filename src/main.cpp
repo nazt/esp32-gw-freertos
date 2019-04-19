@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <WiFi.h>
 #include <rom/rtc.h>
 #include <CMMC_GPS.h>
 #include <CMMC_LCD.h>
@@ -13,6 +14,15 @@ void print_reset_reason(RESET_REASON reason);
 HardwareSerial NBSerial(2);
 RTC_DATA_ATTR static int rebootCount = -1;
 
+// struct queue_data {
+//   int deviceId;
+//   int measurementType;
+//   float value;
+// };
+static char sta_mac[18];
+static char softap_mac[18];
+#define EXT_WDT_PIN 14
+
 CMMC_LCD *lcd;
 CMMC_GPS *gps;
 CMMC_Modem *modem;
@@ -20,13 +30,19 @@ CMMC_RTC *rtc;
 CMMC_DustSensor *dustSensor;
 
 const int MODULE_SIZE = 2;
-
 CMMC_Module* modules[10];
 void nbTask( void * parameter);
 void lcdTask( void * parameter);
 
+// static QueueHandle_t xQueueMain;
+
 void setup() {
   rebootCount++;
+  // xQueueMain = xQueueCreate(1, sizeof(int));
+  //
+  // if(xQueueMain == NULL){
+  //   Serial.println("Error creating the queue");
+  // }
   Serial.begin(115200);
   Serial.print(">> CPU0 reset reason: ");
   print_reset_reason(rtc_get_reset_reason(0));
@@ -34,6 +50,16 @@ void setup() {
   Serial.print(">> CPU1 reset reason:");
   print_reset_reason(rtc_get_reset_reason(1));
   verbose_print_reset_reason(rtc_get_reset_reason(1));
+
+  WiFi.disconnect();
+  WiFi.mode(WIFI_AP_STA);
+  strcpy(sta_mac, WiFi.macAddress().c_str());
+  strcpy(softap_mac, WiFi.softAPmacAddress().c_str());
+  Serial.printf("STA MAC: %s\r\n", sta_mac);
+  Serial.printf(" AP MAC: %s\r\n", softap_mac);
+  WiFi.disconnect();
+  WiFi.mode(WIFI_OFF);
+  delay(100);
 
   rtc = new CMMC_RTC();
   lcd = new CMMC_LCD();
@@ -76,11 +102,23 @@ void lcdTask(void * parameter)
 {
     lcd->setup();
     rtc->setup();
-
+    int element;
+    pinMode(EXT_WDT_PIN, OUTPUT);
     while (1) {
       rtc->loop();
       lcd->loop();
-      yield();
+      digitalWrite(EXT_WDT_PIN, HIGH);
+      digitalWrite(EXT_WDT_PIN, LOW);
+      // BaseType_t xStatus;
+      // const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
+      // xStatus = xQueueReceive( xQueueMain, &element, xTicksToWait );
+      // /* check whether receiving is ok or not */
+      // if(xStatus == pdPASS){
+      //   Serial.println("[LCD TASK] QUEUE RECV...");
+      //   Serial.println("[LCD TASK] QUEUE RECV...");
+      //   Serial.println("[LCD TASK] QUEUE RECV...");
+      //   Serial.println("[LCD TASK] QUEUE RECV...");
+      // }
     }
     Serial.println("Ending LCD Task");
     vTaskDelete( NULL );

@@ -1,10 +1,9 @@
 void swap(float &a, float &b)
 {
-  int t = a;
+  float t = a;
   a = b;
   b = t;
 }
-
 
 int partition(float *arr, const int left, const int right)
 {
@@ -32,7 +31,7 @@ int partition(float *arr, const int left, const int right)
   return i - 1;
 }
 
-void quickSort(float *arr, const int left, const int right)
+void quickSort(float *arr, const float left, const int right)
 {
   if (left >= right) {
     return;
@@ -44,7 +43,7 @@ void quickSort(float *arr, const int left, const int right)
   quickSort(arr, part + 1, right);
 }
 
-int median(float arr[], int maxValues)
+float median(float arr[], int maxValues)
 {
   quickSort(arr, 0, maxValues - 1);
   return arr[maxValues / 2];
