@@ -6,6 +6,12 @@
 
 // #define AIS_TOKEN "12dee170-4a4b-11e9-96dd-9fb5d8a71344" // devstation
 #define AIS_TOKEN "76d514f0-217f-11e9-a028-9771a15972bf" // nat-devstation
+#define DUSTBOY2_1 "4f9b9660-62da-11e9-96dd-9fb5d8a71344"
+#define DUSTBOY2_2 "531c0a90-62da-11e9-96dd-9fb5d8a71344"
+#define DUSTBOY2_3 "5bc43a50-62da-11e9-96dd-9fb5d8a71344"
+#define DUSTBOY2_4 "5fc17fa0-62da-11e9-96dd-9fb5d8a71344"
+#define DUSTBOY2_5 "6229a600-62da-11e9-96dd-9fb5d8a71344"
+
 #include "coap.h"
 #include "coap-helper.h"
 static QueueHandle_t xQueueMain;
@@ -147,7 +153,8 @@ void CMMC_Modem::setup() {
 
           Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
           // Serial.printf("   buffer = %s\r\n", _buffer);
-          uint16_t buflen = generate(_buffer, aisip, 5683, ("NBIoT/" AIS_TOKEN),
+          // DUSTBOY2_1
+          uint16_t buflen = generate(_buffer, aisip, 5683, ("NBIoT/" DUSTBOY2_4),
           COAP_CON, COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
           Serial.printf("      len = %d\r\n", buflen);
           that->sendPacket((uint8_t*)_buffer, buflen);
@@ -186,20 +193,27 @@ void CMMC_Modem::loop() {
     data.unixtime = rtc->getCurrentTimestamp();
     strcpy(data.latlngC, gps->getLocation().c_str());
     Serial.println("> sendTask2 is sending data");
-    xStatus = xQueueSendToFront(that->xQueue, &data, xTicksToWait);
-    if ( xStatus == pdPASS ) {
-      Serial.println("ENQUEUE!!!");
+
+    if (!that->isNbConnected) {
+      Serial.println("NB IoT is not connected! skipped.");
+      return;
     }
     else {
-      Serial.println("FAIL TO ENQUEUE.");
+      xStatus = xQueueSendToFront(that->xQueue, &data, xTicksToWait);
+      if ( xStatus == pdPASS ) {
+        Serial.println("ENQUEUE!!!");
+      }
+      else {
+        Serial.println("FAIL TO ENQUEUE.");
+      }
     }
-      // BaseType_t xStatusMain;
-      // /* time to block the task until the queue has free space */
-      // const TickType_t xTicksToWaitMain = pdMS_TO_TICKS(100);
-      // /* create data to send */
-      // int element = 1;
-      // /* send data to front of the queue */
-      // xStatusMain = xQueueSendToFront( xQueueMain, &element, xTicksToWaitMain );
+    // BaseType_t xStatusMain;
+    // /* time to block the task until the queue has free space */
+    // const TickType_t xTicksToWaitMain = pdMS_TO_TICKS(100);
+    // /* create data to send */
+    // int element = 1;
+    // /* send data to front of the queue */
+    // xStatusMain = xQueueSendToFront( xQueueMain, &element, xTicksToWaitMain );
   });
 }
 

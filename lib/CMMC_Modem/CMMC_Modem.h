@@ -44,8 +44,6 @@ class CMMC_Modem: public CMMC_Module{
 
     CMMC_Interval keepAliveInterval;
     xQueueHandle xQueue;
-    uint32_t lastSentOkMillis = 0;
-
     void receiveTask( void * parameter  );
   public:
     CMMC_Modem(Stream*);
@@ -56,7 +54,7 @@ class CMMC_Modem: public CMMC_Module{
     void configSetup();
     void paintScreen();
     String getStatus();
-
+    uint32_t lastSentOkMillis = 0;
 };
 
 #endif

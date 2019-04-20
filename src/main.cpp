@@ -107,8 +107,23 @@ void lcdTask(void * parameter)
     while (1) {
       rtc->loop();
       lcd->loop();
-      digitalWrite(EXT_WDT_PIN, HIGH);
-      digitalWrite(EXT_WDT_PIN, LOW);
+      if (modem != NULL) {
+        if (modem->lastSentOkMillis > 0) {
+          uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
+          Serial.println(lastSentInSeconds);
+          if (lastSentInSeconds > 120) {
+            Serial.println("FFFF.. CAUSE EXTERNAL RST.");
+          }
+          else {
+            digitalWrite(EXT_WDT_PIN, HIGH);
+            digitalWrite(EXT_WDT_PIN, LOW);
+          }
+        }
+        else {
+          digitalWrite(EXT_WDT_PIN, HIGH);
+          digitalWrite(EXT_WDT_PIN, LOW);
+        }
+      }
       // BaseType_t xStatus;
       // const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
       // xStatus = xQueueReceive( xQueueMain, &element, xTicksToWait );
