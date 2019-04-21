@@ -94,16 +94,22 @@ void CMMC_Modem::setup() {
   });
 
   static int counter;
+  static uint32_t prev;
   counter = 0;
+  prev = millis();
   nb->onConnecting([]() {
-    counter = (counter + 1) % 3;
+    counter = (counter + 1);
     // String t = "Attching";
+
     String t = "";
-    for (size_t i = 0; i <= counter; i++) {
+    for (size_t i = 0; i <= counter%3; i++) {
       t += String(".");
     }
     that->updateStatus(t);
     delay(500);
+    if (counter > 120 * 4) {
+      ESP.deepSleep(1e6);
+    }
   });
 
   nb->onConnected([](void * parameter ) {
@@ -178,7 +184,7 @@ void CMMC_Modem::loop() {
   nb->loop();
   static CMMC_Modem *that;
   that = this;
-  keepAliveInterval.every_ms(5*1000, []() {
+  keepAliveInterval.every_ms(10*1000, []() {
     Serial.println("KEEP ALIVE INTERAL...");
     printf(">> CASE; keep alive..\n");
     BaseType_t xStatus;

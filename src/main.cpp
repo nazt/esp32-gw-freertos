@@ -111,16 +111,18 @@ void lcdTask(void * parameter)
         if (modem->lastSentOkMillis > 0) {
           uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
           Serial.println(lastSentInSeconds);
-          if (lastSentInSeconds > 120) {
+          if (lastSentInSeconds > 30) {
             Serial.println("FFFF.. CAUSE EXTERNAL RST.");
           }
           else {
             digitalWrite(EXT_WDT_PIN, HIGH);
+            delay(1);
             digitalWrite(EXT_WDT_PIN, LOW);
           }
         }
         else {
           digitalWrite(EXT_WDT_PIN, HIGH);
+          delay(1);
           digitalWrite(EXT_WDT_PIN, LOW);
         }
       }
@@ -144,6 +146,17 @@ void loop() {
   for (size_t i = 0; i < MODULE_SIZE; i++) {
     modules[i]->loop();
   }
+
+  if (modem->lastSentOkMillis > 0) {
+    uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
+    Serial.println(lastSentInSeconds);
+    if (lastSentInSeconds > 120) {
+      Serial.println("FFFF.. CAUSE EXTERNAL RST.");
+      ESP.deepSleep(1e6);
+      delay(100);
+    }
+  }
+
   // Serial.printf("rebootCount = %lu\r\n", rebootCount);
 }
 

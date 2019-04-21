@@ -2,6 +2,8 @@
 #define CMMC_GPS_H
 
 #include <Arduino.h>
+#include <Wire.h>
+#include <RTClib.h>
 #include <TinyGPS++.h>
 #include <CMMC_Module.h>
 #include <HardwareSerial.h>
