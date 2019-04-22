@@ -146,11 +146,10 @@ void loop() {
   for (size_t i = 0; i < MODULE_SIZE; i++) {
     modules[i]->loop();
   }
-
   if (modem->lastSentOkMillis > 0) {
     uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
     Serial.println(lastSentInSeconds);
-    if (lastSentInSeconds > 120) {
+    if (lastSentInSeconds > 60) {
       Serial.println("FFFF.. CAUSE EXTERNAL RST.");
       ESP.deepSleep(1e6);
       delay(100);

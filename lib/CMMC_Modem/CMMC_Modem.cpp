@@ -57,12 +57,14 @@ void CMMC_Modem::setup() {
   #ifdef TRUE_NB_IOT_CONF
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
+  delay(1);
   digitalWrite(13, HIGH);
   #endif
 
   #ifdef AIS_NB_IOT_CONF
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
+  delay(1);
   digitalWrite(13, LOW);
   #endif
 

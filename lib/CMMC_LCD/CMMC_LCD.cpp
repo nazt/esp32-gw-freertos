@@ -78,15 +78,15 @@ void CMMC_LCD::paintScreen() {
         // u8g2->drawXBM(5, 5, 40, 32, cat);
 
         u8g2->setFont(u8g2_font_siji_t_6x10);
-        u8g2->setCursor(logoMargin+10, 16+1);
+        u8g2->setCursor(logoMargin+6, 16+1);
         u8g2->print("DustBoy 2.0");
 
         u8g2->setFont(u8g2_font_siji_t_6x10);
-        u8g2->setCursor(logoMargin+10, 27+1);
+        u8g2->setCursor(logoMargin+6, 27+1);
         u8g2->print("NB-IoT");
 
         u8g2->setFont(u8g2_font_micro_tr);
-        u8g2->setCursor(logoMargin+48, 27+1);
+        u8g2->setCursor(logoMargin+44, 27+1);
         u8g2->print(modem->getStatus());
         u8g2->setFont(u8g2_font_logisoso16_tf);
         u8g2->setFont(u8g2_font_siji_t_6x10);
