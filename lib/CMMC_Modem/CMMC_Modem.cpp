@@ -107,8 +107,9 @@ void CMMC_Modem::setup() {
     }
     that->updateStatus(t);
     delay(500);
-    if (counter > 120 * 4) {
-      ESP.deepSleep(1e6);
+    if (millis() - prev > (180 * 1000)) {
+        ESP.deepSleep(1e6);
+        delay(100);
     }
   });
 
