@@ -12,6 +12,8 @@
 #define DUSTBOY2_4 "5fc17fa0-62da-11e9-96dd-9fb5d8a71344"
 #define DUSTBOY2_5 "6229a600-62da-11e9-96dd-9fb5d8a71344"
 
+#define DUSTBOY_ID DUSTBOY2_5
+
 #include "coap.h"
 #include "coap-helper.h"
 static QueueHandle_t xQueueMain;
@@ -161,7 +163,7 @@ void CMMC_Modem::setup() {
           Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
           // Serial.printf("   buffer = %s\r\n", _buffer);
           // DUSTBOY2_1
-          uint16_t buflen = generate(_buffer, aisip, 5683, ("NBIoT/" DUSTBOY2_4),
+          uint16_t buflen = generate(_buffer, aisip, 5683, ("NBIoT/" DUSTBOY_ID),
           COAP_CON, COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
           Serial.printf("      len = %d\r\n", buflen);
           that->sendPacket((uint8_t*)_buffer, buflen);
