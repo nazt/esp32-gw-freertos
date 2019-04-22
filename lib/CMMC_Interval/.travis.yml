@@ -1,0 +1,12 @@
+language: python
+python:
+    - "2.7"
+cache:
+  directories:
+    - "~/.platformio"
+env:
+    - PLATFORMIO_CI_SRC=examples/example1
+install:
+  - pip install -U platformio
+script:
+  - platformio ci --project-option="lib_ldf_mode=2" --lib="." --board=espresso_lite_v2 
