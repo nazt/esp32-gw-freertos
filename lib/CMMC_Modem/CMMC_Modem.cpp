@@ -12,7 +12,7 @@
 #define DUSTBOY2_4 "5fc17fa0-62da-11e9-96dd-9fb5d8a71344"
 #define DUSTBOY2_5 "6229a600-62da-11e9-96dd-9fb5d8a71344"
 
-#define DUSTBOY_ID DUSTBOY2_5
+#define DUSTBOY_ID DUSTBOY2_2
 
 #include "coap.h"
 #include "coap-helper.h"
