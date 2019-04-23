@@ -68,6 +68,7 @@ void CMMC_LCD::paintScreen() {
     do
     {
       u8g2->setFont(u8g2_font_p01type_tn);
+
       u8g2->setCursor(60, 6);
       u8g2->print(rtc->getDateTimeString());
 
@@ -75,7 +76,11 @@ void CMMC_LCD::paintScreen() {
       if (page == 0) {
         int logoMargin = 36;
         u8g2->drawXBM(7,0,30, 36, logo);
-        // u8g2->drawXBM(5, 5, 40, 32, cat);
+
+        u8g2->setFont(u8g2_font_p01type_tn);
+        u8g2->setCursor(4, 6);
+        uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
+        u8g2->print(String(lastSentInSeconds));
 
         u8g2->setFont(u8g2_font_siji_t_6x10);
         u8g2->setCursor(logoMargin+6, 16+1);
