@@ -57,12 +57,14 @@ void CMMC_Modem::setup() {
   #ifdef TRUE_NB_IOT_CONF
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
+  delay(1);
   digitalWrite(13, HIGH);
   #endif
 
   #ifdef AIS_NB_IOT_CONF
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
+  delay(1);
   digitalWrite(13, LOW);
   #endif
 
@@ -110,8 +112,10 @@ void CMMC_Modem::setup() {
     that->updateStatus(t);
     delay(500);
     if (millis() - prev > (180 * 1000)) {
-        ESP.deepSleep(1e6);
-        delay(100);
+            ESP.deepSleep(1e6);
+            delay(100);
+            ESP.restart();
+            delay(10);
     }
   });
 
@@ -245,9 +249,10 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
     else {
       updateStatus(">> send failed.");
       if (++rt > 5) {
-        delay(100);
-        ESP.deepSleep(1e6);
-        delay(100);
+            ESP.deepSleep(1e6);
+            delay(100);
+            ESP.restart();
+            delay(10);
         break;
       }
     }

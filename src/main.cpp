@@ -107,24 +107,27 @@ void lcdTask(void * parameter)
     while (1) {
       rtc->loop();
       lcd->loop();
-      if (modem != NULL) {
-        if (modem->lastSentOkMillis > 0) {
-          uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
-          Serial.println(lastSentInSeconds);
-          if (lastSentInSeconds > 30) {
-            Serial.println("FFFF.. CAUSE EXTERNAL RST.");
-          }
-          else {
-            digitalWrite(EXT_WDT_PIN, HIGH);
-            delay(1);
-            digitalWrite(EXT_WDT_PIN, LOW);
-          }
-        }
-        else {
+      if (modem == NULL) {
           digitalWrite(EXT_WDT_PIN, HIGH);
           delay(1);
           digitalWrite(EXT_WDT_PIN, LOW);
-        }
+          continue;
+      }
+
+      uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
+      Serial.println(lastSentInSeconds);
+      if (modem->lastSentOkMillis > 0 && lastSentInSeconds > 30) {
+          if (lastSentInSeconds > 30) {
+            Serial.println("FFFF.. CAUSE EXTERNAL RST.");
+            ESP.deepSleep(1e6);
+            delay(100);
+            ESP.restart();
+            delay(10);
+          }
+          else {
+            digitalWrite(EXT_WDT_PIN, HIGH);
+            digitalWrite(EXT_WDT_PIN, LOW);
+          }
       }
       // BaseType_t xStatus;
       // const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
@@ -146,11 +149,10 @@ void loop() {
   for (size_t i = 0; i < MODULE_SIZE; i++) {
     modules[i]->loop();
   }
-
   if (modem->lastSentOkMillis > 0) {
     uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
     Serial.println(lastSentInSeconds);
-    if (lastSentInSeconds > 120) {
+    if (lastSentInSeconds > 60) {
       Serial.println("FFFF.. CAUSE EXTERNAL RST.");
       ESP.deepSleep(1e6);
       delay(100);
