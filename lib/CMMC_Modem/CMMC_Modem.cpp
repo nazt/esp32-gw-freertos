@@ -12,7 +12,7 @@
 #define DUSTBOY2_4 "5fc17fa0-62da-11e9-96dd-9fb5d8a71344"
 #define DUSTBOY2_5 "6229a600-62da-11e9-96dd-9fb5d8a71344"
 
-#define DUSTBOY_ID DUSTBOY2_2
+#define DUSTBOY_ID DUSTBOY2_5
 
 #include "coap.h"
 #include "coap-helper.h"
@@ -51,8 +51,8 @@ void CMMC_Modem::setup() {
   //   Serial.println(digitalRead(13));
   // }
 
-  #define TRUE_NB_IOT_CONF 1
-  // #define AIS_NB_IOT_CONF 1
+  // #define TRUE_NB_IOT_CONF 1
+  #define AIS_NB_IOT_CONF 1
 
   #ifdef TRUE_NB_IOT_CONF
   pinMode(13, OUTPUT);
