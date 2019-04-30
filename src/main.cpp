@@ -104,6 +104,7 @@ void lcdTask(void * parameter)
     rtc->setup();
     int element;
     pinMode(EXT_WDT_PIN, OUTPUT);
+
     while (1) {
       rtc->loop();
       lcd->loop();
@@ -129,6 +130,7 @@ void lcdTask(void * parameter)
             digitalWrite(EXT_WDT_PIN, LOW);
           }
       }
+
       // BaseType_t xStatus;
       // const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
       // xStatus = xQueueReceive( xQueueMain, &element, xTicksToWait );
