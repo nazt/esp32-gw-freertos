@@ -50,7 +50,7 @@ String print_time(DateTime timestamp) {
   int Minute = timestamp.minute();
   int Second= timestamp.second();
 
-  sprintf(message, "%d/%d/%d %02d:%02d:%02d", Day, Month,Year,Hour,Minute,Second);
+  sprintf(message, "%d/%d/%d %02d:%02d:%02d", Day, Month,Year,Hour%24,Minute%60,Second%60);
 
   return message;
 }
