@@ -1,0 +1,46 @@
+#######################################
+# Syntax Coloring Map For Config_Manager
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+CMMC_ConfigManager			KEYWORD1
+CMMC_Config_Manager			KEYWORD1
+ConfigManager				KEYWORD1
+CMMC_Module					KEYWORD1
+CMMC_System					KEYWORD1
+CMMC_Legend					KEYWORD1
+CMMC_LED					KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+add_field				KEYWORD2
+add_debug_listener		KEYWORD2
+add_field				KEYWORD2
+begin					KEYWORD2
+blink					KEYWORD2
+config					KEYWORD2
+commit					KEYWORD2
+config					KEYWORD2
+configLoop				KEYWORD2
+detach					KEYWORD2
+dump_json_object		KEYWORD2
+init					KEYWORD2
+load_config				KEYWORD2
+loop					KEYWORD2
+setPin					KEYWORD2
+toggle					KEYWORD2
+
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+LEGEND_APP_VERSION		LITERAL1

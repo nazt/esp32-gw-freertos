@@ -1,0 +1,25 @@
+{
+    "name": "CMMC Legend",
+    "keywords": "esp8266, mqtt, connectivity, iot",
+    "description": "CMMC ESP8266 IoT Configurations Manager library.",
+    "authors": [
+        {
+            "name": "Nat Weerawan",
+            "email": "nat@cmmc.io",
+            "url": "http://cmmakerclub.com/",
+            "maintainer": true
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cmmakerclub/CMMC-Legend.git"
+    },
+    "version": "2.0.2",
+    "license": "MIT",
+    "frameworks": "arduino",
+    "platforms": "espressif",
+    "examples": [
+        "examples/*/*.h",
+        "examples/*/*.ino"
+    ]
+}
