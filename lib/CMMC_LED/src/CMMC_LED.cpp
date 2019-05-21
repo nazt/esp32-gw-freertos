@@ -2,7 +2,7 @@
 
 void CMMC_LED::init() {
   pinMode(this->_led, OUTPUT);
-  digitalWrite(this->_led, this->_led_state);
+  digitalWrite(this->_led, !this->_led_state);
 }
 
 void CMMC_LED::toggle() {

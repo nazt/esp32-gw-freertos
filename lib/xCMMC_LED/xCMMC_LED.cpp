@@ -27,7 +27,7 @@ void xCMMC_LED::setPin(uint8_t pin)
 {
   _ledPin = pin;
   pinMode(_ledPin, OUTPUT);
-  digitalWrite(_ledPin, LOW);
+  digitalWrite(_ledPin, HIGH);
 }
 
 void xCMMC_LED::toggle()
@@ -64,7 +64,7 @@ void xCMMC_LED::blink(uint32_t ms)
   static xCMMC_LED *_that = this;
   static auto lambda = []() {
     _that->state = !_that->state;
-    if (_that->state == LOW)
+    if (_that->state == HIGH)
     {
       _that->prev_active = millis();
     }
@@ -75,7 +75,7 @@ void xCMMC_LED::blink(uint32_t ms)
     if (diff > 60L)
     {
       _that->prev_active = millis();
-      _that->state = HIGH;
+      _that->state = LOW;
       digitalWrite(_pin, _that->state);
     }
   };
