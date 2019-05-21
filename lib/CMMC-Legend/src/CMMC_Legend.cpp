@@ -29,13 +29,13 @@ bool CMMC_Legend::setEnable(bool status) {
 void CMMC_Legend::isLongPressed() {
   uint32_t prev = millis();
   int state = digitalRead(button_gpio);
-  while (state == this->switch_mode_logic) {
+  while (state == this->SWITCH_PRESSED_LOGIC) {
     delay(50);
     Serial.println("...isLongPressed..");
     if ( (millis() - prev) > 5L * 1000L) {
       Serial.println("LONG PRESSED.");
       blinker->blink(50);
-      while (state == this->switch_mode_logic) {
+      while (state == this->SWITCH_PRESSED_LOGIC) {
         delay(10);
       }
       setEnable(false);
@@ -52,7 +52,7 @@ void CMMC_Legend::setup(os_config_t *config) {
 
     this->blink_gpio = config->blink_gpio;
     this->button_gpio = config->button1_gpio;
-    this->switch_mode_logic = config->switch_mode_logic;
+    this->SWITCH_PRESSED_LOGIC = config->SWITCH_PRESSED_LOGIC;
     this->button1_gpio_mode = config->button1_gpio_mode;
     init_gpio();
 

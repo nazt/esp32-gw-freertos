@@ -39,7 +39,7 @@ typedef struct
     uint8_t blink_gpio;
     uint8_t button1_gpio;
     uint8_t button1_gpio_mode;
-    bool switch_mode_logic;
+    bool SWITCH_PRESSED_LOGIC;
     uint32_t delay_after_init_ms;
 } os_config_t;
 
@@ -69,7 +69,7 @@ class CMMC_Legend: public CMMC_System {
     bool stopFlag = false;
     uint8_t blink_gpio;
     uint8_t button_gpio;
-    bool switch_mode_logic;
+    bool SWITCH_PRESSED_LOGIC;
     uint8_t button1_gpio_mode;
 };
 
