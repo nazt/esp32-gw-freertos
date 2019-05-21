@@ -45,12 +45,17 @@ void CMMC_Legend::isLongPressed() {
   }
 }
 
-void CMMC_Legend::setup() {
-  CMMC_System::setup();
+void CMMC_Legend::setup(os_config_t *config) {
+  // CMMC_System::setup();
+    Serial.begin(config->baudrate);
+    init_gpio();
+    init_fs();
+    init_user_config();
+    init_user_sensor();
+    init_network();
 }
 
 void CMMC_Legend::init_gpio() {
-  Serial.begin(115200);
   Serial.println("OS::Init GPIO..");
   pinMode(15, INPUT);
   blinker = new xCMMC_LED;

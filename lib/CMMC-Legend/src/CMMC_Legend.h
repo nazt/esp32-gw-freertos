@@ -33,12 +33,19 @@ static const char* http_password = "admin";
 
 enum MODE {SETUP, RUN};
 
+typedef struct
+{
+    uint32_t baudrate;
+    uint8_t led_gpio;
+} os_config_t;
+
+
 class CMMC_Legend: public CMMC_System {
   public:
     void addModule(CMMC_Module* module);
     void run();
     void isLongPressed();
-    void setup();
+    void setup(os_config_t *);
 
   xCMMC_LED *getBlinker();
   protected:
