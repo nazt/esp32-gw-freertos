@@ -28,13 +28,14 @@ bool CMMC_Legend::setEnable(bool status) {
 
 void CMMC_Legend::isLongPressed() {
   uint32_t prev = millis();
-  while (digitalRead(button_gpio) == this->switch_mode_logic) {
+  int state = digitalRead(button_gpio);
+  while (state == this->switch_mode_logic) {
     delay(50);
     Serial.println("...isLongPressed..");
     if ( (millis() - prev) > 5L * 1000L) {
       Serial.println("LONG PRESSED.");
       blinker->blink(50);
-      while (digitalRead(button_gpio) == this->switch_mode_logic) {
+      while (state == this->switch_mode_logic) {
         delay(10);
       }
       setEnable(false);
@@ -52,6 +53,7 @@ void CMMC_Legend::setup(os_config_t *config) {
     this->blink_gpio = config->blink_gpio;
     this->button_gpio = config->button1_gpio;
     this->switch_mode_logic = config->sw_mode_logic;
+    this->button1_gpio_mode = config->button1_gpio_mode;
 
     init_gpio();
     init_fs();
@@ -62,7 +64,7 @@ void CMMC_Legend::setup(os_config_t *config) {
 
 void CMMC_Legend::init_gpio() {
   Serial.println("OS::Init GPIO..");
-  pinMode(this->button_gpio, INPUT);
+  pinMode(this->button_gpio, this->button1_gpio_mode);
   blinker = new xCMMC_LED;
   blinker->init();
   blinker->setPin(this->blink_gpio);

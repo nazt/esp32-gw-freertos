@@ -12,6 +12,8 @@ os_config_t config = {
   .blink_gpio = 21,
   .button1_gpio = 0,
   .sw_mode_logic = LOW,
+  .button1_gpio_mode = INPUT_PULLUP,
+  .delay_after_init_ms = 200,
 };
 
 void setup()
