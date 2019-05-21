@@ -1,64 +1,26 @@
-#include <Arduino.h>
-#include <WiFi.h>
-#include <rom/rtc.h>
-#include <CMMC_GPS.h>
-#include <CMMC_LCD.h>
-#include <CMMC_NB_IoT.h>
-#include <HardwareSerial.h>
-#include <CMMC_Modem.h>
-#include <CMMC_DustSensor.h>
-#include <CMMC_RTC.h>
 
-void verbose_print_reset_reason(RESET_REASON reason);
-void print_reset_reason(RESET_REASON reason);
-HardwareSerial NBSerial(2);
-RTC_DATA_ATTR static int rebootCount = -1;
+#include <CMMC_Legend.h>
 
-// struct queue_data {
-//   int deviceId;
-//   int measurementType;
-//   float value;
-// };
-static char sta_mac[18];
-static char softap_mac[18];
-#define EXT_WDT_PIN 14
+// #include "modules/LCDModule.h"
+// #include "modules/NTPModule.h"
+// #include "modules/WiFiModule.h"
+// #include "modules/MqttModule.h"
+// #include "modules/SensorModule.h"
 
-CMMC_LCD *lcd;
-CMMC_GPS *gps;
-CMMC_Modem *modem;
-CMMC_RTC *rtc;
-CMMC_DustSensor *dustSensor;
+const char* MEOBOT_VERSION = "1.5";
 
-const int MODULE_SIZE = 2;
-CMMC_Module* modules[10];
-void nbTask( void * parameter);
-void lcdTask( void * parameter);
+CMMC_Legend os;
+// LCDModule *lcdModule;
+// NTPModule *ntpModule;
+// WiFiModule* wifiModule;
+// SensorModule *sensorModule;
 
-// static QueueHandle_t xQueueMain;
 
-void setup() {
-  rebootCount++;
-  // xQueueMain = xQueueCreate(1, sizeof(int));
-  //
-  // if(xQueueMain == NULL){
-  //   Serial.println("Error creating the queue");
-  // }
-  Serial.begin(115200);
-  Serial.print(">> CPU0 reset reason: ");
-  print_reset_reason(rtc_get_reset_reason(0));
-  verbose_print_reset_reason(rtc_get_reset_reason(0));
-  Serial.print(">> CPU1 reset reason:");
-  print_reset_reason(rtc_get_reset_reason(1));
-  verbose_print_reset_reason(rtc_get_reset_reason(1));
-
-  WiFi.disconnect();
-  WiFi.mode(WIFI_AP_STA);
-  strcpy(sta_mac, WiFi.macAddress().c_str());
-  strcpy(softap_mac, WiFi.softAPmacAddress().c_str());
-  Serial.printf("STA MAC: %s\r\n", sta_mac);
-  Serial.printf(" AP MAC: %s\r\n", softap_mac);
+void setup()
+{
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);
+
   delay(100);
 
   rtc = new CMMC_RTC();
@@ -104,12 +66,6 @@ void lcdTask(void * parameter)
     rtc->setup();
     int element;
     pinMode(EXT_WDT_PIN, OUTPUT);
-<<<<<<< HEAD
-
-=======
-    digitalWrite(EXT_WDT_PIN, HIGH);
-    digitalWrite(EXT_WDT_PIN, LOW);
->>>>>>> fd6b8bd36cf73e53c172c2769da8777e3d6a26af
     while (1) {
       rtc->loop();
       lcd->loop();
@@ -202,27 +158,22 @@ void print_reset_reason(RESET_REASON reason)
     case 16 : Serial.println ("RTCWDT_RTC_RESET");break;      /**<16, RTC Watch dog reset digital core and rtc module*/
     default : Serial.println ("NO_MEAN");
   }
+  // lcdModule = new LCDModule();
+  // wifiModule = new WiFiModule();
+  // ntpModule = new NTPModule();
+  // sensorModule = new SensorModule();
+  // os.addModule(sensorModule);
+  // os.addModule(lcdModule);
+  // os.addModule(wifiModule);
+  // os.addModule(ntpModule);
+  // os.addModule(new MqttModule());
+
+  os.setup();
+  Serial.printf("APP VERSION: %s\r\n", LEGEND_APP_VERSION);
+  Serial.printf("MEOBOT VERSION: %s\r\n", MEOBOT_VERSION);
 }
 
-void verbose_print_reset_reason(RESET_REASON reason)
+void loop()
 {
-  switch ( reason)
-  {
-    case 1  : Serial.println ("Vbat power on reset");break;
-    case 3  : Serial.println ("Software reset digital core");break;
-    case 4  : Serial.println ("Legacy watch dog reset digital core");break;
-    case 5  : Serial.println ("Deep Sleep reset digital core");break;
-    case 6  : Serial.println ("Reset by SLC module, reset digital core");break;
-    case 7  : Serial.println ("Timer Group0 Watch dog reset digital core");break;
-    case 8  : Serial.println ("Timer Group1 Watch dog reset digital core");break;
-    case 9  : Serial.println ("RTC Watch dog Reset digital core");break;
-    case 10 : Serial.println ("Instrusion tested to reset CPU");break;
-    case 11 : Serial.println ("Time Group reset CPU");break;
-    case 12 : Serial.println ("Software reset CPU");break;
-    case 13 : Serial.println ("RTC Watch dog Reset CPU");break;
-    case 14 : Serial.println ("for APP CPU, reseted by PRO CPU");break;
-    case 15 : Serial.println ("Reset when the vdd voltage is not stable");break;
-    case 16 : Serial.println ("RTC Watch dog reset digital core and rtc module");break;
-    default : Serial.println ("NO_MEAN");
-  }
+  os.run();
 }
