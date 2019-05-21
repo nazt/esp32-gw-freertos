@@ -52,10 +52,16 @@ void CMMC_Legend::setup(os_config_t *config) {
 
     this->blink_gpio = config->blink_gpio;
     this->button_gpio = config->button1_gpio;
-    this->switch_mode_logic = config->sw_mode_logic;
+    this->switch_mode_logic = config->switch_mode_logic;
     this->button1_gpio_mode = config->button1_gpio_mode;
-
     init_gpio();
+    pinMode(this->button_gpio, this->button_gpio);
+    blinker = new xCMMC_LED;
+    blinker->init();
+    blinker->setPin(config->blink_gpio);
+    Serial.println();
+    blinker->blink(500);
+    
     init_fs();
     init_user_config();
     init_user_sensor();
@@ -64,12 +70,6 @@ void CMMC_Legend::setup(os_config_t *config) {
 
 void CMMC_Legend::init_gpio() {
   Serial.println("OS::Init GPIO..");
-  pinMode(this->button_gpio, this->button1_gpio_mode);
-  blinker = new xCMMC_LED;
-  blinker->init();
-  blinker->setPin(config->led_gpio1);
-  Serial.println();
-  blinker->blink(500);
   delay(10);
 }
 
