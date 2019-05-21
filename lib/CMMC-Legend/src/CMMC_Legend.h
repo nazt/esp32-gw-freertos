@@ -36,7 +36,10 @@ enum MODE {SETUP, RUN};
 typedef struct
 {
     uint32_t baudrate;
-    uint8_t led_gpio;
+    uint8_t led_gpio1;
+    uint8_t led_gpio2;
+    uint8_t sw_gpio1;
+    uint8_t sw_gpio2;
 } os_config_t;
 
 
