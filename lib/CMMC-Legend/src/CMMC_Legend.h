@@ -36,7 +36,11 @@ enum MODE {SETUP, RUN};
 typedef struct
 {
     uint32_t baudrate;
-    uint8_t led_gpio;
+    uint8_t blink_gpio;
+    uint8_t button1_gpio;
+    uint8_t sw_mode_logic;
+      // uint8_t led_gpio2;
+    // uint8_t button_gpio2;
 } os_config_t;
 
 
@@ -63,6 +67,9 @@ class CMMC_Legend: public CMMC_System {
     void _init_ap();
     void setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, AsyncEventSource *events);
     bool stopFlag = false;
+    uint8_t blink_gpio;
+    uint8_t button_gpio;
+    bool switch_mode_logic;
 };
 
 #endif

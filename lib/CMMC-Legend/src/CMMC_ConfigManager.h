@@ -12,9 +12,7 @@
 #include <map>
 #include "FS.h"
 
-// #ifdef ESP8266
-// #ifndef CMMC_NO_ALIAS
-// #endif
+// #ifdef
 
 #define CMMC_ConfigManager ConfigManager
 

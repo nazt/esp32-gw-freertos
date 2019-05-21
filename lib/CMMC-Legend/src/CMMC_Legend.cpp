@@ -28,13 +28,13 @@ bool CMMC_Legend::setEnable(bool status) {
 
 void CMMC_Legend::isLongPressed() {
   uint32_t prev = millis();
-  while (digitalRead(15) == HIGH) {
+  while (digitalRead(button_gpio) == this->switch_mode_logic) {
     delay(50);
     Serial.println("...isLongPressed..");
     if ( (millis() - prev) > 5L * 1000L) {
       Serial.println("LONG PRESSED.");
       blinker->blink(50);
-      while (digitalRead(15) == HIGH) {
+      while (digitalRead(button_gpio) == this->switch_mode_logic) {
         delay(10);
       }
       setEnable(false);
@@ -48,6 +48,11 @@ void CMMC_Legend::isLongPressed() {
 void CMMC_Legend::setup(os_config_t *config) {
   // CMMC_System::setup();
     Serial.begin(config->baudrate);
+
+    this->blink_gpio = config->blink_gpio;
+    this->button_gpio = config->button1_gpio;
+    this->switch_mode_logic = config->sw_mode_logic;
+
     init_gpio();
     init_fs();
     init_user_config();
@@ -57,19 +62,17 @@ void CMMC_Legend::setup(os_config_t *config) {
 
 void CMMC_Legend::init_gpio() {
   Serial.println("OS::Init GPIO..");
-  pinMode(15, INPUT);
+  pinMode(this->button_gpio, INPUT);
   blinker = new xCMMC_LED;
   blinker->init();
-  blinker->setPin(16);
+  blinker->setPin(this->blink_gpio);
   Serial.println();
   blinker->blink(500);
   delay(10);
 }
 
-#include <FS.h> //this needs to be first, or it all crashes and burns...
-#include "SPIFFS.h"
 void CMMC_Legend::init_fs() {
-  // Serial.println("OS::Init FS..");
+  Serial.println("OS::Init FS..");
   SPIFFS.begin();
   // Dir dir = SPIFFS.openDir("/");
   // isLongPressed();
@@ -112,35 +115,45 @@ void CMMC_Legend::init_network() {
   if (mode == SETUP) {
     Serial.println("calling confgSetup");
     for (int i = 0 ; i < _modules.size(); i++) {
+      Serial.printf("_modules[%d]->configSetup()\r\n", i);
       _modules[i]->configSetup();
     }
 
     _init_ap();
 
+    SPIFFS.begin();
     setupWebServer(&server, &ws, &events);
-
-    blinker->blink(50);
+    Serial.printf("after setupWebserver\r\n");
+    if (blinker) {
+      blinker->blink(50);
+    }
+    else {
+      Serial.println("no blinker");
+    }
     uint32_t startConfigLoopAtMs = millis();
     while (1 && !stopFlag) {
+      // Serial.println("1.");
       for (int i = 0 ; i < _modules.size(); i++) {
         _modules[i]->configLoop();
         yield();
+        // Serial.println("2.");
       }
       if ( (millis() - startConfigLoopAtMs) > 20L*60*1000) {
+          // Serial.println("3.");
           setEnable(true);
           delay(100);
           ESP.restart();
       }
     }
 
-    SPIFFS.begin();
+    Serial.println("starting SPIFFS..");
+
     File f = SPIFFS.open("/enabled", "a+");
     blinker->blink(50);
     delay(200);;
     ESP.restart();
   }
   else if (mode == RUN) {
-    // system_update_cpu_freq(80);
     blinker->blink(4000);
     for (int i = 0 ; i < _modules.size(); i++) {
       _modules[i]->setup();

@@ -38,6 +38,7 @@ void xCMMC_LED::toggle()
 
 void xCMMC_LED::blink(uint32_t ms, uint8_t pin)
 {
+  Serial.printf("::blink pin=%d\r\n", pin);
   this->setPin(pin);
   this->blink(ms);
 }
