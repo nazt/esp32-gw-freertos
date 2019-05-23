@@ -28,14 +28,14 @@ bool CMMC_Legend::setEnable(bool status) {
 
 void CMMC_Legend::isLongPressed() {
   uint32_t prev = millis();
-  int state = digitalRead(button_gpio);
-  while (state == this->SWITCH_PRESSED_LOGIC) {
-    delay(50);
-    Serial.println("...isLongPressed..");
+  while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
+    blinker->high();
+    Serial.println("button pressed...");
     if ( (millis() - prev) > 5L * 1000L) {
       Serial.println("LONG PRESSED.");
       blinker->blink(50);
-      while (state == this->SWITCH_PRESSED_LOGIC) {
+
+      while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
         delay(10);
       }
       setEnable(false);
@@ -44,6 +44,8 @@ void CMMC_Legend::isLongPressed() {
       ESP.restart();
     }
   }
+  blinker->low();
+  blinker->blink(4000);
 }
 
 void CMMC_Legend::setup(os_config_t *config) {
@@ -53,10 +55,10 @@ void CMMC_Legend::setup(os_config_t *config) {
     this->blink_gpio = config->blink_gpio;
     this->button_gpio = config->button1_gpio;
     this->SWITCH_PRESSED_LOGIC = config->SWITCH_PRESSED_LOGIC;
-    this->button1_gpio_mode = config->button1_gpio_mode;
+    this->SWITCH_PIN_MODE = config->SWITCH_PIN_MODE;
     init_gpio();
 
-    pinMode(this->button_gpio, this->button1_gpio_mode);
+    pinMode(this->button_gpio, this->SWITCH_PIN_MODE);
     blinker = new xCMMC_LED;
     blinker->init();
     blinker->setPin(config->blink_gpio);
@@ -135,14 +137,22 @@ void CMMC_Legend::init_network() {
     }
     uint32_t startConfigLoopAtMs = millis();
     while (1 && !stopFlag) {
+      if (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
+          blinker->blink(1000);
+          Serial.println("=== button pressed to enabled.");
+          setEnable(true);
+          delay(300);
+          ESP.restart();
+      }
       // Serial.println("1.");
       for (int i = 0 ; i < _modules.size(); i++) {
         _modules[i]->configLoop();
         yield();
         // Serial.println("2.");
       }
+
       if ( (millis() - startConfigLoopAtMs) > 20L*60*1000) {
-          // Serial.println("3.");
+          Serial.println("3.");
           setEnable(true);
           delay(100);
           ESP.restart();

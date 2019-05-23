@@ -83,3 +83,16 @@ void xCMMC_LED::blink(uint32_t ms)
   this->_ticker->attach_ms(ms, lambda);
   this->_ticker2->attach_ms(30, wtf);
 }
+
+
+  void xCMMC_LED::set(uint8_t status) {
+    digitalWrite(this->_ledPin, status);
+  };
+
+  void xCMMC_LED::low() {
+    this->set(LOW);
+  };
+
+  void xCMMC_LED::high() {
+    this->set(HIGH);
+  };

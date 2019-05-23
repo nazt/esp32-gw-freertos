@@ -38,7 +38,7 @@ typedef struct
     uint32_t baudrate;
     uint8_t blink_gpio;
     uint8_t button1_gpio;
-    uint8_t button1_gpio_mode;
+    uint8_t SWITCH_PIN_MODE;
     bool SWITCH_PRESSED_LOGIC;
     uint32_t delay_after_init_ms;
 } os_config_t;
@@ -70,7 +70,7 @@ class CMMC_Legend: public CMMC_System {
     uint8_t blink_gpio;
     uint8_t button_gpio;
     bool SWITCH_PRESSED_LOGIC;
-    uint8_t button1_gpio_mode;
+    uint8_t SWITCH_PIN_MODE;
 };
 
 #endif

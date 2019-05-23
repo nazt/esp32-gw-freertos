@@ -26,6 +26,9 @@ public:
   void blink(uint32_t ms, uint8_t pin);
   void detach();
   void blink(uint32_t ms);
+  void set(uint8_t status);
+  void low();
+  void high();
 
 private:
   unsigned int _ledPin = 254;
