@@ -4,6 +4,7 @@
 #include <rom/rtc.h>
 #include <CMMC_GPS.h>
 #include <CMMC_LCD.h>
+#include "modules/ConfigModule.h"
 #include <HardwareSerial.h>
 #include <CMMC_DustSensor.h>
 #include <CMMC_RTC.h>
@@ -37,6 +38,7 @@ void setup()
   delay(100);
 
   os.addModule(new CMMC_LCD());
+  os.addModule(new ConfigModule());
   os.setup(&config);
   Serial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   // Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
