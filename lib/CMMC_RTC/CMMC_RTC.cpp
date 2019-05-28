@@ -1,5 +1,4 @@
 #include "CMMC_RTC.h"
-#include "logo.h"
 #include <CMMC_GPS.h>
 #include <CMMC_Modem.h>
 #include <CMMC_NB_IoT.h>

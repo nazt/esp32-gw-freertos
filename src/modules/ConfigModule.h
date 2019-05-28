@@ -11,6 +11,9 @@ class ConfigModule: public CMMC_Module {
     void loop();
     void isLongPressed();
     void configLoop();
+    const char* name() {
+      return "ConfigModule";
+    }
   protected:
     void configWebServer();
   private:

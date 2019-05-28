@@ -12,12 +12,13 @@ class CMMC_Module {
     CMMC_ConfigManager *_managerPtr;
     AsyncWebServer *_serverPtr;
     char path[20];
-
     String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);
+    const char* MODULE_NAME = "MODULE_NAME";
   public:
     virtual void config(CMMC_System *os, AsyncWebServer* server) = 0;
     virtual void setup() = 0;
     virtual void loop() = 0;
+    virtual const char* name() = 0;
     virtual void configLoop();
     virtual void configSetup();
     void configWebServer();

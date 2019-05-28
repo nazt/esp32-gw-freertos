@@ -49,7 +49,6 @@ void CMMC_Legend::isLongPressed() {
 }
 
 void CMMC_Legend::setup(os_config_t *config) {
-  // CMMC_System::setup();
     Serial.begin(config->baudrate);
     this->BLINKER_PIN = config->BLINKER_PIN;
     this->button_gpio = config->BUTTON_MODE_PIN;
@@ -69,6 +68,13 @@ void CMMC_Legend::setup(os_config_t *config) {
     init_user_config();
     init_user_sensor();
     init_network();
+
+    Serial.println("--------- setup -----------");
+    for (int i = 0 ; i < _modules.size(); i++) {
+      Serial.printf("calling %s.setup()\r\n", _modules[i]->name());
+      _modules[i]->setup();
+    }
+    Serial.println("---------------------------");
 }
 
 void CMMC_Legend::init_gpio() {
@@ -91,7 +97,7 @@ void CMMC_Legend::init_fs() {
    *******************************************/
   // Serial.println("--------------------------");
   if (!SPIFFS.exists("/enabled")) {
-    mode = SETUP;
+    mode = CONFIG;
   }
   else {
     mode = RUN;
@@ -99,8 +105,8 @@ void CMMC_Legend::init_fs() {
 }
 
 void CMMC_Legend::init_user_sensor() {
-  Serial.printf("Initializing Sensor.. MODE=%s\r\n", mode == SETUP ? "SETUP" : "RUN");
-  if (mode == SETUP) {
+  Serial.printf("Initializing Sensor.. MODE=%s\r\n", mode == CONFIG ? "CONFIG" : "RUN");
+  if (mode == CONFIG) {
     return;
   }
 }
@@ -112,21 +118,23 @@ void CMMC_Legend::init_user_config() {
 void CMMC_Legend::init_network() {
   Serial.println("Initializing network.");
 
+    Serial.println("------- config ----------");
   for (int i = 0 ; i < _modules.size(); i++) {
-    Serial.println("call module.config()");
+    Serial.printf("calling %s.config()\r\n", _modules[i]->name());
     _modules[i]->config(this, &server);
   }
+  Serial.println("---------------------------");
 
-  if (mode == SETUP) {
-    Serial.println("calling confgSetup");
+  if (mode == CONFIG) {
+    Serial.println("------ configSetup --------");
     for (int i = 0 ; i < _modules.size(); i++) {
-      Serial.printf("_modules[%d]->configSetup()\r\n", i);
+    Serial.printf("calling %s.configSetup()\r\n", _modules[i]->name());
       _modules[i]->configSetup();
     }
+    Serial.println("---------------------------");
 
     _init_ap();
 
-    SPIFFS.begin();
     setupWebServer(&server, &ws, &events);
     Serial.printf("after setupWebserver\r\n");
     if (blinker) {
@@ -148,7 +156,6 @@ void CMMC_Legend::init_network() {
       for (int i = 0 ; i < _modules.size(); i++) {
         _modules[i]->configLoop();
         yield();
-        // Serial.println("2.");
       }
 
       if ( (millis() - startConfigLoopAtMs) > 20L*60*1000) {
@@ -168,9 +175,12 @@ void CMMC_Legend::init_network() {
   }
   else if (mode == RUN) {
     blinker->blink(4000);
+    Serial.println("------ configSetup --------");
     for (int i = 0 ; i < _modules.size(); i++) {
-      _modules[i]->setup();
+      Serial.printf("calling %s.configSetup()\r\n", _modules[i]->name());
+      _modules[i]->configSetup();
     }
+    Serial.println("---------------------------");
   }
 }
 

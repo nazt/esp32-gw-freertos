@@ -45,6 +45,9 @@ class CMMC_LCD: public CMMC_Module{
     void paintScreen();
     void displayLogo();
     const char* formatedNumber(char* buffer, int n);
+    const char* name() {
+      return "CMMC_LCD";
+    }
 };
 
 #endif

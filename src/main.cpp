@@ -3,8 +3,8 @@
 #include <WiFi.h>
 #include <rom/rtc.h>
 #include <CMMC_GPS.h>
-#include <CMMC_LCD.h>
 #include "modules/ConfigModule.h"
+#include "modules/CMMC_LCD.h"
 #include <HardwareSerial.h>
 #include <CMMC_DustSensor.h>
 #include <CMMC_RTC.h>
