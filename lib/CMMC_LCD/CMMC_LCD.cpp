@@ -2,13 +2,14 @@
 #include "logo.h"
 // #include <CMMC_Modem.h>
 #include <CMMC_RTC.h>
-#include <CMMC_DustSensor.h>
+// #include <CMMC_DustSensor.h>
 #include <TimeLib.h>
 // extern CMMC_GPS *gps;
 // extern CMMC_GPS *gps;
-extern CMMC_Modem *modem;
+
+// extern CMMC_Modem *modem;
 extern CMMC_RTC *rtc;
-extern CMMC_DustSensor *dustSensor;
+// extern CMMC_DustSensor *dustSensor;
 
 String pm10Value = "999.88";
 String pm2_5Value = "45.49";
@@ -20,6 +21,18 @@ int packetRecv = 0;
 int count = 0;
 
 CMMC_LCD::CMMC_LCD() {
+  u8g2 = new U8G2_ST7920_128X64_F_SW_SPI(U8G2_R0, /* clock=*/ 18, /* MOSI=*/ 23, /* MISO=*/ 19);
+  u8g2->begin();
+  hello();
+  pinMode(0, INPUT_PULLUP);
+}
+
+void CMMC_LCD::config(CMMC_System *os, AsyncWebServer *server)
+{
+  // u8g2 = new U8G2_ST7920_128X64_1_SW_SPI(U8G2_R0, /* clock=*/14, /* data=*/13, /* CS=*/12);
+  // u8g2->begin();
+  // u8g2->enableUTF8Print();
+  // displayLogo();
 }
 
 void CMMC_LCD::configLoop() {
@@ -31,10 +44,6 @@ void CMMC_LCD::configSetup() {
 }
 
 void CMMC_LCD::setup() {
-  u8g2 = new U8G2_ST7920_128X64_F_SW_SPI(U8G2_R0, /* clock=*/ 18, /* MOSI=*/ 23, /* MISO=*/ 19);
-  u8g2->begin();
-  hello();
-  pinMode(0, INPUT_PULLUP);
 }
 
 void CMMC_LCD::loop() {
@@ -43,7 +52,7 @@ void CMMC_LCD::loop() {
     page = ++page % (MAX_PAGE);
     delay(100);
   }
-  paintScreen();
+  // paintScreen();
 }
 
 const char* CMMC_LCD::formatedNumber(char* buffer, int n) {
@@ -70,7 +79,7 @@ void CMMC_LCD::paintScreen() {
       u8g2->setFont(u8g2_font_p01type_tn);
 
       u8g2->setCursor(60, 6);
-      u8g2->print(rtc->getDateTimeString());
+      // u8g2->print(rtc->getDateTimeString());
 
       int marginLeft = 6;
       if (page == 0) {
@@ -79,8 +88,8 @@ void CMMC_LCD::paintScreen() {
 
         u8g2->setFont(u8g2_font_p01type_tn);
         u8g2->setCursor(4, 6);
-        uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
-        u8g2->print(String(lastSentInSeconds));
+        // uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
+        // u8g2->print(String(lastSentInSeconds));
 
         u8g2->setFont(u8g2_font_siji_t_6x10);
         u8g2->setCursor(logoMargin+6, 16+1);
@@ -92,7 +101,7 @@ void CMMC_LCD::paintScreen() {
 
         u8g2->setFont(u8g2_font_micro_tr);
         u8g2->setCursor(logoMargin+44, 27+1);
-        u8g2->print(modem->getStatus());
+        // u8g2->print(modem->getStatus());
         u8g2->setFont(u8g2_font_logisoso16_tf);
         u8g2->setFont(u8g2_font_siji_t_6x10);
         u8g2->setCursor(marginLeft, 50);
@@ -101,9 +110,9 @@ void CMMC_LCD::paintScreen() {
         u8g2->print("PM2.5");
 
         u8g2->setCursor(marginLeft+35, 50);
-        u8g2->print(String(dustSensor->getPMValue(DustPM10)));
+        // u8g2->print(String(dustSensor->getPMValue(DustPM10)));
         u8g2->setCursor(marginLeft+35, 62);
-        u8g2->print(String(dustSensor->getPMValue(DustPM2_5)));
+        // u8g2->print(String(dustSensor->getPMValue(DustPM2_5)));
 
         u8g2->setCursor(marginLeft+75, 50);
         u8g2->print("ug/m3");
@@ -154,7 +163,7 @@ void CMMC_LCD::paintScreen() {
         u8g2->print(statusBuffer);
 
         u8g2->setCursor(5, 45 + (6 * lineSpacing));
-        u8g2->print(modem->getStatus());
+        // u8g2->print(modem->getStatus());
 
         // u8g2->setFont(u8g2_font_p01type_tn);
         // u8g2->setFont(u8g2_font_micro_tr);

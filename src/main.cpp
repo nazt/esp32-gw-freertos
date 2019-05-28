@@ -36,9 +36,11 @@ void setup()
   WiFi.mode(WIFI_OFF);
   delay(100);
 
+  os.addModule(new CMMC_LCD());
   os.setup(&config);
   Serial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
-  Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+  // Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+
 }
 
 void loop()

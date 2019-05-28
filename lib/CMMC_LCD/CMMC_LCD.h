@@ -36,7 +36,7 @@ class CMMC_LCD: public CMMC_Module{
     // String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);
   public:
     CMMC_LCD();
-    // virtual void config(CMMC_System *os, AsyncWebServer* server) = 0;
+    void config(CMMC_System *os, AsyncWebServer* server);
     void hello();
     void setup();
     void loop();
