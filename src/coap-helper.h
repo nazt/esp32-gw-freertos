@@ -1,5 +1,10 @@
+#ifndef COAP_HELPER_H
+#define COAP_HELPER_H
+
 #include "coap.h"
 #include <Arduino.h>
+
+
 int16_t construct(uint8_t *buffer, CoapPacket &packet, IPAddress ip, int port) {
     uint8_t *p = buffer;
     uint16_t running_delta = 0;
@@ -65,7 +70,7 @@ int16_t construct(uint8_t *buffer, CoapPacket &packet, IPAddress ip, int port) {
         *p++ = 0xFF;
         memcpy(p, packet.payload, packet.payloadlen);
         packetSize += 1 + packet.payloadlen;
-    } 
+    }
     return packetSize;
 }
 
@@ -83,7 +88,7 @@ uint16_t generate(uint8_t *buffer, IPAddress ip, int port, char *url, COAP_TYPE 
     packet.messageid = rand();
 
     // use URI_HOST URI_PATH
-    String ipaddress = String(ip[0]) + String(".") + String(ip[1]) + String(".") + String(ip[2]) + String(".") + String(ip[3]); 
+    String ipaddress = String(ip[0]) + String(".") + String(ip[1]) + String(".") + String(ip[2]) + String(".") + String(ip[3]);
     packet.options[packet.optionnum].buffer = (uint8_t *)ipaddress.c_str();
     packet.options[packet.optionnum].length = ipaddress.length();
     packet.options[packet.optionnum].number = COAP_URI_HOST;
@@ -106,8 +111,10 @@ uint16_t generate(uint8_t *buffer, IPAddress ip, int port, char *url, COAP_TYPE 
         packet.options[packet.optionnum].length = strlen(url) - idx;
         packet.options[packet.optionnum].number = COAP_URI_PATH;
         packet.optionnum++;
-    } 
+    }
 
-    uint16_t s = construct(buffer, packet, ip, port); 
+    uint16_t s = construct(buffer, packet, ip, port);
     return s;
 }
+
+#endif

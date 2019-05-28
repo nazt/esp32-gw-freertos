@@ -1,6 +1,14 @@
-
+#include <Arduino.h>
 #include <CMMC_Legend.h>
-#include <Preferences.h>
+#include <WiFi.h>
+#include <rom/rtc.h>
+#include <CMMC_GPS.h>
+#include <CMMC_LCD.h>
+#include <CMMC_NB_IoT.h>
+#include <HardwareSerial.h>
+#include <CMMC_Modem.h>
+#include <CMMC_DustSensor.h>
+#include <CMMC_RTC.h>
 
 const char* MEOBOT_VERSION = "1.5";
 
