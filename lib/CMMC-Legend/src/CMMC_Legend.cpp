@@ -51,17 +51,17 @@ void CMMC_Legend::isLongPressed() {
 void CMMC_Legend::setup(os_config_t *config) {
   // CMMC_System::setup();
     Serial.begin(config->baudrate);
-
-    this->blink_gpio = config->blink_gpio;
-    this->button_gpio = config->button1_gpio;
+    this->BLINKER_PIN = config->BLINKER_PIN;
+    this->button_gpio = config->BUTTON_MODE_PIN;
     this->SWITCH_PRESSED_LOGIC = config->SWITCH_PRESSED_LOGIC;
     this->SWITCH_PIN_MODE = config->SWITCH_PIN_MODE;
+    this->_hook_init_ap = config->hook_init_ap;
     init_gpio();
 
     pinMode(this->button_gpio, this->SWITCH_PIN_MODE);
     blinker = new xCMMC_LED;
     blinker->init();
-    blinker->setPin(config->blink_gpio);
+    blinker->setPin(config->BLINKER_PIN);
     Serial.println();
     blinker->blink(500);
 
@@ -195,6 +195,9 @@ void CMMC_Legend::_init_ap() {
   Serial.print("AP IP address: ");
   Serial.println(myIP);
   delay(100);
+  if (_hook_init_ap != NULL) {
+    _hook_init_ap(ap_ssid, myIP);
+  }
 }
 void CMMC_Legend::setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, AsyncEventSource *events) {
   // ws->onEvent(this->onWsEvent);

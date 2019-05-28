@@ -36,11 +36,12 @@ enum MODE {SETUP, RUN};
 typedef struct
 {
     uint32_t baudrate;
-    uint8_t blink_gpio;
-    uint8_t button1_gpio;
+    uint8_t BLINKER_PIN;
+    uint8_t BUTTON_MODE_PIN;
     uint8_t SWITCH_PIN_MODE;
     bool SWITCH_PRESSED_LOGIC;
     uint32_t delay_after_init_ms;
+    std::function<void(char*, IPAddress&)> hook_init_ap;
 } os_config_t;
 
 
@@ -67,10 +68,11 @@ class CMMC_Legend: public CMMC_System {
     void _init_ap();
     void setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, AsyncEventSource *events);
     bool stopFlag = false;
-    uint8_t blink_gpio;
+    uint8_t BLINKER_PIN;
     uint8_t button_gpio;
     bool SWITCH_PRESSED_LOGIC;
     uint8_t SWITCH_PIN_MODE;
+    std::function<void(char*, IPAddress&)> _hook_init_ap;
 };
 
 #endif

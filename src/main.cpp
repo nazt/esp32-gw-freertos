@@ -6,13 +6,22 @@ const char* MEOBOT_VERSION = "1.5";
 
 CMMC_Legend os;
 
+
+void hook_init_ap(char* name, IPAddress ip) {
+  Serial.println("----------- hook_init_ap -----------");
+  Serial.println(name);
+  Serial.println(ip);
+  Serial.println("/----------- hook_init_ap -----------");
+}
+
 os_config_t config = {
   .baudrate = 115200,
-  .blink_gpio = 21,
-  .button1_gpio = 0,
+  .BLINKER_PIN = 21,
+  .BUTTON_MODE_PIN = 0,
   .SWITCH_PIN_MODE = INPUT_PULLUP,
   .SWITCH_PRESSED_LOGIC = LOW,
-  .delay_after_init_ms = 200
+  .delay_after_init_ms = 200,
+  .hook_init_ap = hook_init_ap
 };
 
 void setup()
@@ -22,6 +31,8 @@ void setup()
   delay(100);
 
   os.setup(&config);
+  Serial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
+  Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
 }
 
 void loop()
