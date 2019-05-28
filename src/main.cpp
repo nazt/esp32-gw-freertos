@@ -9,8 +9,6 @@
 #include <CMMC_DustSensor.h>
 #include <CMMC_RTC.h>
 
-const char* MEOBOT_VERSION = "1.5";
-
 CMMC_Legend os;
 
 
@@ -41,8 +39,7 @@ void setup()
   os.addModule(new ConfigModule());
   os.setup(&config);
   Serial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
-  // Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
-
+  Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
 }
 
 void loop()

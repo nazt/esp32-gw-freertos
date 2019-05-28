@@ -16,7 +16,7 @@ void CMMC_Legend::run() {
   yield();
 }
 
-bool CMMC_Legend::setEnable(bool status) {
+bool CMMC_Legend::enable_run_mode(bool status) {
   if (status) {
     File f = SPIFFS.open("/enabled", "a+");
     return f;
@@ -38,7 +38,7 @@ void CMMC_Legend::isLongPressed() {
       while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
         delay(10);
       }
-      setEnable(false);
+      enable_run_mode(false);
       Serial.println("being restarted.");
       delay(1000);
       ESP.restart();
@@ -140,7 +140,7 @@ void CMMC_Legend::init_network() {
       if (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
           blinker->blink(1000);
           Serial.println("=== button pressed to enabled.");
-          setEnable(true);
+          enable_run_mode(true);
           delay(300);
           ESP.restart();
       }
@@ -153,7 +153,7 @@ void CMMC_Legend::init_network() {
 
       if ( (millis() - startConfigLoopAtMs) > 20L*60*1000) {
           Serial.println("3.");
-          setEnable(true);
+          enable_run_mode(true);
           delay(100);
           ESP.restart();
       }

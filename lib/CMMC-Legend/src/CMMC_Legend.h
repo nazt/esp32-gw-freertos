@@ -59,20 +59,21 @@ class CMMC_Legend: public CMMC_System {
     void init_user_sensor();
     void init_user_config();
     void init_network();
-    bool setEnable(bool status);
+    bool enable_run_mode(bool status);
 
   private:
     MODE mode;
     std::vector<CMMC_Module*> _modules;
-    char ap_ssid[30] = "CMMC-Legend";
     void _init_ap();
     void setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, AsyncEventSource *events);
+    char ap_ssid[30] = "CMMC-Legend";
     bool stopFlag = false;
     uint8_t BLINKER_PIN;
     uint8_t button_gpio;
     bool SWITCH_PRESSED_LOGIC;
     uint8_t SWITCH_PIN_MODE;
     std::function<void(char*, IPAddress&)> _hook_init_ap;
+    std::function<void(void)> _hook_long_pressed;
 };
 
 #endif
