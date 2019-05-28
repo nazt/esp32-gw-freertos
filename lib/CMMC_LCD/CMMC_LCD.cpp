@@ -1,6 +1,6 @@
 #include "CMMC_LCD.h"
 #include "logo.h"
-#include <CMMC_Modem.h>
+// #include <CMMC_Modem.h>
 #include <CMMC_RTC.h>
 #include <CMMC_DustSensor.h>
 #include <TimeLib.h>
