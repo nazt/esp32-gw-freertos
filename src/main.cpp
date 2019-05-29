@@ -57,8 +57,8 @@ void setup()
   // dustSensor = new CMMC_DustSensor(&Serial1);
   // modules[0] = dustSensor;
   // modules[1] = new CMMC_GPS(&Serial1);
-  lcd = new CMMC_LCD();
-  lcd->setup();
+  // lcd = new CMMC_LCD();
+  // lcd->setup()
 }
 
 // extern struct shared_pool pool;
@@ -69,13 +69,13 @@ void loop()
   os->run();
   String taskMessage = "[main] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
-  lcd->pm2_5 = pool.pm2_5;
-  lcd->pm10 = pool.pm10;
+  // lcd->pm2_5 = pool.pm2_5;
+  // lcd->pm10 = pool.pm10;
   // Serial.println(taskMessage);
   if ( (millis() - prev) > 1*10L) {
-    mySerial.println(taskMessage);
+    // mySerial.println(taskMessage);
     // lcd->pm10 = millis()/1000;
     prev = millis();
-    lcd->loop();
+    // lcd->loop();
   }
 }

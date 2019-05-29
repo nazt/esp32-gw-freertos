@@ -72,12 +72,13 @@ static void task_serial1(void *parameter) {
 }
 
 static void lcd_task(void *parameter) {
-  // os.addModule(new CMMC_LCD());
   static CMMC_LCD *lcd = new CMMC_LCD();
   lcd->setup();
   while(1) {
+    lcd->pm10 = pool.pm10;
+    lcd->pm2_5 = pool.pm2_5;
     lcd->loop();
-    mySerial.println("HELLO..");
+    vTaskDelay(10/portTICK_PERIOD_MS);
   }
 }
 
@@ -85,5 +86,5 @@ static void tasks_init() {
   int priority = 1;
   xTaskCreate(task_serial1, "task_serial1", 4096, NULL, priority, NULL);
   // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 4096, NULL, priority, NULL, 1);
-  // xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 1, NULL);
+  xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 1, NULL);
 }
