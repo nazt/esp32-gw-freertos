@@ -23,8 +23,13 @@ class CMMC_RTC: public CMMC_Module{
     void configLoop();
     void configSetup();
     String getDateTimeString();
+    DateTime getDateTime();
     void adjust(const DateTime& dt);
     uint32_t getCurrentTimestamp();
+    void config(CMMC_System *os, AsyncWebServer* server) {};
+    const char* name() {
+      return "CMMC_RTC";
+    }
 };
 
 #endif

@@ -62,40 +62,47 @@ void CMMC_RTC::loop() {
       Serial.println("RTC FAILED.");
       return;
     }
-    if (!_rtc_locked && (millis() - prev >= 500)) {
       DateTime now = rtc->now();
       // Serial.println(now.unixtime());
       if (now.year() > 2000 && now.year() <= 2021) { // work around
         _now = now;
         strcpy(dateTimeCharArrray, print_time(now).c_str());
       }
+      else {
+
+      }
       // sprintf(dateTimeCharArrray, "%02u/%02u/%02u %02u:%02u:%02u",
       // now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second());
       // Serial.println(dateTimeCharArrray);
       // this->serial
       // Serial.println(dateTimeCharArrray);
-      // Serial.print(now.year(), DEC);
-      // Serial.print('/');
-      // Serial.print(now.month(), DEC);
-      // Serial.print('/');
-      // Serial.print(now.day(), DEC);
-      // Serial.print(" (");
-      // Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
-      // Serial.print(") ");
-      // Serial.print(now.hour(), DEC);
-      // Serial.print(':');
-      // Serial.print(now.minute(), DEC);
-      // Serial.print(':');
-      // Serial.print(now.second(), DEC);
-      // Serial.println();
+      Serial.print(now.year(), DEC);
+      Serial.print('/');
+      Serial.print(now.month(), DEC);
+      Serial.print('/');
+      Serial.print(now.day(), DEC);
+      Serial.print(" (");
+      Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
+      Serial.print(") ");
+      Serial.print(now.hour(), DEC);
+      Serial.print(':');
+      Serial.print(now.minute(), DEC);
+      Serial.print(':');
+      Serial.print(now.second(), DEC);
+      Serial.println();
       prev = millis();
       // Serial.println(dateTimeCharArrray);
-  }
 }
 
-
 void CMMC_RTC::adjust(const DateTime& dt) {
+  Serial.print("ADJUST RTC.. with ");
+  Serial.println(print_time(dt));
   _rtc_locked = true;
   rtc->adjust(dt);
+  loop();
   _rtc_locked = false;
+}
+
+DateTime CMMC_RTC::getDateTime() {
+  return _now;
 }

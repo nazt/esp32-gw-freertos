@@ -88,6 +88,7 @@ void CMMC_GPS::loop() {
         // Serial.println()
         this->_lastFetchLocation = millis();
         if (gps.time.isUpdated()) {
+          this->_lastSyncRtc = millis();
           _dt =  DateTime(gps.date.year(), gps.date.month(), gps.date.day(), gps.time.hour()+7%24, gps.time.minute(), gps.time.second());
         }
       }

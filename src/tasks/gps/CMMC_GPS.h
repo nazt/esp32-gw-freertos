@@ -15,7 +15,6 @@ class CMMC_GPS: public CMMC_Module{
   char lngC[40];
   char latlngC[80];
   bool gpsNoSignal = 1;
-  uint32_t _lastSyncRtc = 0;
   uint32_t _lastFetchLocation = 0;
   DateTime _dt;
   protected:
@@ -34,6 +33,7 @@ class CMMC_GPS: public CMMC_Module{
     void configSetup();
     String getLocation();
     DateTime getDateTime();
+    uint32_t _lastSyncRtc = 0;
     // void configWebServer();
 };
 
