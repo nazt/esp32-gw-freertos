@@ -9,8 +9,8 @@
 // #include <CMMC_DustSensor.h>
 // #include <CMMC_RTC.h>
 
-static CMMC_Legend os;
-
+CMMC_Legend *os;
+HardwareSerial mySerial(0);
 
 void hook_init_ap(char* name, IPAddress ip) {
   Serial.println("----------- hook_init_ap -----------");
@@ -26,14 +26,17 @@ void setup()
 {
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);
-  Serial.begin(115200);
+  mySerial.begin(115200);
   // delay(200);
+
+  os = new CMMC_Legend(&mySerial);
+
 
   String taskMessage = "[main] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
   // Serial.println(taskMessage);
   static os_config_t config = {
-    .serial = &Serial,
+    .serial = &mySerial,
     .baudrate = 115200,
     .BLINKER_PIN = 21,
     .BUTTON_MODE_PIN = 0,
@@ -43,8 +46,8 @@ void setup()
     .hook_init_ap = hook_init_ap
   };
 
-  os.addModule(new ConfigModule());
-  os.setup(&config);
+  os->addModule(new ConfigModule());
+  os->setup(&config);
   //
   Serial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
@@ -58,7 +61,7 @@ void setup()
 uint32_t prev = 0;
 void loop()
 {
-  // os.run();
+  os->run();
   String taskMessage = "[main] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
   // Serial.println(taskMessage);

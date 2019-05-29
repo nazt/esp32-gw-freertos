@@ -11,7 +11,6 @@
 #include <WiFiClient.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include <FS.h> //this needs to be first, or it all crashes and burns...
 #include <FS.h>
 #include <xCMMC_LED.h>
 #include <CMMC_ConfigManager.h>
@@ -44,6 +43,7 @@ typedef struct
 
 class CMMC_Legend: public CMMC_System {
   public:
+    CMMC_Legend(HardwareSerial *);
     void addModule(CMMC_Module* module);
     void isLongPressed();
     void run();
@@ -74,7 +74,7 @@ class CMMC_Legend: public CMMC_System {
     std::function<void(char*, IPAddress&)> _hook_init_ap;
     std::function<void(void)> _hook_long_pressed;
     HardwareSerial *_serial = NULL;
-
+    HardwareSerial *_nat = NULL;
 };
 
 #endif
