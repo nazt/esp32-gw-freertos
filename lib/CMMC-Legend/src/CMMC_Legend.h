@@ -74,7 +74,7 @@ class CMMC_Legend: public CMMC_System {
     std::function<void(char*, IPAddress&)> _hook_init_ap;
     std::function<void(void)> _hook_long_pressed;
     HardwareSerial *_serial = NULL;
-    HardwareSerial *_nat = NULL;
+    HardwareSerial *_serial_legend = NULL;
 };
 
 #endif

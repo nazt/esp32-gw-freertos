@@ -1,12 +1,12 @@
 #include "CMMC_Legend.h"
 
 CMMC_Legend::CMMC_Legend(HardwareSerial *s) {
-  this->_nat = s;
+  this->_serial_legend = s;
 };
 
 void CMMC_Legend::addModule(CMMC_Module* module) {
   _modules.push_back(module);
-  this->_nat->printf("addModule.. size = %d\r\n", _modules.size());
+  this->_serial_legend->printf("addModule.. size = %d\r\n", _modules.size());
 }
 
 // being called by os
@@ -34,16 +34,16 @@ void CMMC_Legend::isLongPressed() {
   uint32_t prev = millis();
   while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
     blinker->high();
-    _nat->println("button pressed...");
+    _serial_legend->println("button pressed...");
     if ( (millis() - prev) > 5L * 1000L) {
-      _nat->println("LONG PRESSED.");
+      _serial_legend->println("LONG PRESSED.");
       blinker->blink(50);
 
       while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
         delay(10);
       }
       enable_run_mode(false);
-      _nat->println("being restarted.");
+      _serial_legend->println("being restarted.");
       delay(1000);
       ESP.restart();
     }
@@ -53,8 +53,8 @@ void CMMC_Legend::isLongPressed() {
 }
 
 void CMMC_Legend::setup(os_config_t *config) {
-    // this->_nat->begin(config->baudrate);
-    this->_nat = config->serial;
+    // this->_serial_legend->begin(config->baudrate);
+    this->_serial_legend = config->serial;
     this->BLINKER_PIN = config->BLINKER_PIN;
     this->button_gpio = config->BUTTON_MODE_PIN;
     this->SWITCH_PRESSED_LOGIC = config->SWITCH_PRESSED_LOGIC;
@@ -66,43 +66,43 @@ void CMMC_Legend::setup(os_config_t *config) {
     blinker = new xCMMC_LED;
     blinker->init();
     blinker->setPin(config->BLINKER_PIN);
-    this->_nat->println();
+    this->_serial_legend->println();
     blinker->blink(500);
 
     init_fs();
     init_user_config();
     init_user_sensor();
     init_network();
-    this->_nat->println("HELLO");
-    this->_nat->printf("sw addr %lu\r\n", _nat);
-    this->_nat->printf("sw addr %lu\r\n", _nat);
-    _nat->println("--------- setup -----------");
+    this->_serial_legend->println("HELLO");
+    this->_serial_legend->printf("sw addr %lu\r\n", _serial_legend);
+    this->_serial_legend->printf("sw addr %lu\r\n", _serial_legend);
+    _serial_legend->println("--------- setup -----------");
     for (int i = 0 ; i < _modules.size(); i++) {
-      _nat->printf("calling %s.setup()\r\n", _modules[i]->name());
+      _serial_legend->printf("calling %s.setup()\r\n", _modules[i]->name());
       _modules[i]->setup();
     }
-    _nat->println("---------------------------");
+    _serial_legend->println("---------------------------");
 }
 
 void CMMC_Legend::init_gpio() {
-  // _nat->println("OS::Init GPIO..");
+  // _serial_legend->println("OS::Init GPIO..");
   delay(10);
 }
 
 void CMMC_Legend::init_fs() {
-  _nat->println("OS::Init FS..");
+  _serial_legend->println("OS::Init FS..");
   SPIFFS.begin();
   // Dir dir = SPIFFS.openDir("/");
   // isLongPressed();
-  // this->_nat->println("--------------------------");
+  // this->_serial_legend->println("--------------------------");
   // while (dir.next()) {
   //   File f = dir.openFile("r");
-  //   that->_nat->printf("> %s \r\n", dir.fileName().c_str());
+  //   that->_serial_legend->printf("> %s \r\n", dir.fileName().c_str());
   // }
   /*******************************************
      Boot Mode Selection
    *******************************************/
-  // that->_nat->println("--------------------------");
+  // that->_serial_legend->println("--------------------------");
   if (!SPIFFS.exists("/enabled")) {
     mode = CONFIG;
   }
@@ -112,68 +112,68 @@ void CMMC_Legend::init_fs() {
 }
 
 void CMMC_Legend::init_user_sensor() {
-  _nat->printf("Initializing Sensor.. MODE=%s\r\n", mode == CONFIG ? "CONFIG" : "RUN");
+  _serial_legend->printf("Initializing Sensor.. MODE=%s\r\n", mode == CONFIG ? "CONFIG" : "RUN");
   if (mode == CONFIG) {
     return;
   }
 }
 
 void CMMC_Legend::init_user_config() {
-  _nat->println("init_user_config");
+  _serial_legend->println("init_user_config");
 }
 
 void CMMC_Legend::init_network() {
-  _nat->println("Initializing network.");
+  _serial_legend->println("Initializing network.");
 
-    _nat->println("------- config ----------");
+    _serial_legend->println("------- config ----------");
   for (int i = 0 ; i < _modules.size(); i++) {
-    _nat->printf("calling %s.config()\r\n", _modules[i]->name());
+    _serial_legend->printf("calling %s.config()\r\n", _modules[i]->name());
     _modules[i]->config(this, &server);
   }
-  _nat->println("---------------------------");
+  _serial_legend->println("---------------------------");
 
   if (mode == CONFIG) {
-    _nat->println("------ configSetup --------");
+    _serial_legend->println("------ configSetup --------");
     for (int i = 0 ; i < _modules.size(); i++) {
-    _nat->printf("calling %s.configSetup()\r\n", _modules[i]->name());
+    _serial_legend->printf("calling %s.configSetup()\r\n", _modules[i]->name());
       _modules[i]->configSetup();
     }
-    _nat->println("---------------------------");
+    _serial_legend->println("---------------------------");
 
     _init_ap();
 
     setupWebServer(&server, &ws, &events);
-    _nat->printf("after setupWebserver\r\n");
+    _serial_legend->printf("after setupWebserver\r\n");
     if (blinker) {
       blinker->blink(50);
     }
     else {
-      _nat->println("no blinker");
+      _serial_legend->println("no blinker");
     }
     uint32_t startConfigLoopAtMs = millis();
     while (1 && !stopFlag) {
       if (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
           blinker->blink(1000);
-          _nat->println("=== button pressed to enabled.");
+          _serial_legend->println("=== button pressed to enabled.");
           enable_run_mode(true);
           delay(300);
           ESP.restart();
       }
-      // _nat->println("1.");
+      // _serial_legend->println("1.");
       for (int i = 0 ; i < _modules.size(); i++) {
         _modules[i]->configLoop();
         yield();
       }
 
       if ( (millis() - startConfigLoopAtMs) > 20L*60*1000) {
-          _nat->println("3.");
+          _serial_legend->println("3.");
           enable_run_mode(true);
           delay(100);
           ESP.restart();
       }
     }
 
-    _nat->println("starting SPIFFS..");
+    _serial_legend->println("starting SPIFFS..");
 
     File f = SPIFFS.open("/enabled", "a+");
     blinker->blink(50);
@@ -181,12 +181,12 @@ void CMMC_Legend::init_network() {
   }
   else if (mode == RUN) {
     blinker->blink(4000);
-    _nat->println("------ configSetup --------");
+    _serial_legend->println("------ configSetup --------");
     for (int i = 0 ; i < _modules.size(); i++) {
-      _nat->printf("calling %s.configSetup()\r\n", _modules[i]->name());
+      _serial_legend->printf("calling %s.configSetup()\r\n", _modules[i]->name());
       _modules[i]->configSetup();
     }
-    _nat->println("---------------------------");
+    _serial_legend->println("---------------------------");
   }
 }
 
@@ -207,9 +207,9 @@ void CMMC_Legend::_init_ap() {
   WiFi.softAP(ap_ssid, &ap_ssid[5]);
   delay(20);
   IPAddress myIP = WiFi.softAPIP();
-  this->_nat->println();
-  this->_nat->print("AP IP address: ");
-  this->_nat->println(myIP);
+  this->_serial_legend->println();
+  this->_serial_legend->print("AP IP address: ");
+  this->_serial_legend->println(myIP);
   delay(100);
   if (_hook_init_ap != NULL) {
     _hook_init_ap(ap_ssid, myIP);
@@ -240,7 +240,7 @@ void CMMC_Legend::setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, Asy
   server->on("/enable", HTTP_GET, [](AsyncWebServerRequest * request) {
     File f = SPIFFS.open("/enabled", "a+");
     if (!f) {
-      that->_nat->println("file open failed");
+      that->_serial_legend->println("file open failed");
     }
     request->send(200, "text/plain", String("ENABLING.. ") + String(ESP.getFreeHeap()));
     delay(1000);
@@ -281,9 +281,9 @@ void CMMC_Legend::setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, Asy
     if (!index) { // if index == 0 then this is the first frame of data
       SPIFFS.end();
       blinker->detach();
-      that->_nat->println("upload start...");
-      that->_nat->printf("UploadStart: %s\n", filename.c_str());
-      that->_nat->setDebugOutput(true);
+      that->_serial_legend->println("upload start...");
+      that->_serial_legend->printf("UploadStart: %s\n", filename.c_str());
+      that->_serial_legend->setDebugOutput(true);
       // calculate sketch space required for the update
       uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
       bool updateOK = maxSketchSpace < ESP.getFreeSketchSpace();
@@ -301,12 +301,12 @@ void CMMC_Legend::setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, Asy
 
     if (final) { // if the final flag is set then this is the last frame of data
       if (Update.end(true)) { //true to set the size to the current progress
-        that->_nat->printf("Update Success: %u B\nRebooting...\n", index + len);
+        that->_serial_legend->printf("Update Success: %u B\nRebooting...\n", index + len);
         blinker->blink(1000);
       } else {
         Update.printError(Serial);
       }
-      that->_nat->setDebugOutput(false);
+      that->_serial_legend->setDebugOutput(false);
     }
   });
 
@@ -320,8 +320,8 @@ void CMMC_Legend::setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, Asy
   },[&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
     //Upload handler chunks in data
     if(!index){ // if index == 0 then this is the first frame of data
-      that->_nat->printf("UploadStart: %s\n", filename.c_str());
-      that->_nat->setDebugOutput(true);
+      that->_serial_legend->printf("UploadStart: %s\n", filename.c_str());
+      that->_serial_legend->setDebugOutput(true);
 
       // calculate sketch space required for the update
       uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
@@ -339,13 +339,13 @@ void CMMC_Legend::setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, Asy
 
     if(final){ // if the final flag is set then this is the last frame of data
       if(Update.end(true)){ //true to set the size to the current progress
-          that->_nat->printf("Update Success: %u B\nRebooting...\n", index+len);
+          that->_serial_legend->printf("Update Success: %u B\nRebooting...\n", index+len);
           that->stopFlag = true;
           stopFlag = true;
         } else {
           Update.printError(Serial);
         }
-        that->_nat->setDebugOutput(false);
+        that->_serial_legend->setDebugOutput(false);
     }
   });
 
@@ -368,9 +368,9 @@ void CMMC_Legend::setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, Asy
     if (!index) { // if index == 0 then this is the first frame of data
       SPIFFS.end();
       blinker->detach();
-      that->_nat->println("upload start...");
-      that->_nat->printf("UploadStart: %s\n", filename.c_str());
-      that->_nat->setDebugOutput(true);
+      that->_serial_legend->println("upload start...");
+      that->_serial_legend->printf("UploadStart: %s\n", filename.c_str());
+      that->_serial_legend->setDebugOutput(true);
       // calculate sketch space required for the update
       uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
       bool updateOK = maxSketchSpace < ESP.getFreeSketchSpace();
@@ -388,58 +388,58 @@ void CMMC_Legend::setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, Asy
 
     if (final) { // if the final flag is set then this is the last frame of data
       if (Update.end(true)) { //true to set the size to the current progress
-        that->_nat->printf("Update Success: %u B\nRebooting...\n", index + len);
+        that->_serial_legend->printf("Update Success: %u B\nRebooting...\n", index + len);
           that->stopFlag = true;
           stopFlag = true;
         blinker->blink(1000);
       } else {
         Update.printError(Serial);
       }
-      that->_nat->setDebugOutput(false);
+      that->_serial_legend->setDebugOutput(false);
     }
   });
 
   server->onNotFound([](AsyncWebServerRequest * request) {
-    that->_nat->printf("NOT_FOUND: ");
+    that->_serial_legend->printf("NOT_FOUND: ");
     if (request->method() == HTTP_GET)
-      that->_nat->printf("GET");
+      that->_serial_legend->printf("GET");
     else if (request->method() == HTTP_POST)
-      that->_nat->printf("POST");
+      that->_serial_legend->printf("POST");
     else if (request->method() == HTTP_DELETE)
-      that->_nat->printf("DELETE");
+      that->_serial_legend->printf("DELETE");
     else if (request->method() == HTTP_PUT)
-      that->_nat->printf("PUT");
+      that->_serial_legend->printf("PUT");
     else if (request->method() == HTTP_PATCH)
-      that->_nat->printf("PATCH");
+      that->_serial_legend->printf("PATCH");
     else if (request->method() == HTTP_HEAD)
-      that->_nat->printf("HEAD");
+      that->_serial_legend->printf("HEAD");
     else if (request->method() == HTTP_OPTIONS)
-      that->_nat->printf("OPTIONS");
+      that->_serial_legend->printf("OPTIONS");
     else
-      that->_nat->printf("UNKNOWN");
-    that->_nat->printf(" http://%s%s\n", request->host().c_str(), request->url().c_str());
+      that->_serial_legend->printf("UNKNOWN");
+    that->_serial_legend->printf(" http://%s%s\n", request->host().c_str(), request->url().c_str());
 
     if (request->contentLength()) {
-      that->_nat->printf("_CONTENT_TYPE: %s\n", request->contentType().c_str());
-      that->_nat->printf("_CONTENT_LENGTH: %u\n", request->contentLength());
+      that->_serial_legend->printf("_CONTENT_TYPE: %s\n", request->contentType().c_str());
+      that->_serial_legend->printf("_CONTENT_LENGTH: %u\n", request->contentLength());
     }
 
     int headers = request->headers();
     int i;
     // for (i = 0; i < headers; i++) {
     //   // AsyncWebHeader* h = request->getHeader(i);
-    //   // that->_nat->printf("_HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
+    //   // that->_serial_legend->printf("_HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
     // }
 
     int params = request->params();
     for (i = 0; i < params; i++) {
       AsyncWebParameter* p = request->getParam(i);
       if (p->isFile()) {
-        that->_nat->printf("_FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
+        that->_serial_legend->printf("_FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
       } else if (p->isPost()) {
-        that->_nat->printf("_POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
+        that->_serial_legend->printf("_POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
       } else {
-        that->_nat->printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
+        that->_serial_legend->printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
       }
     }
 
@@ -447,5 +447,5 @@ void CMMC_Legend::setupWebServer(AsyncWebServer *server, AsyncWebSocket *ws, Asy
   });
 
   server->begin();
-  that->_nat->println("Starting webserver->..");
+  that->_serial_legend->println("Starting webserver->..");
 }
