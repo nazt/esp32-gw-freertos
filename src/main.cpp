@@ -7,7 +7,7 @@
 #include "modules/CMMC_LCD.h"
 #include <HardwareSerial.h>
 // #include <CMMC_DustSensor.h>
-#include <CMMC_RTC.h>
+// #include <CMMC_RTC.h>
 
 CMMC_Legend os;
 

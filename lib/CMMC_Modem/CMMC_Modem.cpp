@@ -1,7 +1,6 @@
 #include <Wire.h>
 #include <RTClib.h>
 #include "CMMC_Modem.h"
-#include <CMMC_RTC.h>
 
 // #define AIS_TOKEN "12dee170-4a4b-11e9-96dd-9fb5d8a71344" // devstation
 #define AIS_TOKEN "76d514f0-217f-11e9-a028-9771a15972bf" // nat-devstation
@@ -23,7 +22,7 @@ RTC_DATA_ATTR int rebootCount = -1;
 
 // extern CMMC_DustSensor *dustSensor;
 // extern CMMC_GPS *gps;
-extern CMMC_RTC *rtc;
+// extern CMMC_RTC *rtc;
 
 CMMC_Modem::CMMC_Modem(Stream* s)   {
   this->_modemSerial = s;
@@ -202,7 +201,7 @@ void CMMC_Modem::loop() {
     // data.pm10 = dustSensor->getPMValue(DustPM10);
     // data.pm2_5 = dustSensor->getPMValue(DustPM2_5);
     data.uptime_s = millis() / 1000;
-    data.unixtime = rtc->getCurrentTimestamp();
+    // data.unixtime = rtc->getCurrentTimestamp();
     // strcpy(data.latlngC, gps->getLocation().c_str());
     Serial.println("> sendTask2 is sending data");
 

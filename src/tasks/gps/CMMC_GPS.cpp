@@ -1,5 +1,4 @@
 #include "CMMC_GPS.h"
-#include <CMMC_RTC.h>
 
 // extern CMMC_RTC* rtc;
 
@@ -102,5 +101,5 @@ void CMMC_GPS::loop() {
 }
 
 DateTime CMMC_GPS::getDateTime() {
-  return _dt;   
+  return _dt;
 }

@@ -1,14 +1,13 @@
 #include "CMMC_LCD.h"
 #include "logo.h"
 // #include <CMMC_Modem.h>
-#include <CMMC_RTC.h>
 // #include <CMMC_DustSensor.h>
 #include <TimeLib.h>
 // extern CMMC_GPS *gps;
 // extern CMMC_GPS *gps;
 
 // extern CMMC_Modem *modem;
-extern CMMC_RTC *rtc;
+// extern CMMC_RTC *rtc;
 // extern CMMC_DustSensor *dustSensor;
 
 String pm10Value = "999.88";
