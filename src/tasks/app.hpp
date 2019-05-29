@@ -1,8 +1,32 @@
 #include "tasks/dust/CMMC_DustSensor.h"
 #include "tasks/gps/CMMC_GPS.h"
 #include "tasks/rtc/CMMC_RTC.h"
+#include <TinyGPS++.h>
 
 static const int RX_BUF_SIZE = 1024;
+struct shared_pool {
+  float pm10;
+  float pm2_5;
+  DateTime dt;
+  TinyGPSLocation location;
+  String locationString;
+  void printDt() {
+    Serial.print("")  ;
+    Serial.print(dt.year(), DEC);
+    Serial.print('/');
+    Serial.print(dt.month(), DEC);
+    Serial.print('/');
+    Serial.print(dt.day(), DEC);
+    Serial.print(' ');
+    Serial.print(dt.hour(), DEC);
+    Serial.print(':');
+    Serial.print(dt.minute(), DEC);
+    Serial.print(':');
+    Serial.print(dt.second(), DEC);
+  }
+};
+
+struct shared_pool pool;
 
 void showDate(const char* txt, const DateTime& dt) {
     Serial.print(txt);
@@ -39,18 +63,28 @@ static void task_serial1(void *parameter) {
       dustSensor->loop();
       gps->loop();
       rtc->loop();
-      showDate("[RTC]:", rtc->getDateTime());
+      pool.pm10 = dustSensor->getPMValue(DustPM10);
+      pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
+      pool.dt = rtc->getDateTime();
+      pool.location = gps->getLocation();
+      // showDate("[RTC]:", pool.location);
+      // showDate("[GPS]:", pool.location);
+      pool.locationString = gps->getLocationString();
       if (gps->_lastSyncRtc > 0) {
-        showDate("[GPS]:", gps->getDateTime());
         rtc->adjust(gps->getDateTime());
       }
       else {
-        Serial.println("Waiting for gps..");
       }
+      Serial.printf("pool.pm10 = %f\r\n", pool.pm10);
+      Serial.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
+      Serial.printf("pool.location = %s\r\n", pool.locationString.c_str());
+      Serial.printf("pool.dt = ");
+      pool.printDt();
     }
+
 }
 
 void tasks_init() {
   int priority = 1;
-  xTaskCreate(task_serial1, "task_serial1", 2048, NULL, priority, NULL);
+  xTaskCreate(task_serial1, "task_serial1", 4096, NULL, priority, NULL);
 }

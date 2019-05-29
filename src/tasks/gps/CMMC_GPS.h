@@ -17,6 +17,7 @@ class CMMC_GPS: public CMMC_Module{
   bool gpsNoSignal = 1;
   uint32_t _lastFetchLocation = 0;
   DateTime _dt;
+  TinyGPSLocation _location;
   protected:
     // char path[20];
     // String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);
@@ -31,10 +32,10 @@ class CMMC_GPS: public CMMC_Module{
     void loop();
     void configLoop();
     void configSetup();
-    String getLocation();
+    String getLocationString();
     DateTime getDateTime();
     uint32_t _lastSyncRtc = 0;
-    // void configWebServer();
+    TinyGPSLocation getLocation();
 };
 
 #endif

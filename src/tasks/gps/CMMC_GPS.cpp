@@ -11,7 +11,7 @@ void CMMC_GPS::configLoop() {
   yield();
 }
 
-String CMMC_GPS::getLocation() {
+String CMMC_GPS::getLocationString() {
   return String(_bufferLatLng);
   // char x[100];
   // strcpy(x, this->_bufferLatLng);
@@ -31,9 +31,9 @@ void CMMC_GPS::loop() {
   this->serial->begin(9600, SERIAL_8N1, 12 /*rx*/, 15 /* tx */);
   this->serial->flush();
   uint32_t ms = millis();
-  delay(20);
+  vTaskDelay(20 / portTICK_PERIOD_MS);
   while(!this->serial->available()) {
-    delay(1);
+    vTaskDelay(1 / portTICK_PERIOD_MS);
     if (millis() - ms > 2000) {
       Serial.println("GPS_SERIAL timeout!!!");
       break;
@@ -103,4 +103,8 @@ void CMMC_GPS::loop() {
 
 DateTime CMMC_GPS::getDateTime() {
   return _dt;
+}
+
+TinyGPSLocation CMMC_GPS::getLocation() {
+  return _location;
 }

@@ -70,7 +70,8 @@ void CMMC_DustSensor::loop() {
       break;
     }
   }
-
+  vTaskDelay(200 / portTICK_PERIOD_MS);
+  Serial.println();
   Serial.println("Reading Dust Sensor..");
   this->readDustSensor();
 }
