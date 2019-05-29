@@ -1,7 +1,7 @@
 /*
 
   u8g2_ll_hvline.c
-
+  
   low level hvline
 
   Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
@@ -9,34 +9,34 @@
   Copyright (c) 2016, olikraus@gmail.com
   All rights reserved.
 
-  Redistribution and use in source and binary forms, with or without modification,
+  Redistribution and use in source and binary forms, with or without modification, 
   are permitted provided that the following conditions are met:
 
-  * Redistributions of source code must retain the above copyright notice, this list
+  * Redistributions of source code must retain the above copyright notice, this list 
     of conditions and the following disclaimer.
-
-  * Redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other
+    
+  * Redistributions in binary form must reproduce the above copyright notice, this 
+    list of conditions and the following disclaimer in the documentation and/or other 
     materials provided with the distribution.
 
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 
 
   *ptr |= or_mask
   *ptr ^= xor_mask
-
+  
   color = 0:   or_mask = 1, xor_mask = 1
   color = 1:   or_mask = 1, xor_mask = 0
   color = 2:   or_mask = 0, xor_mask = 1
@@ -45,7 +45,7 @@
     or_mask  = mask;
   if ( color != 1 )
     xor_mask = mask;
-
+    
 */
 
 #include "u8g2.h"
@@ -55,7 +55,7 @@
 /*
   u8g2_ll_hvline_vertical_top_lsb
     SSD13xx
-    UC1701
+    UC1701    
 */
 
 
@@ -66,7 +66,7 @@
   len		length of the line in pixel, len must not be 0
   dir		0: horizontal line (left to right)
 		1: vertical line (top to bottom)
-  asumption:
+  asumption: 
     all clipping done
 */
 void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, uint8_t dir)
@@ -83,7 +83,7 @@ void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y,
   //assert(x < u8g2_GetU8x8(u8g2)->display_info->tile_width*8);
   //assert(y >= u8g2->buf_y0);
   //assert(y < u8g2_GetU8x8(u8g2)->display_info->tile_height*8);
-
+  
   /* bytes are vertical, lsb on top (y=0), msb at bottom (y=7) */
   bit_pos = y;		/* overflow truncate is ok here... */
   bit_pos &= 7; 	/* ... because only the lowest 3 bits are needed */
@@ -104,7 +104,7 @@ void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y,
   ptr = u8g2->tile_buf_ptr;
   ptr += offset;
   ptr += x;
-
+  
   if ( dir == 0 )
   {
       do
@@ -119,7 +119,7 @@ void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y,
       } while( len != 0 );
   }
   else
-  {
+  {    
     do
     {
 #ifdef __unix
@@ -127,7 +127,7 @@ void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y,
 #endif
       *ptr |= or_mask;
       *ptr ^= xor_mask;
-
+      
       bit_pos++;
       bit_pos &= 7;
 
@@ -136,7 +136,7 @@ void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y,
       if ( bit_pos == 0 )
       {
 	ptr+=u8g2->pixel_buf_width;	/* 6 Jan 17: Changed u8g2->width to u8g2->pixel_buf_width, issue #148 */
-
+		
 	if ( u8g2->draw_color <= 1 )
 	  or_mask  = 1;
 	if ( u8g2->draw_color != 1 )
@@ -163,12 +163,12 @@ static void u8g2_draw_pixel_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_u
   uint16_t offset;
   uint8_t *ptr;
   uint8_t bit_pos, mask;
-
+  
   //assert(x >= u8g2->buf_x0);
   //assert(x < u8g2_GetU8x8(u8g2)->display_info->tile_width*8);
   //assert(y >= u8g2->buf_y0);
   //assert(y < u8g2_GetU8x8(u8g2)->display_info->tile_height*8);
-
+  
   /* bytes are vertical, lsb on top (y=0), msb at bottom (y=7) */
   bit_pos = y;		/* overflow truncate is ok here... */
   bit_pos &= 7; 	/* ... because only the lowest 3 bits are needed */
@@ -195,7 +195,7 @@ static void u8g2_draw_pixel_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_u
   len		length of the line in pixel, len must not be 0
   dir		0: horizontal line (left to right)
 		1: vertical line (top to bottom)
-  asumption:
+  asumption: 
     all clipping done
 */
 void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, uint8_t dir)
@@ -236,7 +236,7 @@ void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y,
   len		length of the line in pixel, len must not be 0
   dir		0: horizontal line (left to right)
 		1: vertical line (top to bottom)
-  asumption:
+  asumption: 
     all clipping done
 */
 
@@ -258,10 +258,10 @@ void u8g2_ll_hvline_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_
   offset += x>>3;
   ptr = u8g2->tile_buf_ptr;
   ptr += offset;
-
+  
   if ( dir == 0 )
   {
-
+      
     do
     {
 
@@ -269,14 +269,14 @@ void u8g2_ll_hvline_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_
 	*ptr |= mask;
       if ( u8g2->draw_color != 1 )
 	*ptr ^= mask;
-
+      
       mask >>= 1;
       if ( mask == 0 )
       {
 	mask = 128;
         ptr++;
       }
-
+      
       //x++;
       len--;
     } while( len != 0 );
@@ -289,7 +289,7 @@ void u8g2_ll_hvline_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_
 	*ptr |= mask;
       if ( u8g2->draw_color != 1 )
 	*ptr ^= mask;
-
+      
       ptr += tile_width;
       //y++;
       len--;
@@ -313,7 +313,7 @@ static void u8g2_draw_pixel_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8
   //assert(x < u8g2_GetU8x8(u8g2)->display_info->tile_width*8);
   //assert(y >= u8g2->buf_y0);
   //assert(y < u8g2_GetU8x8(u8g2)->display_info->tile_height*8);
-
+  
   /* bytes are vertical, lsb on top (y=0), msb at bottom (y=7) */
   bit_pos = x;		/* overflow truncate is ok here... */
   bit_pos &= 7; 	/* ... because only the lowest 3 bits are needed */
@@ -326,13 +326,13 @@ static void u8g2_draw_pixel_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8
   offset += x;
   ptr = u8g2->tile_buf_ptr;
   ptr += offset;
-
+  
 
   if ( u8g2->draw_color <= 1 )
     *ptr |= mask;
   if ( u8g2->draw_color != 1 )
     *ptr ^= mask;
-
+  
 }
 
 /*
@@ -340,7 +340,7 @@ static void u8g2_draw_pixel_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8
   len		length of the line in pixel, len must not be 0
   dir		0: horizontal line (left to right)
 		1: vertical line (top to bottom)
-  asumption:
+  asumption: 
     all clipping done
 */
 void u8g2_ll_hvline_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, uint8_t dir)

@@ -1,36 +1,36 @@
 /*
 
   u8log.c
-
+  
 
   Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
 
   Copyright (c) 2018, olikraus@gmail.com
   All rights reserved.
 
-  Redistribution and use in source and binary forms, with or without modification,
+  Redistribution and use in source and binary forms, with or without modification, 
   are permitted provided that the following conditions are met:
 
-  * Redistributions of source code must retain the above copyright notice, this list
+  * Redistributions of source code must retain the above copyright notice, this list 
     of conditions and the following disclaimer.
-
-  * Redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other
+    
+  * Redistributions in binary form must reproduce the above copyright notice, this 
+    list of conditions and the following disclaimer in the documentation and/or other 
     materials provided with the distribution.
 
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 
 */
 
@@ -60,7 +60,7 @@ static void u8log_clear_screen(u8log_t *u8log)
     *dest++ = ' ';
     cnt--;
   } while( cnt > 0 );
-
+  
 }
 
 
@@ -83,7 +83,7 @@ static void u8log_scroll_up(u8log_t *u8log)
     *dest++ = ' ';
     cnt--;
   } while(cnt > 0);
-
+  
   if ( u8log->is_redraw_line_for_each_char )
     u8log->is_redraw_all = 1;
   else
@@ -91,7 +91,7 @@ static void u8log_scroll_up(u8log_t *u8log)
 }
 
 /*
-  Place the cursor on the screen. This will also scroll, if required
+  Place the cursor on the screen. This will also scroll, if required 
 */
 static void u8log_cursor_on_screen(u8log_t *u8log)
 {
@@ -116,7 +116,7 @@ static void u8log_write_to_screen(u8log_t *u8log, uint8_t c)
   u8log_cursor_on_screen(u8log);
   u8log->screen_buffer[u8log->cursor_y * u8log->width + u8log->cursor_x] = c;
   u8log->cursor_x++;
-
+  
   if ( u8log->is_redraw_line_for_each_char )
   {
     u8log->is_redraw_line = 1;
@@ -127,12 +127,12 @@ static void u8log_write_to_screen(u8log_t *u8log, uint8_t c)
 /*
   Handle control codes or write the char to the screen.
   Supported control codes are:
-
+  
     \n		10		Goto first position of the next line. Line is marked for redraw.
     \r		13		Goto first position in the same line. Line is marked for redraw.
     \t		9		Jump to the next tab position
     \f		12		Clear the screen and mark redraw for whole screen
-    any other char	Write char to screen. Line redraw mark depends on
+    any other char	Write char to screen. Line redraw mark depends on 
 				is_redraw_line_for_each_char flag.
 */
 void u8log_write_char(u8log_t *u8log, uint8_t c)
@@ -147,7 +147,7 @@ void u8log_write_char(u8log_t *u8log, uint8_t c)
       u8log->is_redraw_all_required_for_next_nl = 0;
       u8log->cursor_y++;
       u8log->cursor_x = 0;
-      break;
+      break;	
     case '\r':	// 13
       u8log->is_redraw_line = 1;
       u8log->redraw_line = u8log->cursor_y;

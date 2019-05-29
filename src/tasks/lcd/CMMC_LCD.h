@@ -30,12 +30,12 @@ class CMMC_LCD: public CMMC_Module{
   String lngC;
   String sta_mac;
   String softap_mac;
-  float pm10 = 0;
-  float pm2_5 = 0;
   protected:
     // char path[20];
     // String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);
   public:
+  float pm10 = 0;
+  float pm2_5 = 0;
     CMMC_LCD();
     void config(CMMC_System *os, AsyncWebServer* server);
     void hello();

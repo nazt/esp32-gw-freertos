@@ -1,37 +1,37 @@
 /*
 
-  u8x8_byte.c
-
+  u8x8_byte.c 
+  
   Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
 
   Copyright (c) 2016, olikraus@gmail.com
   All rights reserved.
 
-  Redistribution and use in source and binary forms, with or without modification,
+  Redistribution and use in source and binary forms, with or without modification, 
   are permitted provided that the following conditions are met:
 
-  * Redistributions of source code must retain the above copyright notice, this list
+  * Redistributions of source code must retain the above copyright notice, this list 
     of conditions and the following disclaimer.
-
-  * Redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other
+    
+  * Redistributions in binary form must reproduce the above copyright notice, this 
+    list of conditions and the following disclaimer in the documentation and/or other 
     materials provided with the distribution.
 
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  
+  
 */
 
 #include "u8x8.h"
@@ -110,7 +110,7 @@ uint8_t u8x8_byte_4wire_sw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void 
   uint8_t *data;
   uint8_t takeover_edge = u8x8_GetSPIClockPhase(u8x8);
   uint8_t not_takeover_edge = 1 - takeover_edge;
-
+ 
   switch(msg)
   {
     case U8X8_MSG_BYTE_SEND:
@@ -127,20 +127,20 @@ uint8_t u8x8_byte_4wire_sw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void 
 	  else
 	    u8x8_gpio_SetSPIData(u8x8, 0);
 	  b <<= 1;
-
+	  
 	  u8x8_gpio_SetSPIClock(u8x8, not_takeover_edge);
 	  u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->sda_setup_time_ns);
 	  u8x8_gpio_SetSPIClock(u8x8, takeover_edge);
 	  u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->sck_pulse_width_ns);
-	}
+	}    
       }
       break;
-
+      
     case U8X8_MSG_BYTE_INIT:
       /* disable chipselect */
       u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);
       /* no wait required here */
-
+      
       /* for SPI: setup correct level of the clock signal */
       u8x8_gpio_SetSPIClock(u8x8, u8x8_GetSPIClockPhase(u8x8));
       break;
@@ -148,7 +148,7 @@ uint8_t u8x8_byte_4wire_sw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void 
       u8x8_gpio_SetDC(u8x8, arg_int);
       break;
     case U8X8_MSG_BYTE_START_TRANSFER:
-      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_enable_level);
+      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_enable_level);  
       u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->post_chip_enable_wait_ns, NULL);
       break;
     case U8X8_MSG_BYTE_END_TRANSFER:
@@ -167,7 +167,7 @@ uint8_t u8x8_byte_8bit_6800mode(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
 {
   uint8_t i, b;
   uint8_t *data;
-
+ 
   switch(msg)
   {
     case U8X8_MSG_BYTE_SEND:
@@ -181,18 +181,18 @@ uint8_t u8x8_byte_8bit_6800mode(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
 	{
 	  u8x8_gpio_call(u8x8, i, b&1);
 	  b >>= 1;
-	}
-
+	}    
+	
 	u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->data_setup_time_ns);
 	u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 1);
 	u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->write_pulse_width_ns);
 	u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 0);
       }
       break;
-
+      
     case U8X8_MSG_BYTE_INIT:
       /* disable chipselect */
-      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);
+      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);    
       /* ensure that the enable signal is high */
       u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 0);
       break;
@@ -200,7 +200,7 @@ uint8_t u8x8_byte_8bit_6800mode(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
       u8x8_gpio_SetDC(u8x8, arg_int);
       break;
     case U8X8_MSG_BYTE_START_TRANSFER:
-      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_enable_level);
+      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_enable_level);  
       u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->post_chip_enable_wait_ns, NULL);
       break;
     case U8X8_MSG_BYTE_END_TRANSFER:
@@ -217,7 +217,7 @@ uint8_t u8x8_byte_8bit_8080mode(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
 {
   uint8_t i, b;
   uint8_t *data;
-
+ 
   switch(msg)
   {
     case U8X8_MSG_BYTE_SEND:
@@ -231,18 +231,18 @@ uint8_t u8x8_byte_8bit_8080mode(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
 	{
 	  u8x8_gpio_call(u8x8, i, b&1);
 	  b >>= 1;
-	}
-
+	}    
+	
 	u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->data_setup_time_ns);
 	u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 0);
 	u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->write_pulse_width_ns);
 	u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 1);
       }
       break;
-
+      
     case U8X8_MSG_BYTE_INIT:
       /* disable chipselect */
-      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);
+      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);    
       /* ensure that the enable signal is high */
       u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 1);
       break;
@@ -250,7 +250,7 @@ uint8_t u8x8_byte_8bit_8080mode(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
       u8x8_gpio_SetDC(u8x8, arg_int);
       break;
     case U8X8_MSG_BYTE_START_TRANSFER:
-      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_enable_level);
+      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_enable_level);  
       u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->post_chip_enable_wait_ns, NULL);
       break;
     case U8X8_MSG_BYTE_END_TRANSFER:
@@ -273,7 +273,7 @@ uint8_t u8x8_byte_3wire_sw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void 
   uint8_t not_takeover_edge = 1 - takeover_edge;
   uint16_t b;
   static uint8_t last_dc;
-
+ 
   switch(msg)
   {
     case U8X8_MSG_BYTE_SEND:
@@ -292,20 +292,20 @@ uint8_t u8x8_byte_3wire_sw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void 
 	  else
 	    u8x8_gpio_SetSPIData(u8x8, 0);
 	  b <<= 1;
-
+	  
 	  u8x8_gpio_SetSPIClock(u8x8, not_takeover_edge);
 	  u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->sda_setup_time_ns);
 	  u8x8_gpio_SetSPIClock(u8x8, takeover_edge);
 	  u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->sck_pulse_width_ns);
-	}
+	}    
       }
       break;
-
+      
     case U8X8_MSG_BYTE_INIT:
       /* disable chipselect */
       u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);
       /* no wait required here */
-
+      
       /* for SPI: setup correct level of the clock signal */
       u8x8_gpio_SetSPIClock(u8x8, u8x8_GetSPIClockPhase(u8x8));
       break;
@@ -313,7 +313,7 @@ uint8_t u8x8_byte_3wire_sw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void 
       last_dc = arg_int;
       break;
     case U8X8_MSG_BYTE_START_TRANSFER:
-      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_enable_level);
+      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_enable_level);  
       u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->post_chip_enable_wait_ns, NULL);
       break;
     case U8X8_MSG_BYTE_END_TRANSFER:
@@ -342,7 +342,7 @@ uint8_t u8x8_byte_ks0108(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_p
 {
   uint8_t i, b;
   uint8_t *data;
-
+ 
   switch(msg)
   {
     case U8X8_MSG_BYTE_SEND:
@@ -356,18 +356,18 @@ uint8_t u8x8_byte_ks0108(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_p
 	{
 	  u8x8_gpio_call(u8x8, i, b&1);
 	  b >>= 1;
-	}
-
+	}    
+	
 	u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->data_setup_time_ns);
 	u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 1);
 	u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->write_pulse_width_ns);
 	u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 0);
       }
       break;
-
+      
     case U8X8_MSG_BYTE_INIT:
       /* disable chipselect */
-      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);
+      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);    
       /* ensure that the enable signal is low */
       u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 0);
       break;
@@ -375,7 +375,7 @@ uint8_t u8x8_byte_ks0108(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_p
       u8x8_gpio_SetDC(u8x8, arg_int);
       break;
     case U8X8_MSG_BYTE_START_TRANSFER:
-      /* expects 3 bits in arg_int for the chip select lines */
+      /* expects 3 bits in arg_int for the chip select lines */ 
       u8x8_byte_set_ks0108_cs(u8x8, arg_int);
       u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->post_chip_enable_wait_ns, NULL);
       break;
@@ -390,7 +390,7 @@ uint8_t u8x8_byte_ks0108(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_p
 }
 
 
-/* sed1520 or sbn1661
+/* sed1520 or sbn1661 
   U8X8_MSG_GPIO_E --> E1
   U8X8_MSG_GPIO_CS --> E2
 */
@@ -399,7 +399,7 @@ uint8_t u8x8_byte_sed1520(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_
   uint8_t i, b;
   uint8_t *data;
   static uint8_t enable_pin;
-
+ 
   switch(msg)
   {
     case U8X8_MSG_BYTE_SEND:
@@ -413,8 +413,8 @@ uint8_t u8x8_byte_sed1520(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_
 	{
 	  u8x8_gpio_call(u8x8, i, b&1);
 	  b >>= 1;
-	}
-
+	}    
+	
 	u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, u8x8->display_info->data_setup_time_ns);
 	u8x8_gpio_call(u8x8, enable_pin, 1);
 	u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, 200);		/* KS0108 requires 450 ns, use 200 here */
@@ -422,10 +422,10 @@ uint8_t u8x8_byte_sed1520(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_
 	u8x8_gpio_call(u8x8, enable_pin, 0);
       }
       break;
-
+      
     case U8X8_MSG_BYTE_INIT:
       /* disable chipselect */
-      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);
+      u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);    
       /* ensure that the enable signals are low */
       u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_E, 0);
       u8x8_gpio_call(u8x8, U8X8_MSG_GPIO_CS, 0);
@@ -436,7 +436,7 @@ uint8_t u8x8_byte_sed1520(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_
       break;
     case U8X8_MSG_BYTE_START_TRANSFER:
       /* cs lines are not supported for the SED1520/SBN1661 */
-      /* instead, this will select the E1 or E2 line */
+      /* instead, this will select the E1 or E2 line */ 
       enable_pin = U8X8_MSG_GPIO_E;
       if ( arg_int != 0 )
 	enable_pin = U8X8_MSG_GPIO_CS;
@@ -468,7 +468,7 @@ static void i2c_init(u8x8_t *u8x8)
 {
   u8x8_gpio_SetI2CClock(u8x8, 1);
   u8x8_gpio_SetI2CData(u8x8, 1);
-
+  
   i2c_delay(u8x8);
 }
 
@@ -520,12 +520,12 @@ static void i2c_start(u8x8_t *u8x8)
 static void i2c_stop(u8x8_t *u8x8)
 {
   /* set SDA to 0 */
-  i2c_clear_sda(u8x8);
+  i2c_clear_sda(u8x8);  
   i2c_delay(u8x8);
-
+ 
   /* now release all lines */
   i2c_read_scl_and_delay(u8x8);
-
+ 
   /* set SDA to 1 */
   i2c_read_sda(u8x8);
   i2c_delay(u8x8);
@@ -538,7 +538,7 @@ static void i2c_write_bit(u8x8_t *u8x8, uint8_t val)
     i2c_read_sda(u8x8);
   else
     i2c_clear_sda(u8x8);
-
+ 
   i2c_delay(u8x8);
   i2c_read_scl_and_delay(u8x8);
   i2c_clear_scl(u8x8);
@@ -567,10 +567,10 @@ static void i2c_write_byte(u8x8_t *u8x8, uint8_t b)
   i2c_write_bit(u8x8, b & 4);
   i2c_write_bit(u8x8, b & 2);
   i2c_write_bit(u8x8, b & 1);
-
+    
   /* read ack from client */
   /* 0: ack was given by client */
-  /* 1: nothing happend during ack cycle */
+  /* 1: nothing happend during ack cycle */  
   i2c_read_bit(u8x8);
 }
 
@@ -582,16 +582,16 @@ uint8_t u8x8_byte_sw_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_p
   {
     case U8X8_MSG_BYTE_SEND:
       data = (uint8_t *)arg_ptr;
-
+    
       while( arg_int > 0 )
       {
 	i2c_write_byte(u8x8, *data);
 	data++;
 	arg_int--;
       }
-
+      
       break;
-
+      
     case U8X8_MSG_BYTE_INIT:
       i2c_init(u8x8);
       break;
@@ -624,7 +624,7 @@ void i2c_transfer(u8x8_t *u8x8, uint8_t adr, uint8_t cnt, uint8_t *data)
   i2c_write_byte(u8x8, adr);
   for( i = 0; i < cnt; i++ )
     i2c_write_byte(u8x8, data[i]);
-  i2c_stop(u8x8);
+  i2c_stop(u8x8);  
 }
 
 
@@ -633,17 +633,17 @@ uint8_t u8x8_byte_sw_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_p
   static uint8_t buffer[32];		/* u8g2/u8x8 will never send more than 32 bytes */
   static uint8_t buf_idx;
   uint8_t *data;
-
+ 
   switch(msg)
   {
     case U8X8_MSG_BYTE_SEND:
-      data = (uint8_t *)arg_ptr;
+      data = (uint8_t *)arg_ptr;      
       while( arg_int > 0 )
       {
 	buffer[buf_idx++] = *data;
 	data++;
 	arg_int--;
-      }
+      }      
       break;
     case U8X8_MSG_BYTE_INIT:
       i2c_init(u8x8);			/* init i2c communication */

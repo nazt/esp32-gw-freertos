@@ -67,7 +67,7 @@ static void task_serial1(void *parameter) {
       // mySerial.printf("pool.location = %s\r\n", pool.locationString.c_str());
       // mySerial.printf("pool.dt = ");
       // pool.printDt();
-      vTaskDelay(1000/portTICK_PERIOD_MS);
+      vTaskDelay(100/portTICK_PERIOD_MS);
     }
 }
 

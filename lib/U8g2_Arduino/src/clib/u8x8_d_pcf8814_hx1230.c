@@ -1,10 +1,10 @@
 /*
 
   u8x8_d_pcf8814_hc1230.c
-
+  
   pcf8814: 65x96
   hx1230: 68x96
-
+  
   pcf8814 and hc1230 are almost identical.
 
   Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
@@ -12,30 +12,30 @@
   Copyright (c) 2017, olikraus@gmail.com
   All rights reserved.
 
-  Redistribution and use in source and binary forms, with or without modification,
+  Redistribution and use in source and binary forms, with or without modification, 
   are permitted provided that the following conditions are met:
 
-  * Redistributions of source code must retain the above copyright notice, this list
+  * Redistributions of source code must retain the above copyright notice, this list 
     of conditions and the following disclaimer.
-
-  * Redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other
+    
+  * Redistributions in binary form must reproduce the above copyright notice, this 
+    list of conditions and the following disclaimer in the documentation and/or other 
     materials provided with the distribution.
 
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  
 */
 
 
@@ -44,9 +44,9 @@
 
 
 static const uint8_t u8x8_d_hx1230_96x68_init_seq[] = {
-
+    
   U8X8_START_TRANSFER(),             	/* enable chip, delay is part of the transfer start */
-
+  
   U8X8_C(0x0ae),		                /* display off */
   U8X8_C(0x020),		                /* power off */
   U8X8_C(0x080),				/* contrast setting, 0..31, set to 0 */
@@ -55,9 +55,9 @@ static const uint8_t u8x8_d_hx1230_96x68_init_seq[] = {
 
   U8X8_C(0x0a0),		                /* */
   U8X8_C(0x0c0),		                /* */
-
+  
   U8X8_C(0x040),		                /* start at scanline 0 */
-
+    
   U8X8_END_TRANSFER(),             	/* disable chip */
   U8X8_END()             			/* end of sequence */
 };
@@ -108,7 +108,7 @@ static uint8_t u8x8_d_hx1230_96x68_generic(u8x8_t *u8x8, uint8_t msg, uint8_t ar
     */
     case U8X8_MSG_DISPLAY_INIT:
       u8x8_d_helper_display_init(u8x8);
-      u8x8_cad_SendSequence(u8x8, u8x8_d_hx1230_96x68_init_seq);
+      u8x8_cad_SendSequence(u8x8, u8x8_d_hx1230_96x68_init_seq);    
       break;
     case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
       if ( arg_int == 0 )
@@ -137,14 +137,14 @@ static uint8_t u8x8_d_hx1230_96x68_generic(u8x8_t *u8x8, uint8_t msg, uint8_t ar
 #endif
     case U8X8_MSG_DISPLAY_DRAW_TILE:
       u8x8_cad_StartTransfer(u8x8);
-      x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+      x = ((u8x8_tile_t *)arg_ptr)->x_pos;    
       x *= 8;
       x += u8x8->x_offset;
-
+    
       u8x8_cad_SendCmd(u8x8, x&15);
       u8x8_cad_SendCmd(u8x8, 0x010 | (x>>4));
       u8x8_cad_SendCmd(u8x8, 0x0b0 | ((u8x8_tile_t *)arg_ptr)->y_pos);
-
+      
       do
       {
 	c = ((u8x8_tile_t *)arg_ptr)->cnt;
@@ -152,7 +152,7 @@ static uint8_t u8x8_d_hx1230_96x68_generic(u8x8_t *u8x8, uint8_t msg, uint8_t ar
 	u8x8_cad_SendData(u8x8, c*8, ptr); 	/* note: SendData can not handle more than 255 bytes */
 	arg_int--;
       } while( arg_int > 0 );
-
+      
       u8x8_cad_EndTransfer(u8x8);
       break;
     default:
@@ -165,18 +165,18 @@ static const u8x8_display_info_t u8x8_hx1230_96x68_display_info =
 {
   /* chip_enable_level = */ 0,
   /* chip_disable_level = */ 1,
-
+  
   /* post_chip_enable_wait_ns = */ 100,
   /* pre_chip_disable_wait_ns = */ 100,
-  /* reset_pulse_width_ms = */ 100,
-  /* post_reset_wait_ms = */ 100,
-  /* sda_setup_time_ns = */ 100,
-  /* sck_pulse_width_ns = */ 100,
+  /* reset_pulse_width_ms = */ 100, 
+  /* post_reset_wait_ms = */ 100, 
+  /* sda_setup_time_ns = */ 100,	
+  /* sck_pulse_width_ns = */ 100,	
   /* sck_clock_hz = */ 4000000UL,	/* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/sck_pulse_width_ns */
   /* spi_mode = */ 0,		/* active high, rising edge */
   /* i2c_bus_clock_100kHz = */ 4,
   /* data_setup_time_ns = */ 40,
-  /* write_pulse_width_ns = */ 150,
+  /* write_pulse_width_ns = */ 150,	
   /* tile_width = */ 12,
   /* tile_hight = */ 9,
   /* default_x_offset = */ 0,
@@ -194,3 +194,5 @@ uint8_t u8x8_d_hx1230_96x68(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *ar
     }
     return u8x8_d_hx1230_96x68_generic(u8x8, msg, arg_int, arg_ptr);
 }
+
+

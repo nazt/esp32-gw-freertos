@@ -3,28 +3,28 @@
   Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
   Copyright (c) 2018, olikraus@gmail.com
   All rights reserved.
-  Redistribution and use in source and binary forms, with or without modification,
+  Redistribution and use in source and binary forms, with or without modification, 
   are permitted provided that the following conditions are met:
-  * Redistributions of source code must retain the above copyright notice, this list
+  * Redistributions of source code must retain the above copyright notice, this list 
     of conditions and the following disclaimer.
-
-  * Redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other
+    
+  * Redistributions in binary form must reproduce the above copyright notice, this 
+    list of conditions and the following disclaimer in the documentation and/or other 
     materials provided with the distribution.
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  
 */
 
 #include "u8g2.h"
@@ -53,8 +53,8 @@ static const uint8_t u8x8_d_st7586s_erc240160_flip0_seq[] = {
   U8X8_A(0x000),
   U8X8_C(0x02A), /* Column Address Setting */
   U8X8_A(0x000),  /* COL8 -> COL127 */
-  U8X8_A(0x008),
-  U8X8_A(0x000),
+  U8X8_A(0x008),  
+  U8X8_A(0x000), 
   U8X8_A(0x07F),  /* 120*3=240 pixels + 120 unused */
   U8X8_END_TRANSFER(),  /* disable chip */
   U8X8_END()           	/* end of sequence */
@@ -109,16 +109,16 @@ static const uint8_t u8x8_d_st7586s_erc240160_init_seq[] = {
   U8X8_A(0x0C8), // COM:C159->C0   SEG: SEG383->SEG0
 
   U8X8_C(0x0B1), // First output COM
-  U8X8_A(0x000), //
-
+  U8X8_A(0x000), // 
+  
   U8X8_C(0x0B0), // Duty Setting (num rows - 1)
-  U8X8_A(0x09F),
+  U8X8_A(0x09F), 
 
   U8X8_C(0x020), // Display inversion off
 
   U8X8_C(0x02A), // Column Address Setting
   U8X8_A(0x000), // COL0 -> COL127
-  U8X8_A(0x008), //
+  U8X8_A(0x008), // 
   U8X8_A(0x000), //
   U8X8_A(0x07F), // 80*3=240 pixels
 
@@ -161,7 +161,7 @@ static const u8x8_display_info_t u8x8_st7586s_erc240160_display_info =
  * st7586s_erc240160 driver. ST7586 based display from buydisplay.com
  ******************************************************************************/
 uint8_t u8x8_d_st7586s_erc240160(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) {
-
+  
   uint8_t c;
   uint8_t *ptr;
   uint8_t i, byte;
@@ -181,36 +181,36 @@ uint8_t u8x8_d_st7586s_erc240160(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, voi
     ptr = ((u8x8_tile_t *) arg_ptr)->tile_ptr;  //
 
 // The ST7586S has an unusual 3 pixels per byte format the ERC240160 is even more annoying
-// as it has every 3rd COM line disconnected for extra oddness so here we read in a byte
+// as it has every 3rd COM line disconnected for extra oddness so here we read in a byte 
 // (8 pixels) and pack that into 4 bytes of 2 pixels + 1 unused each. This has to be done
 // in a different order for flipped, normal UUx11x22 flipped 11x22xUU
 	while (c > 0) {
       input = ((uint8_t)ptr[0]);
-
+      
       for (i=0; i<4; i++)
       {
         byte = 0;
         if (u8x8->x_offset ==0){
           if (input & 0x80)          // if bit 7
-            byte = byte | 0b00011000;  //set pixel 1
+            byte = byte | 0x18;  //set pixel 1
           if (input & 0x40)          // if bit 6
-            byte = byte | 0b00000011;  //set pixel 2
+            byte = byte | 0x3;  //set pixel 2
         }
         if (u8x8->x_offset ==1){
           if (input & 0x80)          // if bit 7
-            byte = byte | 0b11000000;  //set pixel 1
+            byte = byte | 0xC0;  //set pixel 1
           if (input & 0x40)          // if bit 6
-            byte = byte | 0b00011000;  //set pixel 2
+            byte = byte | 0x18;  //set pixel 2
         }
         output[i] = byte;
         input <<= 2;
       }
-
+      
       u8x8_cad_SendData(u8x8, 4, output);
       ptr += 1;
       c -= 1;
     }
-    u8x8_cad_EndTransfer(u8x8);
+    u8x8_cad_EndTransfer(u8x8); 
     break;
   case U8X8_MSG_DISPLAY_INIT:
     u8x8_d_helper_display_init(u8x8);
@@ -220,7 +220,7 @@ uint8_t u8x8_d_st7586s_erc240160(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, voi
     u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7586s_erc240160_display_info);
     break;
   case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
-	if ( arg_int == 0 )
+  	if ( arg_int == 0 )
     {
        u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_erc240160_flip0_seq);
        u8x8->x_offset = u8x8->display_info->default_x_offset;
@@ -229,7 +229,7 @@ uint8_t u8x8_d_st7586s_erc240160(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, voi
     {
       u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_erc240160_flip1_seq);
       u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
-    }
+    }	
     break;
   case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
     if (arg_int == 0)

@@ -1,6 +1,5 @@
 #ifndef CMMC_LEGEND_H
 #define CMMC_LEGEND_H
-#define CMMC_USE_ALIAS
 
 #include <Arduino.h>
 #include "version.h"
@@ -30,8 +29,6 @@ enum MODE {CONFIG, RUN};
 
 typedef struct
 {
-    HardwareSerial *serial;
-    uint32_t baudrate;
     uint8_t BLINKER_PIN;
     uint8_t BUTTON_MODE_PIN;
     uint8_t SWITCH_PIN_MODE;

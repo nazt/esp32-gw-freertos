@@ -1,35 +1,35 @@
 /*
 
   u8x8_d_ls013b7dh03.c
-
+  
   Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
 
   Copyright (c) 2016, olikraus@gmail.com
   All rights reserved.
 
-  Redistribution and use in source and binary forms, with or without modification,
+  Redistribution and use in source and binary forms, with or without modification, 
   are permitted provided that the following conditions are met:
 
-  * Redistributions of source code must retain the above copyright notice, this list
+  * Redistributions of source code must retain the above copyright notice, this list 
     of conditions and the following disclaimer.
-
-  * Redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other
+    
+  * Redistributions in binary form must reproduce the above copyright notice, this 
+    list of conditions and the following disclaimer in the documentation and/or other 
     materials provided with the distribution.
 
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 
 
   The LS013B7DH02 is a simple display and controller
@@ -52,7 +52,7 @@ static const u8x8_display_info_t u8x8_ls013b7dh03_128x128_display_info =
   /* pre_chip_disable_wait_ns = */ 50,
   /* reset_pulse_width_ms = */ 1,
   /* post_reset_wait_ms = */ 6,
-  /* sda_setup_time_ns = */ 227,	/* 227 nsec according to the datasheet */
+  /* sda_setup_time_ns = */ 227,	/* 227 nsec according to the datasheet */		
   /* sck_pulse_width_ns = */  255,	/* 450 nsec according to the datasheet */
   /* sck_clock_hz = */ 1000000UL,	/* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/sck_pulse_width_ns */
   /* spi_mode = */ 2,		/* active low, rising edge */
@@ -130,7 +130,7 @@ static const u8x8_display_info_t u8x8_ls027b7dh01_400x240_display_info =
   /* pre_chip_disable_wait_ns = */ 50,
   /* reset_pulse_width_ms = */ 1,
   /* post_reset_wait_ms = */ 6,
-  /* sda_setup_time_ns = */ 227,	/* 227 nsec according to the datasheet */
+  /* sda_setup_time_ns = */ 227,	/* 227 nsec according to the datasheet */		
   /* sck_pulse_width_ns = */  255,	/* 450 nsec according to the datasheet */
   /* sck_clock_hz = */ 1000000UL,	/* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/sck_pulse_width_ns */
   /* spi_mode = */ 2,		/* active low, rising edge */
@@ -154,7 +154,7 @@ uint8_t u8x8_d_ls027b7dh01_400x240(u8x8_t *u8x8, uint8_t msg, U8X8_UNUSED uint8_
       break;
     default:
       return u8x8_d_ls013b7dh03_128x128(u8x8, msg, arg_int, arg_ptr);
-  }
+  }    
   return 1;
 }
 
@@ -166,7 +166,7 @@ static const u8x8_display_info_t u8x8_ls013b7dh05_144x168_display_info =
   /* pre_chip_disable_wait_ns = */ 50,
   /* reset_pulse_width_ms = */ 1,
   /* post_reset_wait_ms = */ 6,
-  /* sda_setup_time_ns = */ 227,	/* 227 nsec according to the datasheet */
+  /* sda_setup_time_ns = */ 227,	/* 227 nsec according to the datasheet */		
   /* sck_pulse_width_ns = */  255,	/* 450 nsec according to the datasheet */
   /* sck_clock_hz = */ 1000000UL,	/* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/sck_pulse_width_ns */
   /* spi_mode = */ 2,		/* active low, rising edge */
@@ -190,6 +190,8 @@ uint8_t u8x8_d_ls013b7dh05_144x168(u8x8_t *u8x8, uint8_t msg, U8X8_UNUSED uint8_
       break;
     default:
       return u8x8_d_ls013b7dh03_128x128(u8x8, msg, arg_int, arg_ptr);
-  }
+  }    
   return 1;
 }
+
+

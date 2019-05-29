@@ -212,3 +212,4 @@ uint8_t u8x8_d_ssd1306_48x64_winstar(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int,
   }
   return u8x8_d_ssd1306_48x64_generic(u8x8, msg, arg_int, arg_ptr);
 }
+

@@ -38,8 +38,6 @@ void setup()
   taskMessage = taskMessage + xPortGetCoreID();
   // Serial.println(taskMessage);
   static os_config_t config = {
-    .serial = &mySerial,
-    .baudrate = 115200,
     .BLINKER_PIN = 21,
     .BUTTON_MODE_PIN = 0,
     .SWITCH_PIN_MODE = INPUT_PULLUP,
@@ -48,7 +46,7 @@ void setup()
     .hook_init_ap = hook_init_ap
   };
 
-  os->addModule(new ConfigModule());
+  // os->addModule(new ConfigModule());
   os->setup(&config);
 
   tasks_init();
@@ -61,8 +59,9 @@ void setup()
   // modules[1] = new CMMC_GPS(&Serial1);
   lcd = new CMMC_LCD();
   lcd->setup();
-
 }
+
+// extern struct shared_pool pool;
 
 uint32_t prev = 0;
 void loop()
@@ -70,10 +69,13 @@ void loop()
   os->run();
   String taskMessage = "[main] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
-  lcd->loop();
+  lcd->pm2_5 = pool.pm2_5;
+  lcd->pm10 = pool.pm10;
   // Serial.println(taskMessage);
-  if ( (millis() - prev) > 1*1000L) {
-    // mySerial.println(taskMessage);
+  if ( (millis() - prev) > 1*10L) {
+    mySerial.println(taskMessage);
+    // lcd->pm10 = millis()/1000;
     prev = millis();
+    lcd->loop();
   }
 }

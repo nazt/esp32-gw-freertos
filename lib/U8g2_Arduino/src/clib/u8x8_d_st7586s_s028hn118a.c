@@ -3,28 +3,28 @@
   Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
   Copyright (c) 2018, olikraus@gmail.com
   All rights reserved.
-  Redistribution and use in source and binary forms, with or without modification,
+  Redistribution and use in source and binary forms, with or without modification, 
   are permitted provided that the following conditions are met:
-  * Redistributions of source code must retain the above copyright notice, this list
+  * Redistributions of source code must retain the above copyright notice, this list 
     of conditions and the following disclaimer.
-
-  * Redistributions in binary form must reproduce the above copyright notice, this
-    list of conditions and the following disclaimer in the documentation and/or other
+    
+  * Redistributions in binary form must reproduce the above copyright notice, this 
+    list of conditions and the following disclaimer in the documentation and/or other 
     materials provided with the distribution.
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  
 */
 
 #include "u8g2.h"
@@ -85,19 +85,19 @@ static uint8_t u8x8_d_st7586s_common(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int,
     ptr = ((u8x8_tile_t *) arg_ptr)->tile_ptr;  //
 
 // The ST7586S has an unusual 3 pixels per byte format so here we read in 3 bytes (24 pixels) and
-// pack that into 8 bytes of 3 pixels each
+// pack that into 8 bytes of 3 pixels each 	
 	while (c > 0) {
       input = (((uint32_t)ptr[0] << 16) | ((uint32_t)ptr[1] << 8) | (uint32_t)ptr[2]);
       for (i=0; i<8; i++)
       {
         byte = 0;
         if (input & 0x800000)          // if bit 23
-            byte = byte | 0b11000000;  //set pixel 1
+            byte = byte | 0xC0;  //set pixel 1
         if (input & 0x400000)          // if bit 22
-            byte = byte | 0b00011000;  //set pixel 2
-        if (input & 0x200000)          // if bit 22
-            byte = byte | 0b00000011;  //set pixel 3
-        output[i] = byte;
+            byte = byte | 0x18;  //set pixel 2
+		if (input & 0x200000)          // if bit 22
+			byte = byte | 0x3;  //set pixel 3
+		output[i] = byte;
         input <<= 3;
       }
       u8x8_cad_SendData(u8x8, 8, output);
@@ -167,7 +167,7 @@ static const uint8_t u8x8_d_st7586s_s028hn118a_init_seq[] = {
 
   U8X8_C(0x02A), // Column Address Setting
   U8X8_A(0x000), // COL0 -> COL127
-  U8X8_A(0x000), //
+  U8X8_A(0x000), // 
   U8X8_A(0x000), //
   U8X8_A(0x07f), // 128*3=384 pixels
 
@@ -182,7 +182,7 @@ static const uint8_t u8x8_d_st7586s_s028hn118a_init_seq[] = {
   U8X8_A(0x00C), // This caused a shimmer under 50Hz LED lights
   U8X8_A(0x00C), // 69.0 Hz (0x0C) fixes this and should avoid the
   U8X8_A(0x00C), // issue in the US too
-
+  
   U8X8_C(0x029), // Display ON
   U8X8_END()  /* end of sequence */
 };
@@ -218,7 +218,7 @@ static const u8x8_display_info_t u8x8_st7586s_s028hn118a_display_info =
 uint8_t u8x8_d_st7586s_s028hn118a(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) {
   if (u8x8_d_st7586s_common(u8x8, msg, arg_int, arg_ptr) != 0)
     return 1;
-
+  
   switch (msg) {
   case U8X8_MSG_DISPLAY_INIT:
     u8x8_d_helper_display_init(u8x8);
@@ -228,7 +228,7 @@ uint8_t u8x8_d_st7586s_s028hn118a(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, vo
     u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7586s_s028hn118a_display_info);
     break;
   case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
-	if ( arg_int == 0 )
+  	if ( arg_int == 0 )
     {
        u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_s028hn118a_flip0_seq);
        u8x8->x_offset = u8x8->display_info->default_x_offset;
@@ -237,7 +237,7 @@ uint8_t u8x8_d_st7586s_s028hn118a(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, vo
     {
       u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_s028hn118a_flip1_seq);
       u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
-    }
+    }	
     break;
   default:
     return 0;

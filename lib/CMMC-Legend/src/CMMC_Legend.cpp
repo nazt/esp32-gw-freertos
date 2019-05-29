@@ -18,6 +18,8 @@ void CMMC_Legend::run() {
     _modules[i]->loop();
   }
   isLongPressed();
+  yield();
+  // vTaskDelay(10)
 }
 
 bool CMMC_Legend::enable_run_mode(bool status) {
@@ -54,7 +56,7 @@ void CMMC_Legend::isLongPressed() {
 
 void CMMC_Legend::setup(os_config_t *config) {
     // this->_serial_legend->begin(config->baudrate);
-    this->_serial_legend = config->serial;
+    // this->_serial_legend = config->serial;
     this->BLINKER_PIN = config->BLINKER_PIN;
     this->button_gpio = config->BUTTON_MODE_PIN;
     this->SWITCH_PRESSED_LOGIC = config->SWITCH_PRESSED_LOGIC;
