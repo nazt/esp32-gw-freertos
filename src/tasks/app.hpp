@@ -1,6 +1,7 @@
 #include "tasks/dust/CMMC_DustSensor.h"
 #include "tasks/gps/CMMC_GPS.h"
 #include "tasks/rtc/CMMC_RTC.h"
+#include "tasks/lcd/CMMC_LCD.h"
 #include <TinyGPS++.h>
 
 static const int RX_BUF_SIZE = 1024;
@@ -12,17 +13,17 @@ struct shared_pool {
   String locationString;
   void printDt() {
     Serial.print("")  ;
-    Serial.print(dt.year(), DEC);
+    Serial.printf("%2d", dt.year());
+    Serial.printf("%2d", dt.month());
     Serial.print('/');
-    Serial.print(dt.month(), DEC);
-    Serial.print('/');
-    Serial.print(dt.day(), DEC);
+    Serial.printf("%2d", dt.day());
     Serial.print(' ');
-    Serial.print(dt.hour(), DEC);
+    Serial.printf("%2d", dt.hour());
     Serial.print(':');
-    Serial.print(dt.minute(), DEC);
+    Serial.printf("%2d", dt.minute());
     Serial.print(':');
-    Serial.print(dt.second(), DEC);
+    Serial.printf("%2d", dt.second());
+    Serial.println();
   }
 };
 
@@ -42,13 +43,11 @@ void showDate(const char* txt, const DateTime& dt) {
     Serial.print(dt.minute(), DEC);
     Serial.print(':');
     Serial.print(dt.second(), DEC);
-
     // Serial.print(" = ");
     // Serial.print(dt.unixtime());
     // Serial.print("s / ");
     // Serial.print(dt.unixtime() / 86400L);
     // Serial.print("d since 1970");
-
     Serial.println();
 }
 
@@ -66,7 +65,7 @@ static void task_serial1(void *parameter) {
       pool.pm10 = dustSensor->getPMValue(DustPM10);
       pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
       pool.dt = rtc->getDateTime();
-      pool.location = gps->getLocation();
+      // pool.location = gps->getLocation();
       // showDate("[RTC]:", pool.location);
       // showDate("[GPS]:", pool.location);
       pool.locationString = gps->getLocationString();
@@ -81,10 +80,21 @@ static void task_serial1(void *parameter) {
       Serial.printf("pool.dt = ");
       pool.printDt();
     }
+}
 
+static void lcd_task(void *parameter) {
+  // os.addModule(new CMMC_LCD());
+  static CMMC_LCD *lcd = new CMMC_LCD();
+  lcd->setup();
+  // lcd->hello();
+  while(1) {
+    lcd->loop();
+  }
 }
 
 void tasks_init() {
   int priority = 1;
-  xTaskCreate(task_serial1, "task_serial1", 4096, NULL, priority, NULL);
+  // xTaskCreate(task_serial1, "task_serial1", 4096, NULL, priority, NULL);
+  // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 4096, NULL, priority, NULL, 1);
+  // xTaskCreatePinnedToCore(lcd_task, "lcd_task", 4096, NULL, 2, NULL, 1);
 }

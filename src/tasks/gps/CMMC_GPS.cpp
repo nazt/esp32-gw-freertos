@@ -25,6 +25,9 @@ void CMMC_GPS::configSetup() {
 void CMMC_GPS::setup() {
   strcpy(latlngC, "00.0000,00.0000");
   strcpy(_bufferLatLng, "00.0000,00.0000");
+  String taskMessage = "[CMMC_GPS] Task running on core ";
+  taskMessage = taskMessage + xPortGetCoreID();
+  Serial.println(taskMessage);
 }
 
 void CMMC_GPS::loop() {

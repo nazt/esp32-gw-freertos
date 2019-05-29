@@ -4,12 +4,12 @@
 #include <rom/rtc.h>
 
 #include "modules/ConfigModule.h"
-#include "modules/CMMC_LCD.h"
+// #include "modules/CMMC_LCD.h"
 #include <HardwareSerial.h>
 // #include <CMMC_DustSensor.h>
 // #include <CMMC_RTC.h>
 
-CMMC_Legend os;
+static CMMC_Legend os;
 
 
 void hook_init_ap(char* name, IPAddress ip) {
@@ -19,15 +19,6 @@ void hook_init_ap(char* name, IPAddress ip) {
   Serial.println("/----------- hook_init_ap -----------");
 }
 
-os_config_t config = {
-  .baudrate = 115200,
-  .BLINKER_PIN = 21,
-  .BUTTON_MODE_PIN = 0,
-  .SWITCH_PIN_MODE = INPUT_PULLUP,
-  .SWITCH_PRESSED_LOGIC = LOW,
-  .delay_after_init_ms = 200,
-  .hook_init_ap = hook_init_ap
-};
 
 #include "tasks/app.hpp"
 
@@ -35,22 +26,44 @@ void setup()
 {
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);
-  delay(100);
+  Serial.begin(115200);
+  // delay(200);
 
-  os.addModule(new CMMC_LCD());
+  String taskMessage = "[main] Task running on core ";
+  taskMessage = taskMessage + xPortGetCoreID();
+  // Serial.println(taskMessage);
+  static os_config_t config = {
+    .serial = &Serial,
+    .baudrate = 115200,
+    .BLINKER_PIN = 21,
+    .BUTTON_MODE_PIN = 0,
+    .SWITCH_PIN_MODE = INPUT_PULLUP,
+    .SWITCH_PRESSED_LOGIC = LOW,
+    .delay_after_init_ms = 200,
+    .hook_init_ap = hook_init_ap
+  };
+
   os.addModule(new ConfigModule());
   os.setup(&config);
+  //
   Serial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
 
-
-  tasks_init();
+  // tasks_init();
   // dustSensor = new CMMC_DustSensor(&Serial1);
   // modules[0] = dustSensor;
   // modules[1] = new CMMC_GPS(&Serial1);
 }
 
+uint32_t prev = 0;
 void loop()
 {
-  os.run();
+  // os.run();
+  String taskMessage = "[main] Task running on core ";
+  taskMessage = taskMessage + xPortGetCoreID();
+  // Serial.println(taskMessage);
+  if ( (millis() - prev) > 1*1000L) {
+    Serial.println(taskMessage);
+    prev = millis();
+  }
 }

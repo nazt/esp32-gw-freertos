@@ -28,6 +28,10 @@ void CMMC_DustSensor::setup() {
       // float pm10_array[MAX_ARRAY] = { 0.0 };
     Serial.println("initialize DustSensor");
     Serial.println("CLEARING ARRAY FOR CMMC_DUST");
+    String taskMessage = "[CMMC_DustSensor ] Task running on core ";
+    taskMessage = taskMessage + xPortGetCoreID();
+    Serial.println(taskMessage);
+
     for (size_t i = 0; i < MAX_ARRAY; i++) {
       pm25_array[i] = 0.0;
       pm10_array[i] = 0.0;
@@ -65,14 +69,14 @@ void CMMC_DustSensor::loop() {
 
   while(this->_serial->peek() != 0x42) {
     this->_serial->read();
-    if (millis() - ms > 2000) {
+    if (millis() - ms > 3000) {
       Serial.println("WAITING.. DUST SENSOR TIMEOUT...");
       break;
     }
   }
   vTaskDelay(200 / portTICK_PERIOD_MS);
-  Serial.println();
-  Serial.println("Reading Dust Sensor..");
+  // Serial.println();
+  // Serial.println("Reading Dust Sensor..");
   this->readDustSensor();
 }
 
@@ -115,14 +119,14 @@ void CMMC_DustSensor::readDustSensor() {
     // Serial.println();
     // Serial.println("---------------------------------------");
     // Serial.println("Concentration Units (standard)");
-    Serial.print("PM 1.0: "); Serial.print(data.pm10_standard);
-    Serial.print("\t\tPM 2.5: "); Serial.print(data.pm25_standard);
-    Serial.print("\t\tPM 10: "); Serial.println(data.pm100_standard);
-    Serial.printf("PM 1.0 = %u<\t\tPM 2.5 = %u<\t\tPM 10=%u<\r\n", data.pm10_standard,
-      data.pm25_standard, data.pm100_standard);
+    // Serial.print("PM 1.0: "); Serial.print(data.pm10_standard);
+    // Serial.print("\t\tPM 2.5: "); Serial.print(data.pm25_standard);
+    // Serial.print("\t\tPM 10: "); Serial.println(data.pm100_standard);
+    // Serial.printf("PM 1.0 = %u<\t\tPM 2.5 = %u<\t\tPM 10=%u<\r\n", data.pm10_standard,
+      // data.pm25_standard, data.pm100_standard);
     dustIdx = dust_counter % MAX_ARRAY;
     pm25_array[dustIdx] = data.pm25_standard;
-    pm10_array[dustIdx] = data.pm100_env;
+    pm10_array[dustIdx] = data.pm100_standard;
     _calculateDustAverage();
     dust_counter++;
     // Serial.println("---------------------------------------");

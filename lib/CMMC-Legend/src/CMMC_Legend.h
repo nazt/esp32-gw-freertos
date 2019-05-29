@@ -7,7 +7,7 @@
 #include <WiFi.h>
 #include <ESPmDNS.h>
 #include <ArduinoOTA.h>
-
+#include <HardwareSerial.h>
 #include <WiFiClient.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
@@ -31,6 +31,7 @@ enum MODE {CONFIG, RUN};
 
 typedef struct
 {
+    HardwareSerial *serial;
     uint32_t baudrate;
     uint8_t BLINKER_PIN;
     uint8_t BUTTON_MODE_PIN;
@@ -72,6 +73,8 @@ class CMMC_Legend: public CMMC_System {
     uint8_t SWITCH_PIN_MODE;
     std::function<void(char*, IPAddress&)> _hook_init_ap;
     std::function<void(void)> _hook_long_pressed;
+    HardwareSerial *_serial = NULL;
+
 };
 
 #endif

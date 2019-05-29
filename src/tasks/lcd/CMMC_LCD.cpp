@@ -22,7 +22,11 @@ int count = 0;
 CMMC_LCD::CMMC_LCD() {
   u8g2 = new U8G2_ST7920_128X64_F_SW_SPI(U8G2_R0, /* clock=*/ 18, /* MOSI=*/ 23, /* MISO=*/ 19);
   u8g2->begin();
+  String taskMessage = "[CMMC_LCD] Task running on core ";
+  taskMessage = taskMessage + xPortGetCoreID();
+
   hello();
+  // page++;
   pinMode(0, INPUT_PULLUP);
 }
 
@@ -49,9 +53,8 @@ void CMMC_LCD::loop() {
   int state = digitalRead(0);
   if (state == LOW) {
     page = ++page % (MAX_PAGE);
-    delay(100);
   }
-  // paintScreen();
+  paintScreen();
 }
 
 const char* CMMC_LCD::formatedNumber(char* buffer, int n) {
@@ -66,7 +69,7 @@ void CMMC_LCD::hello() {
   // u8g2->drawStr(0, 20, "It's a test.");
   // u8g2->sendBuffer();       latC   // transfer internal memory to the display
   this->displayLogo();
-  delay(1000);
+  // vTaskDelay(200 / portTICK_PERIOD_MS);
 }
 
 void CMMC_LCD::paintScreen() {

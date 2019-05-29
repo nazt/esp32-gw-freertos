@@ -1,5 +1,5 @@
 #include "CMMC_Legend.h"
-
+HardwareSerial *_nat = NULL;
 void CMMC_Legend::addModule(CMMC_Module* module) {
   _modules.push_back(module);
   Serial.printf("addModule.. size = %d\r\n", _modules.size());
@@ -7,13 +7,13 @@ void CMMC_Legend::addModule(CMMC_Module* module) {
 
 // being called by os
 void CMMC_Legend::run() {
-  static CMMC_Legend *that = this;
+  // static CMMC_Legend *that;
+  // that = this;
   int size = _modules.size();
   for (int i = 0 ; i < size; i++) {
     _modules[i]->loop();
   }
   isLongPressed();
-  yield();
 }
 
 bool CMMC_Legend::enable_run_mode(bool status) {
@@ -68,22 +68,24 @@ void CMMC_Legend::setup(os_config_t *config) {
     init_user_config();
     init_user_sensor();
     init_network();
-
-    Serial.println("--------- setup -----------");
+    Serial.println("HELLO");
+    Serial.printf("sw addr %lu\r\n", _nat);
+    _nat = &Serial;
+    _nat->println("--------- setup -----------");
     for (int i = 0 ; i < _modules.size(); i++) {
-      Serial.printf("calling %s.setup()\r\n", _modules[i]->name());
+      _nat->printf("calling %s.setup()\r\n", _modules[i]->name());
       _modules[i]->setup();
     }
-    Serial.println("---------------------------");
+    _nat->println("---------------------------");
 }
 
 void CMMC_Legend::init_gpio() {
-  Serial.println("OS::Init GPIO..");
+  // _nat->println("OS::Init GPIO..");
   delay(10);
 }
 
 void CMMC_Legend::init_fs() {
-  Serial.println("OS::Init FS..");
+  // _nat->println("OS::Init FS..");
   SPIFFS.begin();
   // Dir dir = SPIFFS.openDir("/");
   // isLongPressed();
@@ -170,7 +172,6 @@ void CMMC_Legend::init_network() {
 
     File f = SPIFFS.open("/enabled", "a+");
     blinker->blink(50);
-    delay(200);;
     ESP.restart();
   }
   else if (mode == RUN) {
@@ -191,9 +192,9 @@ xCMMC_LED *CMMC_Legend::getBlinker() {
 void CMMC_Legend::_init_ap() {
   WiFi.disconnect();
   WiFi.softAPdisconnect();
-  delay(100);
+  delay(10);
   WiFi.mode(WIFI_AP_STA);
-  delay(100);
+  delay(10);
   IPAddress Ip(192, 168, 4, 1);
   IPAddress NMask(255, 255, 255, 0);
   WiFi.softAPConfig(Ip, Ip, NMask);
