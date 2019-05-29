@@ -19,11 +19,11 @@ void showDate(const char* txt, const DateTime& dt) {
     Serial.print(':');
     Serial.print(dt.second(), DEC);
 
-    Serial.print(" = ");
-    Serial.print(dt.unixtime());
-    Serial.print("s / ");
-    Serial.print(dt.unixtime() / 86400L);
-    Serial.print("d since 1970");
+    // Serial.print(" = ");
+    // Serial.print(dt.unixtime());
+    // Serial.print("s / ");
+    // Serial.print(dt.unixtime() / 86400L);
+    // Serial.print("d since 1970");
 
     Serial.println();
 }

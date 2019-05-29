@@ -34,7 +34,7 @@ void CMMC_GPS::loop() {
   delay(20);
   while(!this->serial->available()) {
     delay(1);
-    if (millis() - ms > 5000) {
+    if (millis() - ms > 2000) {
       Serial.println("GPS_SERIAL timeout!!!");
       break;
     }

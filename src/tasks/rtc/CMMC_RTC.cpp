@@ -76,27 +76,28 @@ void CMMC_RTC::loop() {
       // Serial.println(dateTimeCharArrray);
       // this->serial
       // Serial.println(dateTimeCharArrray);
-      Serial.print(now.year(), DEC);
-      Serial.print('/');
-      Serial.print(now.month(), DEC);
-      Serial.print('/');
-      Serial.print(now.day(), DEC);
-      Serial.print(" (");
-      Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
-      Serial.print(") ");
-      Serial.print(now.hour(), DEC);
-      Serial.print(':');
-      Serial.print(now.minute(), DEC);
-      Serial.print(':');
-      Serial.print(now.second(), DEC);
-      Serial.println();
-      prev = millis();
+      // Serial.print(now.year(), DEC);
+      // Serial.print('/');
+      // Serial.print(now.month(), DEC);
+      // Serial.print('/');
+      // Serial.print(now.day(), DEC);
+      // Serial.print(" - ");
+      // Serial.print(" (");
+      // Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
+      // Serial.print(") ");
+      // Serial.print(now.hour(), DEC);
+      // Serial.print(':');
+      // Serial.print(now.minute(), DEC);
+      // Serial.print(':');
+      // Serial.print(now.second(), DEC);
+      // Serial.println();
+      // prev = millis();
       // Serial.println(dateTimeCharArrray);
 }
 
 void CMMC_RTC::adjust(const DateTime& dt) {
-  Serial.print("ADJUST RTC.. with ");
-  Serial.println(print_time(dt));
+  // Serial.print("ADJUST RTC.. with ");
+  // Serial.println(print_time(dt));
   _rtc_locked = true;
   rtc->adjust(dt);
   loop();

@@ -44,11 +44,9 @@ void CMMC_DustSensor::_calculateDustAverage() {
     dust_average25 = median(pm25_array, MAX_ARRAY);
     dust_average10 = median(pm10_array, MAX_ARRAY);
   }
-  Serial.println("=== DUST AVERAGE === ");
-  Serial.print(dust_average25);
-  Serial.print(",");
-  Serial.println(dust_average10);
-  Serial.println("/=== DUST ===");
+  Serial.printf(">> [avg] %f, %f\r\n", dust_average10, dust_average25);
+  // Serial.print(dust_average25);
+  // Serial.println(dust_average10);
 }
 struct pms5003data {
   uint16_t framelen;
@@ -64,26 +62,25 @@ struct pms5003data data;
 void CMMC_DustSensor::loop() {
   this->_serial->begin(9600, SERIAL_8N1, 32 /*rx*/, 33 /* tx */);
   uint32_t ms = millis();
-  while(!this->_serial->available()) {
+
+  while(this->_serial->peek() != 0x42) {
+    this->_serial->read();
     if (millis() - ms > 2000) {
       Serial.println("WAITING.. DUST SENSOR TIMEOUT...");
       break;
     }
-    delay(1);
   }
+
+  Serial.println("Reading Dust Sensor..");
   this->readDustSensor();
-  delay(200);
 }
 
 void CMMC_DustSensor::readDustSensor() {
   // Read a byte at a time until we get to the special '0x42' start-byte
-  if (this->_serial->peek() != 0x42) {
-    this->_serial->read();
-    return false;
-  }
 
   // Now read all 32 bytes
   if (this->_serial->available() < 32) {
+    Serial.println(".......");
     return false;
   }
 
@@ -114,14 +111,19 @@ void CMMC_DustSensor::readDustSensor() {
     Serial.println("Checksum failure");
   }
   else {
-    Serial.println();
-    Serial.println("---------------------------------------");
-    Serial.println("Concentration Units (standard)");
+    // Serial.println();
+    // Serial.println("---------------------------------------");
+    // Serial.println("Concentration Units (standard)");
     Serial.print("PM 1.0: "); Serial.print(data.pm10_standard);
     Serial.print("\t\tPM 2.5: "); Serial.print(data.pm25_standard);
     Serial.print("\t\tPM 10: "); Serial.println(data.pm100_standard);
     Serial.printf("PM 1.0 = %u<\t\tPM 2.5 = %u<\t\tPM 10=%u<\r\n", data.pm10_standard,
       data.pm25_standard, data.pm100_standard);
+    dustIdx = dust_counter % MAX_ARRAY;
+    pm25_array[dustIdx] = data.pm25_standard;
+    pm10_array[dustIdx] = data.pm100_env;
+    _calculateDustAverage();
+    dust_counter++;
     // Serial.println("---------------------------------------");
     // Serial.println("Concentration Units (environmental)");
     // Serial.print("PM 1.0: "); Serial.print(data.pm10_env);
