@@ -10,6 +10,8 @@
 // extern CMMC_RTC *rtc;
 // extern CMMC_DustSensor *dustSensor;
 
+extern struct shared_pool pool;
+
 String pm10Value = "999.88";
 String pm2_5Value = "45.49";
 
@@ -24,8 +26,7 @@ CMMC_LCD::CMMC_LCD() {
   u8g2->begin();
   String taskMessage = "[CMMC_LCD] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
-
-  hello();
+  // hello();
   // page++;
   pinMode(0, INPUT_PULLUP);
 }
@@ -91,7 +92,7 @@ void CMMC_LCD::paintScreen() {
         u8g2->setFont(u8g2_font_p01type_tn);
         u8g2->setCursor(4, 6);
         // uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
-        // u8g2->print(String(lastSentInSeconds));
+        u8g2->print(String(millis()/1000));
 
         u8g2->setFont(u8g2_font_siji_t_6x10);
         u8g2->setCursor(logoMargin+6, 16+1);
@@ -112,9 +113,9 @@ void CMMC_LCD::paintScreen() {
         u8g2->print("PM2.5");
 
         u8g2->setCursor(marginLeft+35, 50);
-        // u8g2->print(String(dustSensor->getPMValue(DustPM10)));
+        u8g2->print(String(pm10));
         u8g2->setCursor(marginLeft+35, 62);
-        // u8g2->print(String(dustSensor->getPMValue(DustPM2_5)));
+        u8g2->print(String(pm2_5));
 
         u8g2->setCursor(marginLeft+75, 50);
         u8g2->print("ug/m3");
@@ -176,7 +177,6 @@ void CMMC_LCD::paintScreen() {
       }
       else if (page == 2) {
       }
-        // sensorModule->_pin0StateDirty = false;
     } while (u8g2->nextPage());
 }
 void CMMC_LCD::displayLogo() {

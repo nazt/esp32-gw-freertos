@@ -1,5 +1,6 @@
 #include "CMMC_DustSensor.h"
 #include "utils.hpp"
+// extern HardwareSerial mySerial;
 CMMC_DustSensor::CMMC_DustSensor(HardwareSerial* s)   {
   this->_serial = s;
 }
@@ -26,11 +27,11 @@ float CMMC_DustSensor::getPMValue(dustType_t type) {
 void CMMC_DustSensor::setup() {
       // float pm25_array[MAX_ARRAY] = { 0.0 };
       // float pm10_array[MAX_ARRAY] = { 0.0 };
-    Serial.println("initialize DustSensor");
-    Serial.println("CLEARING ARRAY FOR CMMC_DUST");
+    // mySerial.println("initialize DustSensor");
+    // mySerial.println("CLEARING ARRAY FOR CMMC_DUST");
     String taskMessage = "[CMMC_DustSensor ] Task running on core ";
     taskMessage = taskMessage + xPortGetCoreID();
-    Serial.println(taskMessage);
+    // mySerial.println(taskMessage);
 
     for (size_t i = 0; i < MAX_ARRAY; i++) {
       pm25_array[i] = 0.0;
@@ -39,7 +40,7 @@ void CMMC_DustSensor::setup() {
 }
 
 void CMMC_DustSensor::_calculateDustAverage() {
-  // Serial.printf("pm10=%f\r\n", pm10);
+  // mySerial.printf("pm10=%f\r\n", pm10);
   if (dustIdx < MAX_ARRAY) {
     dust_average25 = median(pm25_array, dustIdx + 1);
     dust_average10 = median(pm10_array, dustIdx + 1);
@@ -48,9 +49,9 @@ void CMMC_DustSensor::_calculateDustAverage() {
     dust_average25 = median(pm25_array, MAX_ARRAY);
     dust_average10 = median(pm10_array, MAX_ARRAY);
   }
-  Serial.printf(">> [avg] %f, %f\r\n", dust_average10, dust_average25);
-  // Serial.print(dust_average25);
-  // Serial.println(dust_average10);
+  // mySerial.printf(">> [avg] %f, %f\r\n", dust_average10, dust_average25);
+  // mySerial.print(dust_average25);
+  // mySerial.println(dust_average10);
 }
 struct pms5003data {
   uint16_t framelen;
@@ -70,13 +71,13 @@ void CMMC_DustSensor::loop() {
   while(this->_serial->peek() != 0x42) {
     this->_serial->read();
     if (millis() - ms > 3000) {
-      Serial.println("WAITING.. DUST SENSOR TIMEOUT...");
+      // mySerial.println("WAITING.. DUST SENSOR TIMEOUT...");
       break;
     }
   }
   vTaskDelay(200 / portTICK_PERIOD_MS);
-  // Serial.println();
-  // Serial.println("Reading Dust Sensor..");
+  // mySerial.println();
+  // mySerial.println("Reading Dust Sensor..");
   this->readDustSensor();
 }
 
@@ -85,7 +86,7 @@ void CMMC_DustSensor::readDustSensor() {
 
   // Now read all 32 bytes
   if (this->_serial->available() < 32) {
-    Serial.println(".......");
+    // mySerial.println(".......");
     return false;
   }
 
@@ -98,9 +99,9 @@ void CMMC_DustSensor::readDustSensor() {
   }
 
   // for (uint8_t i=2; i<32; i++) {
-  //   Serial.print("0x"); Serial.print(buffer[i], HEX); Serial.print(", ");
+  //   mySerial.print("0x"); mySerial.print(buffer[i], HEX); mySerial.print(", ");
   // }
-  // Serial.println();
+  // mySerial.println();
 
   // The data comes in endian'd, this solves it so it works on all platforms
   uint16_t buffer_u16[15];
@@ -113,34 +114,34 @@ void CMMC_DustSensor::readDustSensor() {
   memcpy((void *)&data, (void *)buffer_u16, 30);
 
   if (sum != data.checksum) {
-    Serial.println("Checksum failure");
+    // mySerial.println("Checksum failure");
   }
   else {
-    // Serial.println();
-    // Serial.println("---------------------------------------");
-    // Serial.println("Concentration Units (standard)");
-    // Serial.print("PM 1.0: "); Serial.print(data.pm10_standard);
-    // Serial.print("\t\tPM 2.5: "); Serial.print(data.pm25_standard);
-    // Serial.print("\t\tPM 10: "); Serial.println(data.pm100_standard);
-    // Serial.printf("PM 1.0 = %u<\t\tPM 2.5 = %u<\t\tPM 10=%u<\r\n", data.pm10_standard,
+    // mySerial.println();
+    // mySerial.println("---------------------------------------");
+    // mySerial.println("Concentration Units (standard)");
+    // mySerial.print("PM 1.0: "); mySerial.print(data.pm10_standard);
+    // mySerial.print("\t\tPM 2.5: "); mySerial.print(data.pm25_standard);
+    // mySerial.print("\t\tPM 10: "); mySerial.println(data.pm100_standard);
+    // mySerial.printf("PM 1.0 = %u<\t\tPM 2.5 = %u<\t\tPM 10=%u<\r\n", data.pm10_standard,
       // data.pm25_standard, data.pm100_standard);
     dustIdx = dust_counter % MAX_ARRAY;
     pm25_array[dustIdx] = data.pm25_standard;
     pm10_array[dustIdx] = data.pm100_standard;
     _calculateDustAverage();
     dust_counter++;
-    // Serial.println("---------------------------------------");
-    // Serial.println("Concentration Units (environmental)");
-    // Serial.print("PM 1.0: "); Serial.print(data.pm10_env);
-    // Serial.print("\t\tPM 2.5: "); Serial.print(data.pm25_env);
-    // Serial.print("\t\tPM 10: "); Serial.println(data.pm100_env);
-    // Serial.println("---------------------------------------");
-    // Serial.print("Particles > 0.3um / 0.1L air:"); Serial.println(data.particles_03um);
-    // Serial.print("Particles > 0.5um / 0.1L air:"); Serial.println(data.particles_05um);
-    // Serial.print("Particles > 1.0um / 0.1L air:"); Serial.println(data.particles_10um);
-    // Serial.print("Particles > 2.5um / 0.1L air:"); Serial.println(data.particles_25um);
-    // Serial.print("Particles > 5.0um / 0.1L air:"); Serial.println(data.particles_50um);
-    // Serial.print("Particles > 10.0 um / 0.1L air:"); Serial.println(data.particles_100um);
-    // Serial.println("---------------------------------------");
+    // mySerial.println("---------------------------------------");
+    // mySerial.println("Concentration Units (environmental)");
+    // mySerial.print("PM 1.0: "); mySerial.print(data.pm10_env);
+    // mySerial.print("\t\tPM 2.5: "); mySerial.print(data.pm25_env);
+    // mySerial.print("\t\tPM 10: "); mySerial.println(data.pm100_env);
+    // mySerial.println("---------------------------------------");
+    // mySerial.print("Particles > 0.3um / 0.1L air:"); mySerial.println(data.particles_03um);
+    // mySerial.print("Particles > 0.5um / 0.1L air:"); mySerial.println(data.particles_05um);
+    // mySerial.print("Particles > 1.0um / 0.1L air:"); mySerial.println(data.particles_10um);
+    // mySerial.print("Particles > 2.5um / 0.1L air:"); mySerial.println(data.particles_25um);
+    // mySerial.print("Particles > 5.0um / 0.1L air:"); mySerial.println(data.particles_50um);
+    // mySerial.print("Particles > 10.0 um / 0.1L air:"); mySerial.println(data.particles_100um);
+    // mySerial.println("---------------------------------------");
   }
 }

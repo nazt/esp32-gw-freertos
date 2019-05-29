@@ -6,6 +6,8 @@
 #include "modules/ConfigModule.h"
 // #include "modules/CMMC_LCD.h"
 #include <HardwareSerial.h>
+#include "tasks/lcd/CMMC_LCD.h"
+static CMMC_LCD *lcd;
 // #include <CMMC_DustSensor.h>
 // #include <CMMC_RTC.h>
 
@@ -48,14 +50,18 @@ void setup()
 
   os->addModule(new ConfigModule());
   os->setup(&config);
-  //
-  Serial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
-  Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
 
-  // tasks_init();
+  tasks_init();
+  //
+  mySerial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
+  mySerial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+
   // dustSensor = new CMMC_DustSensor(&Serial1);
   // modules[0] = dustSensor;
   // modules[1] = new CMMC_GPS(&Serial1);
+  lcd = new CMMC_LCD();
+  lcd->setup();
+
 }
 
 uint32_t prev = 0;
@@ -64,9 +70,10 @@ void loop()
   os->run();
   String taskMessage = "[main] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
+  lcd->loop();
   // Serial.println(taskMessage);
   if ( (millis() - prev) > 1*1000L) {
-    Serial.println(taskMessage);
+    // mySerial.println(taskMessage);
     prev = millis();
   }
 }

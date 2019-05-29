@@ -11,47 +11,35 @@ struct shared_pool {
   DateTime dt;
   TinyGPSLocation location;
   String locationString;
-  void printDt() {
-    Serial.print("")  ;
-    Serial.printf("%2d", dt.year());
-    Serial.printf("%2d", dt.month());
-    Serial.print('/');
-    Serial.printf("%2d", dt.day());
-    Serial.print(' ');
-    Serial.printf("%2d", dt.hour());
-    Serial.print(':');
-    Serial.printf("%2d", dt.minute());
-    Serial.print(':');
-    Serial.printf("%2d", dt.second());
-    Serial.println();
-  }
 };
 
 struct shared_pool pool;
 
 void showDate(const char* txt, const DateTime& dt) {
-    Serial.print(txt);
-    Serial.print("");
-    Serial.print(dt.year(), DEC);
-    Serial.print('/');
-    Serial.print(dt.month(), DEC);
-    Serial.print('/');
-    Serial.print(dt.day(), DEC);
-    Serial.print(' ');
-    Serial.print(dt.hour(), DEC);
-    Serial.print(':');
-    Serial.print(dt.minute(), DEC);
-    Serial.print(':');
-    Serial.print(dt.second(), DEC);
-    // Serial.print(" = ");
-    // Serial.print(dt.unixtime());
-    // Serial.print("s / ");
-    // Serial.print(dt.unixtime() / 86400L);
-    // Serial.print("d since 1970");
-    Serial.println();
+    mySerial.print(txt);
+    mySerial.print("");
+    mySerial.print(dt.year(), DEC);
+    mySerial.print('/');
+    mySerial.print(dt.month(), DEC);
+    mySerial.print('/');
+    mySerial.print(dt.day(), DEC);
+    mySerial.print(' ');
+    mySerial.print(dt.hour(), DEC);
+    mySerial.print(':');
+    mySerial.print(dt.minute(), DEC);
+    mySerial.print(':');
+    mySerial.print(dt.second(), DEC);
+    // mySerial.print(" = ");
+    // mySerial.print(dt.unixtime());
+    // mySerial.print("s / ");
+    // mySerial.print(dt.unixtime() / 86400L);
+    // mySerial.print("d since 1970");
+    mySerial.println();
 }
 
 static void task_serial1(void *parameter) {
+    pool.pm10 = 0;
+    pool.pm2_5 = 0;
     static CMMC_DustSensor *dustSensor = new CMMC_DustSensor(&Serial1);
     static CMMC_GPS *gps = new CMMC_GPS(&Serial1);
     static CMMC_RTC *rtc = new CMMC_RTC();
@@ -74,11 +62,12 @@ static void task_serial1(void *parameter) {
       }
       else {
       }
-      Serial.printf("pool.pm10 = %f\r\n", pool.pm10);
-      Serial.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
-      Serial.printf("pool.location = %s\r\n", pool.locationString.c_str());
-      Serial.printf("pool.dt = ");
-      pool.printDt();
+      mySerial.printf("pool.pm10 = %f\r\n", pool.pm10);
+      mySerial.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
+      // mySerial.printf("pool.location = %s\r\n", pool.locationString.c_str());
+      // mySerial.printf("pool.dt = ");
+      // pool.printDt();
+      vTaskDelay(1000/portTICK_PERIOD_MS);
     }
 }
 
@@ -86,15 +75,15 @@ static void lcd_task(void *parameter) {
   // os.addModule(new CMMC_LCD());
   static CMMC_LCD *lcd = new CMMC_LCD();
   lcd->setup();
-  // lcd->hello();
   while(1) {
     lcd->loop();
+    mySerial.println("HELLO..");
   }
 }
 
-void tasks_init() {
+static void tasks_init() {
   int priority = 1;
-  // xTaskCreate(task_serial1, "task_serial1", 4096, NULL, priority, NULL);
+  xTaskCreate(task_serial1, "task_serial1", 4096, NULL, priority, NULL);
   // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 4096, NULL, priority, NULL, 1);
-  // xTaskCreatePinnedToCore(lcd_task, "lcd_task", 4096, NULL, 2, NULL, 1);
+  // xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 1, NULL);
 }
