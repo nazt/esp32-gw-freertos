@@ -6,7 +6,7 @@
 #include "modules/ConfigModule.h"
 #include "modules/CMMC_LCD.h"
 #include <HardwareSerial.h>
-#include <CMMC_DustSensor.h>
+// #include <CMMC_DustSensor.h>
 #include <CMMC_RTC.h>
 
 CMMC_Legend os;
@@ -29,6 +29,8 @@ os_config_t config = {
   .hook_init_ap = hook_init_ap
 };
 
+#include "tasks/app.hpp"
+
 void setup()
 {
   WiFi.disconnect();
@@ -40,6 +42,12 @@ void setup()
   os.setup(&config);
   Serial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   Serial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+
+
+  tasks_init();
+  // dustSensor = new CMMC_DustSensor(&Serial1);
+  // modules[0] = dustSensor;
+  // modules[1] = new CMMC_GPS(&Serial1);
 }
 
 void loop()

@@ -1,7 +1,6 @@
 #include <Wire.h>
 #include <RTClib.h>
 #include "CMMC_Modem.h"
-#include "CMMC_DustSensor.h"
 #include <CMMC_RTC.h>
 
 // #define AIS_TOKEN "12dee170-4a4b-11e9-96dd-9fb5d8a71344" // devstation
@@ -22,7 +21,7 @@ static QueueHandle_t xQueueMain;
 IPAddress aisip = IPAddress(103, 20, 205, 85);
 RTC_DATA_ATTR int rebootCount = -1;
 
-extern CMMC_DustSensor *dustSensor;
+// extern CMMC_DustSensor *dustSensor;
 extern CMMC_GPS *gps;
 extern CMMC_RTC *rtc;
 
@@ -200,8 +199,8 @@ void CMMC_Modem::loop() {
     Data data;
     data.packet_type = TYPE_KEEP_ALIVE;
     data.ct = that->nbSentCounter++;
-    data.pm10 = dustSensor->getPMValue(DustPM10);
-    data.pm2_5 = dustSensor->getPMValue(DustPM2_5);
+    // data.pm10 = dustSensor->getPMValue(DustPM10);
+    // data.pm2_5 = dustSensor->getPMValue(DustPM2_5);
     data.uptime_s = millis() / 1000;
     data.unixtime = rtc->getCurrentTimestamp();
     strcpy(data.latlngC, gps->getLocation().c_str());

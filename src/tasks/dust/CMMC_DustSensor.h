@@ -22,7 +22,11 @@ class CMMC_DustSensor: public CMMC_Module {
     float pm25_array[MAX_ARRAY] = { 0.0 };
     float pm10_array[MAX_ARRAY] = { 0.0 };
     unsigned int dust_counter = 0;
+    void config(CMMC_System *os, AsyncWebServer* server) {};
     void _calculateDustAverage();
+    const char* name() {
+      return "CMMC_DustSensor";
+    }
   public:
     CMMC_DustSensor(HardwareSerial*);
     void hello();
