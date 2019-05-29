@@ -2,7 +2,7 @@
 #include <CMMC_Legend.h>
 #include <WiFi.h>
 #include <rom/rtc.h>
-#include <CMMC_GPS.h>
+
 #include "modules/ConfigModule.h"
 #include "modules/CMMC_LCD.h"
 #include <HardwareSerial.h>

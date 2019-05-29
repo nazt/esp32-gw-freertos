@@ -72,11 +72,10 @@ void CMMC_DustSensor::loop() {
     delay(1);
   }
   this->readDustSensor();
+  delay(200);
 }
 
 void CMMC_DustSensor::readDustSensor() {
-  Serial.println("readDustSensor");
-
   // Read a byte at a time until we get to the special '0x42' start-byte
   if (this->_serial->peek() != 0x42) {
     this->_serial->read();
@@ -123,18 +122,18 @@ void CMMC_DustSensor::readDustSensor() {
     Serial.print("\t\tPM 10: "); Serial.println(data.pm100_standard);
     Serial.printf("PM 1.0 = %u<\t\tPM 2.5 = %u<\t\tPM 10=%u<\r\n", data.pm10_standard,
       data.pm25_standard, data.pm100_standard);
-    Serial.println("---------------------------------------");
-    Serial.println("Concentration Units (environmental)");
-    Serial.print("PM 1.0: "); Serial.print(data.pm10_env);
-    Serial.print("\t\tPM 2.5: "); Serial.print(data.pm25_env);
-    Serial.print("\t\tPM 10: "); Serial.println(data.pm100_env);
-    Serial.println("---------------------------------------");
-    Serial.print("Particles > 0.3um / 0.1L air:"); Serial.println(data.particles_03um);
-    Serial.print("Particles > 0.5um / 0.1L air:"); Serial.println(data.particles_05um);
-    Serial.print("Particles > 1.0um / 0.1L air:"); Serial.println(data.particles_10um);
-    Serial.print("Particles > 2.5um / 0.1L air:"); Serial.println(data.particles_25um);
-    Serial.print("Particles > 5.0um / 0.1L air:"); Serial.println(data.particles_50um);
-    Serial.print("Particles > 10.0 um / 0.1L air:"); Serial.println(data.particles_100um);
-    Serial.println("---------------------------------------");
+    // Serial.println("---------------------------------------");
+    // Serial.println("Concentration Units (environmental)");
+    // Serial.print("PM 1.0: "); Serial.print(data.pm10_env);
+    // Serial.print("\t\tPM 2.5: "); Serial.print(data.pm25_env);
+    // Serial.print("\t\tPM 10: "); Serial.println(data.pm100_env);
+    // Serial.println("---------------------------------------");
+    // Serial.print("Particles > 0.3um / 0.1L air:"); Serial.println(data.particles_03um);
+    // Serial.print("Particles > 0.5um / 0.1L air:"); Serial.println(data.particles_05um);
+    // Serial.print("Particles > 1.0um / 0.1L air:"); Serial.println(data.particles_10um);
+    // Serial.print("Particles > 2.5um / 0.1L air:"); Serial.println(data.particles_25um);
+    // Serial.print("Particles > 5.0um / 0.1L air:"); Serial.println(data.particles_50um);
+    // Serial.print("Particles > 10.0 um / 0.1L air:"); Serial.println(data.particles_100um);
+    // Serial.println("---------------------------------------");
   }
 }

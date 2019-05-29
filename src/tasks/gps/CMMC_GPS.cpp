@@ -1,7 +1,7 @@
 #include "CMMC_GPS.h"
 #include <CMMC_RTC.h>
 
-extern CMMC_RTC* rtc;
+// extern CMMC_RTC* rtc;
 
 
 CMMC_GPS::CMMC_GPS(HardwareSerial *s) {
@@ -29,6 +29,30 @@ void CMMC_GPS::setup() {
   strcpy(latlngC, "00.0000,00.0000");
   strcpy(_bufferLatLng, "00.0000,00.0000");
 }
+void showDate(const char* txt, const DateTime& dt) {
+    Serial.print(txt);
+    Serial.print(' ');
+    Serial.print(dt.year(), DEC);
+    Serial.print('/');
+    Serial.print(dt.month(), DEC);
+    Serial.print('/');
+    Serial.print(dt.day(), DEC);
+    Serial.print(' ');
+    Serial.print(dt.hour(), DEC);
+    Serial.print(':');
+    Serial.print(dt.minute(), DEC);
+    Serial.print(':');
+    Serial.print(dt.second(), DEC);
+
+    Serial.print(" = ");
+    Serial.print(dt.unixtime());
+    Serial.print("s / ");
+    Serial.print(dt.unixtime() / 86400L);
+    Serial.print("d since 1970");
+
+    Serial.println();
+}
+
 
 void CMMC_GPS::loop() {
   this->serial->begin(9600, SERIAL_8N1, 12 /*rx*/, 15 /* tx */);
@@ -49,7 +73,7 @@ void CMMC_GPS::loop() {
       if (gps.location.isValid()) {
         gpsNoSignal = 0;
         // 5Minute
-        if (!_lastSyncRtc || millis() - _lastFetchLocation > 5*60*1000) {
+        // if (!_lastSyncRtc || millis() - _lastFetchLocation > 5*60*1000) {
               RawDegrees lat = gps.location.rawLat();
               RawDegrees lng = gps.location.rawLng();
               sprintf(latC, "%s%u.%lu", lat.negative ? "-" : "", lat.deg, lat.billionths);
@@ -58,19 +82,21 @@ void CMMC_GPS::loop() {
               strcat(latlngC, latC);
               strcat(latlngC, ",");
               strcat(latlngC, lngC);
-              // Serial.println(latlngC);
+              Serial.println(latlngC);
               strcpy(_bufferLatLng, latlngC);
               // Serial.println()
               this->_lastFetchLocation = millis();
-        }
+        // }
 
         if (gps.time.isUpdated()) {
-            if (!_lastSyncRtc || millis() - _lastSyncRtc > 5*1000) {
+            // if (!_lastSyncRtc || millis() - _lastSyncRtc > 500) {
               Serial.println("[[[SYNC TIME WITH GPS]]]!!!");
-              rtc->adjust(DateTime(gps.date.year(), gps.date.month(), gps.date.day(), gps.time.hour()+7%24, gps.time.minute(), gps.time.second()));
-              delay(200);
+              // Serial.printf("%d")
+              DateTime _gpsDateTime =  DateTime(gps.date.year(), gps.date.month(), gps.date.day(), gps.time.hour()+7%24, gps.time.minute(), gps.time.second());
+              showDate("-", _gpsDateTime);
+              // rtc->adjust();
               _lastSyncRtc = millis();
-            }
+            // }
         }
       }
       else

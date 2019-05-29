@@ -5,7 +5,6 @@
 #include <CMMC_Module.h>
 #include <CMMC_NB_IoT.h>
 #include <TinyGPS++.h>
-#include <CMMC_GPS.h>
 
 typedef enum {
   TYPE_KEEP_ALIVE = 1,

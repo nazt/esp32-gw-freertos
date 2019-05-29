@@ -22,7 +22,7 @@ IPAddress aisip = IPAddress(103, 20, 205, 85);
 RTC_DATA_ATTR int rebootCount = -1;
 
 // extern CMMC_DustSensor *dustSensor;
-extern CMMC_GPS *gps;
+// extern CMMC_GPS *gps;
 extern CMMC_RTC *rtc;
 
 CMMC_Modem::CMMC_Modem(Stream* s)   {
@@ -203,7 +203,7 @@ void CMMC_Modem::loop() {
     // data.pm2_5 = dustSensor->getPMValue(DustPM2_5);
     data.uptime_s = millis() / 1000;
     data.unixtime = rtc->getCurrentTimestamp();
-    strcpy(data.latlngC, gps->getLocation().c_str());
+    // strcpy(data.latlngC, gps->getLocation().c_str());
     Serial.println("> sendTask2 is sending data");
 
     if (!that->isNbConnected) {

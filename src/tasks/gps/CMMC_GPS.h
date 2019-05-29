@@ -23,7 +23,10 @@ class CMMC_GPS: public CMMC_Module{
     // String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);
   public:
     CMMC_GPS(HardwareSerial*);
-    // virtual void config(CMMC_System *os, AsyncWebServer* server) = 0;
+    void config(CMMC_System *os, AsyncWebServer* server) {};
+    const char* name() {
+      return "CMMC_GPS";
+    }
     void setup();
     void loop();
     void configLoop();
