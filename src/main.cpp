@@ -13,29 +13,29 @@ static CMMC_LCD *lcd;
 SCREEN_PAGE xpage = LCD_RUN;
 
 CMMC_Legend *os;
-HardwareSerial mySerial(0);
+HardwareSerial SERIAL0(0);
 
 
 void hook_init_ap(char* name, IPAddress ip) {
-  mySerial.println("----------- hook_init_ap -----------");
-  mySerial.println(name);
-  mySerial.println(ip);
-  mySerial.println("/----------- hook_init_ap -----------");
+  SERIAL0.println("----------- hook_init_ap -----------");
+  SERIAL0.println(name);
+  SERIAL0.println(ip);
+  SERIAL0.println("/----------- hook_init_ap -----------");
   xpage = LCD_CONFIG;
 }
 
 void hook_button_pressed() {
-  mySerial.println("[user] hook_button_pressed");
+  SERIAL0.println("[user] hook_button_pressed");
   xpage = LCD_BUTTON_PRESSED;
 }
 
 void hook_button_released() {
-  mySerial.println("[user] hook_button_released");
+  SERIAL0.println("[user] hook_button_released");
   xpage = LCD_RUN;
 }
 
 void hook_button_long_pressed() {
-  mySerial.println("[user] hook_button_long_pressed");
+  SERIAL0.println("[user] hook_button_long_pressed");
   xpage = LCD_BUTTON_LONG_PRESSED;
 }
 
@@ -46,13 +46,13 @@ void setup()
 {
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);
-  mySerial.begin(115200);
+  SERIAL0.begin(115200);
   String taskMessage = "[main] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
-  mySerial.println(taskMessage);
+  SERIAL0.println(taskMessage);
   // delay(200);
 
-  os = new CMMC_Legend(&mySerial);
+  os = new CMMC_Legend(&SERIAL0);
 
   static os_config_t config = {
     .BLINKER_PIN = 21,
@@ -69,22 +69,15 @@ void setup()
   // os->addModule(new ConfigModule());
 
   tasks_init();
-  
+
   os->setup(&config);
   //
-  mySerial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
-  mySerial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
-
-  // dustSensor = new CMMC_DustSensor(&Serial1);
-  // modules[0] = dustSensor;
-  // modules[1] = new CMMC_GPS(&Serial1);
-  // lcd = new CMMC_LCD();
-  // lcd->setup()
+  SERIAL0.printf("free heap = %lu\r\n", ESP.getFreeHeap());
+  SERIAL0.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
 }
 
-// extern struct shared_pool pool;
-
 uint32_t prev = 0;
+
 void loop()
 {
   os->run();
@@ -92,9 +85,9 @@ void loop()
   // taskMessage = taskMessage + xPortGetCoreID();
   // lcd->pm2_5 = pool.pm2_5;
   // lcd->pm10 = pool.pm10;
-  // // mySerial.println(taskMessage);
+  // // SERIAL0.println(taskMessage);
   if ( (millis() - prev) > 1*100L) {
-    // mySerial.println(taskMessage);
+    // SERIAL0.println(taskMessage);
   //   // lcd->pm10 = millis()/1000;
   //   prev = millis();
   //   lcd->loop();

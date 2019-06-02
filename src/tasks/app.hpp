@@ -16,25 +16,25 @@ struct shared_pool {
 struct shared_pool pool;
 
 void showDate(const char* txt, const DateTime& dt) {
-    mySerial.print(txt);
-    mySerial.print("");
-    mySerial.print(dt.year(), DEC);
-    mySerial.print('/');
-    mySerial.print(dt.month(), DEC);
-    mySerial.print('/');
-    mySerial.print(dt.day(), DEC);
-    mySerial.print(' ');
-    mySerial.print(dt.hour(), DEC);
-    mySerial.print(':');
-    mySerial.print(dt.minute(), DEC);
-    mySerial.print(':');
-    mySerial.print(dt.second(), DEC);
-    // mySerial.print(" = ");
-    // mySerial.print(dt.unixtime());
-    // mySerial.print("s / ");
-    // mySerial.print(dt.unixtime() / 86400L);
-    // mySerial.print("d since 1970");
-    mySerial.println();
+    SERIAL0.print(txt);
+    SERIAL0.print("");
+    SERIAL0.print(dt.year(), DEC);
+    SERIAL0.print('/');
+    SERIAL0.print(dt.month(), DEC);
+    SERIAL0.print('/');
+    SERIAL0.print(dt.day(), DEC);
+    SERIAL0.print(' ');
+    SERIAL0.print(dt.hour(), DEC);
+    SERIAL0.print(':');
+    SERIAL0.print(dt.minute(), DEC);
+    SERIAL0.print(':');
+    SERIAL0.print(dt.second(), DEC);
+    // SERIAL0.print(" = ");
+    // SERIAL0.print(dt.unixtime());
+    // SERIAL0.print("s / ");
+    // SERIAL0.print(dt.unixtime() / 86400L);
+    // SERIAL0.print("d since 1970");
+    SERIAL0.println();
 }
 
 static void task_serial1(void *parameter) {
@@ -62,10 +62,10 @@ static void task_serial1(void *parameter) {
       }
       else {
       }
-      mySerial.printf("pool.pm10 = %f\r\n", pool.pm10);
-      mySerial.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
-      // mySerial.printf("pool.location = %s\r\n", pool.locationString.c_str());
-      // mySerial.printf("pool.dt = ");
+      SERIAL0.printf("pool.pm10 = %f\r\n", pool.pm10);
+      SERIAL0.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
+      // SERIAL0.printf("pool.location = %s\r\n", pool.locationString.c_str());
+      // SERIAL0.printf("pool.dt = ");
       // pool.printDt();
       vTaskDelay(100/portTICK_PERIOD_MS);
     }
@@ -79,7 +79,7 @@ static void lcd_task(void *parameter) {
     lcd->pm2_5 = pool.pm2_5;
     lcd->loop();
     vTaskDelay(100/portTICK_PERIOD_MS);
-    mySerial.println(".");
+    SERIAL0.println(".");
   }
 }
 

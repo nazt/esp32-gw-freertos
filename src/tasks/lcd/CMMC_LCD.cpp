@@ -83,7 +83,7 @@ void CMMC_LCD::paintScreen() {
       // u8g2->print(rtc->getDateTimeString());
       int marginLeft = 6;
       if (xpage == LCD_RUN) {
-        // mySerial.println("DRAWING..");
+        // SERIAL0.println("DRAWING..");
         int logoMargin = 36;
         u8g2->drawXBM(7,0,30, 36, logo);
 

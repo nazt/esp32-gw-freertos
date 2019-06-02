@@ -1,7 +1,7 @@
 #include "CMMC_GPS.h"
 
 // extern CMMC_RTC* rtc;
-// extern HardwareSerial mySerial;
+// extern HardwareSerial SERIAL0;
 
 CMMC_GPS::CMMC_GPS(HardwareSerial *s) {
   this->serial = s;
@@ -27,7 +27,7 @@ void CMMC_GPS::setup() {
   strcpy(_bufferLatLng, "00.0000,00.0000");
   String taskMessage = "[CMMC_GPS] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
-  // mySerial.println(taskMessage);
+  // SERIAL0.println(taskMessage);
 }
 
 void CMMC_GPS::loop() {
@@ -38,11 +38,11 @@ void CMMC_GPS::loop() {
   while(!this->serial->available()) {
     vTaskDelay(1 / portTICK_PERIOD_MS);
     if (millis() - ms > 2000) {
-      // mySerial.println("GPS_SERIAL timeout!!!");
+      // SERIAL0.println("GPS_SERIAL timeout!!!");
       break;
     }
   }
-  // mySerial.printf("wait GPS_SERIAL for %lums\r\n", millis() - ms);
+  // SERIAL0.printf("wait GPS_SERIAL for %lums\r\n", millis() - ms);
   while (serial->available() > 0) {
     char c = serial->read();
     if (gps.encode(c)) {
