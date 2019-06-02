@@ -11,6 +11,7 @@
 // extern CMMC_DustSensor *dustSensor;
 
 extern struct shared_pool pool;
+extern SCREEN_PAGE xpage;
 
 String pm10Value = "999.88";
 String pm2_5Value = "45.49";
@@ -26,9 +27,6 @@ CMMC_LCD::CMMC_LCD() {
   u8g2->begin();
   String taskMessage = "[CMMC_LCD] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
-  // hello();
-  // page++;
-  pinMode(0, INPUT_PULLUP);
 }
 
 void CMMC_LCD::config(CMMC_System *os, AsyncWebServer *server)
@@ -79,13 +77,12 @@ void CMMC_LCD::paintScreen() {
   u8g2->firstPage();
     int factor = micros()%6;
     factor = +0;
-    do
-    {
+    do {
       u8g2->setFont(u8g2_font_p01type_tn);
       u8g2->setCursor(60, 6);
       // u8g2->print(rtc->getDateTimeString());
       int marginLeft = 6;
-      if (page == 0) {
+      if (xpage == LCD_RUN) {
         // mySerial.println("DRAWING..");
         int logoMargin = 36;
         u8g2->drawXBM(7,0,30, 36, logo);
@@ -125,7 +122,23 @@ void CMMC_LCD::paintScreen() {
         u8g2->print("ug/m3");
         // u8g2->print("%");
       }
-      else if (page == 1) {
+      else if (xpage == LCD_BUTTON_PRESSED) {
+        int lineSpacing = 2;
+        u8g2->firstPage();
+        int factor = micros()%6;
+        factor = +0;
+        u8g2->setCursor(5, 35 + (4 * lineSpacing));
+        u8g2->setFont(u8g2_font_siji_t_6x10);
+        u8g2->print("LCD PRESSED.");
+      }
+      else if (xpage == LCD_BUTTON_LONG_PRESSED) {
+        int lineSpacing = 2;
+        u8g2->setFont(u8g2_font_siji_t_6x10);
+        u8g2->setCursor(5, 35 + (4 * lineSpacing));
+        u8g2->setFont(u8g2_font_siji_t_6x10);
+        u8g2->print("LCD LONG PRESSED... Restarting..");
+      }
+      else if (xpage == LCD_DETAIL_PACKET) {
         int logoMargin = 40;
         int lineSpacing = 2;
         char numBuffer[20];
@@ -162,7 +175,7 @@ void CMMC_LCD::paintScreen() {
 
 
         char statusBuffer[60];
-
+        lineSpacing = 2;
         sprintf(statusBuffer, "Status: (Queue=%d)", pArrIdx);
         u8g2->setCursor(5, 40 + (5 * lineSpacing));
         u8g2->print(statusBuffer);
@@ -177,10 +190,16 @@ void CMMC_LCD::paintScreen() {
         // u8g2->drawGlyph(0 + 4, 1f0, 9680 + count % 7);
         // u8g2->setCursor(0, 7);
       }
-      else if (page == 2) {
+      else if (xpage == LCD_CONFIG) {
+        int lineSpacing = 2;
+        u8g2->setFont(u8g2_font_siji_t_6x10);
+        u8g2->setCursor(5, 35 + (4 * lineSpacing));
+        u8g2->setFont(u8g2_font_siji_t_6x10);
+        u8g2->print("IN CONFIG MODE.");
       }
     } while (u8g2->nextPage());
 }
+
 void CMMC_LCD::displayLogo() {
   u8g2->firstPage();
   do

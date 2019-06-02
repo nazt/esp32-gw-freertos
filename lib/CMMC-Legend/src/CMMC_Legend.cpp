@@ -34,21 +34,24 @@ bool CMMC_Legend::enable_run_mode(bool status) {
 
 void CMMC_Legend::isLongPressed() {
   uint32_t prev = millis();
-  while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
-    blinker->high();
-    this->_hook_button_pressed();
-    if ( (millis() - prev) > 5L * 1000L) {
-      _serial_legend->println("LONG PRESSED.");
-      this->_hook_button_long_pressed();
-      blinker->blink(50);
-      while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
-        delay(10);
+  if (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {       
+    while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
+      blinker->high();
+      this->_hook_button_pressed();
+      if ( (millis() - prev) > 5L * 1000L) {
+        _serial_legend->println("LONG PRESSED.");
+        this->_hook_button_long_pressed();
+        blinker->blink(50);
+        while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
+          delay(10);
+        }
+        enable_run_mode(false);
+        _serial_legend->println("being restarted.");
+        delay(1000);
+        ESP.restart();
       }
-      enable_run_mode(false);
-      _serial_legend->println("being restarted.");
-      delay(1000);
-      ESP.restart();
     }
+    this->_hook_button_released();
   }
   blinker->low();
   blinker->blink(4000);
@@ -61,6 +64,7 @@ void CMMC_Legend::setup(os_config_t *config) {
     this->SWITCH_PIN_MODE = config->SWITCH_PIN_MODE;
     this->_hook_init_ap = config->hook_init_ap;
     this->_hook_button_pressed = config->hook_button_pressed;
+    this->_hook_button_released = config->hook_button_released;
     this->_hook_button_long_pressed = config->hook_button_long_pressed;
     init_gpio();
 
@@ -74,6 +78,7 @@ void CMMC_Legend::setup(os_config_t *config) {
     init_user_config();
     init_user_sensor();
     init_network();
+
     _serial_legend->println("--------- setup -----------");
     for (int i = 0 ; i < _modules.size(); i++) {
       _serial_legend->printf("calling %s.setup()\r\n", _modules[i]->name());

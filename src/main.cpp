@@ -1,32 +1,42 @@
 #include <Arduino.h>
+#include "defs.h"
 #include <CMMC_Legend.h>
 #include <WiFi.h>
 #include <rom/rtc.h>
 
 #include "modules/ConfigModule.h"
-// #include "modules/CMMC_LCD.h"
 #include <HardwareSerial.h>
 #include "tasks/lcd/CMMC_LCD.h"
 static CMMC_LCD *lcd;
 // #include <CMMC_DustSensor.h>
 // #include <CMMC_RTC.h>
+SCREEN_PAGE xpage = LCD_RUN;
 
 CMMC_Legend *os;
 HardwareSerial mySerial(0);
+
 
 void hook_init_ap(char* name, IPAddress ip) {
   mySerial.println("----------- hook_init_ap -----------");
   mySerial.println(name);
   mySerial.println(ip);
   mySerial.println("/----------- hook_init_ap -----------");
+  xpage = LCD_CONFIG;
 }
 
 void hook_button_pressed() {
   mySerial.println("[user] hook_button_pressed");
+  xpage = LCD_BUTTON_PRESSED;
+}
+
+void hook_button_released() {
+  mySerial.println("[user] hook_button_released");
+  xpage = LCD_RUN;
 }
 
 void hook_button_long_pressed() {
   mySerial.println("[user] hook_button_long_pressed");
+  xpage = LCD_BUTTON_LONG_PRESSED;
 }
 
 
@@ -52,13 +62,15 @@ void setup()
     .delay_after_init_ms = 200,
     .hook_init_ap = hook_init_ap,
     .hook_button_pressed =  hook_button_pressed,
-    .hook_button_long_pressed = hook_button_long_pressed
+    .hook_button_long_pressed = hook_button_long_pressed,
+    .hook_button_released = hook_button_released,
   };
 
   // os->addModule(new ConfigModule());
-  os->setup(&config);
 
   tasks_init();
+  
+  os->setup(&config);
   //
   mySerial.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   mySerial.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));

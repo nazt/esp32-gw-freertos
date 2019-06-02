@@ -1,6 +1,8 @@
 #ifndef CMMC_LCD_H
 #define CMMC_LCD_H
 
+#include <defs.h>
+
 #include <Arduino.h>
 #include <CMMC_Module.h>
 #include <U8g2lib.h>
