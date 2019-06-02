@@ -78,8 +78,8 @@ static void lcd_task(void *parameter) {
     lcd->pm10 = pool.pm10;
     lcd->pm2_5 = pool.pm2_5;
     lcd->loop();
-    vTaskDelay(100/portTICK_PERIOD_MS);
-    SERIAL0.println(".");
+    // vTaskDelay(100/portTICK_PERIOD_MS);
+    // SERIAL0.println(".");
   }
 }
 

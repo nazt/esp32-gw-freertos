@@ -32,12 +32,14 @@ class CMMC_LCD: public CMMC_Module{
   String lngC;
   String sta_mac;
   String softap_mac;
+  const int logoMargin = 36;
+  const int marginLeft = 6;
   protected:
     // char path[20];
     // String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);
   public:
-  float pm10 = 0;
-  float pm2_5 = 0;
+    float pm10 = 0;
+    float pm2_5 = 0;
     CMMC_LCD();
     void config(CMMC_System *os, AsyncWebServer* server);
     void hello();
@@ -47,6 +49,8 @@ class CMMC_LCD: public CMMC_Module{
     void configSetup();
     void paintScreen();
     void displayLogo();
+    void paintRunPage();
+    void paintDetailPage();
     const char* formatedNumber(char* buffer, int n);
     const char* name() {
       return "CMMC_LCD";

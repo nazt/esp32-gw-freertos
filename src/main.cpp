@@ -14,9 +14,10 @@ SCREEN_PAGE xpage = LCD_RUN;
 
 CMMC_Legend *os;
 HardwareSerial SERIAL0(0);
-
+const char ap_name[20];
 
 void hook_init_ap(char* name, IPAddress ip) {
+  strcpy(ap_name, name);
   SERIAL0.println("----------- hook_init_ap -----------");
   SERIAL0.println(name);
   SERIAL0.println(ip);
@@ -86,8 +87,8 @@ void loop()
   // lcd->pm2_5 = pool.pm2_5;
   // lcd->pm10 = pool.pm10;
   // // SERIAL0.println(taskMessage);
-  if ( (millis() - prev) > 1*100L) {
-    // SERIAL0.println(taskMessage);
+  if ( (millis() - prev) > 1*1000L) {
+    SERIAL0.println(ESP.getFreeHeap());
   //   // lcd->pm10 = millis()/1000;
   //   prev = millis();
   //   lcd->loop();
