@@ -15,10 +15,18 @@ CMMC_Legend *os;
 HardwareSerial mySerial(0);
 
 void hook_init_ap(char* name, IPAddress ip) {
-  Serial.println("----------- hook_init_ap -----------");
-  Serial.println(name);
-  Serial.println(ip);
-  Serial.println("/----------- hook_init_ap -----------");
+  mySerial.println("----------- hook_init_ap -----------");
+  mySerial.println(name);
+  mySerial.println(ip);
+  mySerial.println("/----------- hook_init_ap -----------");
+}
+
+void hook_button_pressed() {
+  mySerial.println("[user] hook_button_pressed");
+}
+
+void hook_button_long_pressed() {
+  mySerial.println("[user] hook_button_long_pressed");
 }
 
 
@@ -29,21 +37,22 @@ void setup()
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);
   mySerial.begin(115200);
+  String taskMessage = "[main] Task running on core ";
+  taskMessage = taskMessage + xPortGetCoreID();
+  mySerial.println(taskMessage);
   // delay(200);
 
   os = new CMMC_Legend(&mySerial);
 
-
-  String taskMessage = "[main] Task running on core ";
-  taskMessage = taskMessage + xPortGetCoreID();
-  // Serial.println(taskMessage);
   static os_config_t config = {
     .BLINKER_PIN = 21,
     .BUTTON_MODE_PIN = 0,
     .SWITCH_PIN_MODE = INPUT_PULLUP,
     .SWITCH_PRESSED_LOGIC = LOW,
     .delay_after_init_ms = 200,
-    .hook_init_ap = hook_init_ap
+    .hook_init_ap = hook_init_ap,
+    .hook_button_pressed =  hook_button_pressed,
+    .hook_button_long_pressed = hook_button_long_pressed
   };
 
   // os->addModule(new ConfigModule());
@@ -67,15 +76,15 @@ uint32_t prev = 0;
 void loop()
 {
   os->run();
-  String taskMessage = "[main] Task running on core ";
-  taskMessage = taskMessage + xPortGetCoreID();
+  // String taskMessage = "[main] Task running on core ";
+  // taskMessage = taskMessage + xPortGetCoreID();
   // lcd->pm2_5 = pool.pm2_5;
   // lcd->pm10 = pool.pm10;
-  // Serial.println(taskMessage);
-  if ( (millis() - prev) > 1*10L) {
+  // // mySerial.println(taskMessage);
+  if ( (millis() - prev) > 1*100L) {
     // mySerial.println(taskMessage);
-    // lcd->pm10 = millis()/1000;
-    prev = millis();
-    // lcd->loop();
+  //   // lcd->pm10 = millis()/1000;
+  //   prev = millis();
+  //   lcd->loop();
   }
 }

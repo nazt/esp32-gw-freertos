@@ -49,7 +49,7 @@ static void task_serial1(void *parameter) {
     while(1) {
       dustSensor->loop();
       gps->loop();
-      rtc->loop();
+      // rtc->loop();
       pool.pm10 = dustSensor->getPMValue(DustPM10);
       pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
       pool.dt = rtc->getDateTime();
@@ -58,7 +58,7 @@ static void task_serial1(void *parameter) {
       // showDate("[GPS]:", pool.location);
       pool.locationString = gps->getLocationString();
       if (gps->_lastSyncRtc > 0) {
-        rtc->adjust(gps->getDateTime());
+        // rtc->adjust(gps->getDateTime());
       }
       else {
       }
@@ -78,7 +78,8 @@ static void lcd_task(void *parameter) {
     lcd->pm10 = pool.pm10;
     lcd->pm2_5 = pool.pm2_5;
     lcd->loop();
-    vTaskDelay(10/portTICK_PERIOD_MS);
+    vTaskDelay(100/portTICK_PERIOD_MS);
+    mySerial.println(".");
   }
 }
 

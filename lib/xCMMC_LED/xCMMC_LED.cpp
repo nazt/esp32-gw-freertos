@@ -55,6 +55,7 @@ void xCMMC_LED::blink(uint32_t ms)
     return;
   if (_ledPin == 254)
     return;
+
   static int _pin = this->_ledPin;
   this->detach();
   delete this->_ticker;
@@ -62,6 +63,7 @@ void xCMMC_LED::blink(uint32_t ms)
   this->_ticker = new Ticker;
   this->_ticker2 = new Ticker;
   static xCMMC_LED *_that = this;
+  pinMode(_pin, OUTPUT);
   static auto lambda = []() {
     _that->state = !_that->state;
     if (_that->state == HIGH)
@@ -86,6 +88,7 @@ void xCMMC_LED::blink(uint32_t ms)
 
 
   void xCMMC_LED::set(uint8_t status) {
+    pinMode(_ledPin, OUTPUT);
     digitalWrite(this->_ledPin, status);
   };
 

@@ -36,11 +36,11 @@ void CMMC_Legend::isLongPressed() {
   uint32_t prev = millis();
   while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
     blinker->high();
-    _serial_legend->println("button pressed...");
+    this->_hook_button_pressed();
     if ( (millis() - prev) > 5L * 1000L) {
       _serial_legend->println("LONG PRESSED.");
+      this->_hook_button_long_pressed();
       blinker->blink(50);
-
       while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
         delay(10);
       }
@@ -55,13 +55,13 @@ void CMMC_Legend::isLongPressed() {
 }
 
 void CMMC_Legend::setup(os_config_t *config) {
-    // this->_serial_legend->begin(config->baudrate);
-    // this->_serial_legend = config->serial;
     this->BLINKER_PIN = config->BLINKER_PIN;
     this->button_gpio = config->BUTTON_MODE_PIN;
     this->SWITCH_PRESSED_LOGIC = config->SWITCH_PRESSED_LOGIC;
     this->SWITCH_PIN_MODE = config->SWITCH_PIN_MODE;
     this->_hook_init_ap = config->hook_init_ap;
+    this->_hook_button_pressed = config->hook_button_pressed;
+    this->_hook_button_long_pressed = config->hook_button_long_pressed;
     init_gpio();
 
     pinMode(this->button_gpio, this->SWITCH_PIN_MODE);
@@ -69,15 +69,11 @@ void CMMC_Legend::setup(os_config_t *config) {
     blinker->init();
     blinker->setPin(config->BLINKER_PIN);
     this->_serial_legend->println();
-    blinker->blink(500);
 
     init_fs();
     init_user_config();
     init_user_sensor();
     init_network();
-    this->_serial_legend->println("HELLO");
-    this->_serial_legend->printf("sw addr %lu\r\n", _serial_legend);
-    this->_serial_legend->printf("sw addr %lu\r\n", _serial_legend);
     _serial_legend->println("--------- setup -----------");
     for (int i = 0 ; i < _modules.size(); i++) {
       _serial_legend->printf("calling %s.setup()\r\n", _modules[i]->name());
@@ -87,7 +83,7 @@ void CMMC_Legend::setup(os_config_t *config) {
 }
 
 void CMMC_Legend::init_gpio() {
-  // _serial_legend->println("OS::Init GPIO..");
+  _serial_legend->println("OS::Init GPIO..");
   delay(10);
 }
 
@@ -104,7 +100,7 @@ void CMMC_Legend::init_fs() {
   /*******************************************
      Boot Mode Selection
    *******************************************/
-  // that->_serial_legend->println("--------------------------");
+  this->_serial_legend->println("--------------------------");
   if (!SPIFFS.exists("/enabled")) {
     mode = CONFIG;
   }
@@ -156,7 +152,7 @@ void CMMC_Legend::init_network() {
     while (1 && !stopFlag) {
       if (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
           blinker->blink(1000);
-          _serial_legend->println("=== button pressed to enabled.");
+          _serial_legend->println("=== button setuped to enabled.");
           enable_run_mode(true);
           delay(300);
           ESP.restart();
