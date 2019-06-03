@@ -48,6 +48,11 @@ static void task_serial1(void *parameter) {
     gps->setup();
     rtc->setup();
     while(1) {
+      vTaskDelay(500/portTICK_PERIOD_MS);
+      if (xpage == LCD_CONFIG) {
+        continue;
+      }
+
       dustSensor->loop();
       gps->loop();
       rtc->loop();
@@ -59,16 +64,16 @@ static void task_serial1(void *parameter) {
       // showDate("[GPS]:", pool.location);
       pool.locationString = gps->getLocationString();
       if (gps->_lastSyncRtc > 0) {
-        // rtc->adjust(gps->getDateTime());
+        rtc->adjust(gps->getDateTime());
       }
       else {
       }
-      // SERIAL0.printf("pool.pm10 = %f\r\n", pool.pm10);
-      // SERIAL0.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
-      // SERIAL0.printf("pool.location = %s\r\n", pool.locationString.c_str());
-      // SERIAL0.printf("pool.dt = ");
+      SERIAL0.printf("pool.pm10 = %f\r\n", pool.pm10);
+      SERIAL0.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
+      SERIAL0.printf("pool.location = %s\r\n", pool.locationString.c_str());
+      SERIAL0.printf("pool.dt = ");
       // pool.printDt();
-      vTaskDelay(500/portTICK_PERIOD_MS);
+      showDate("", pool.dt);
     }
 }
 
@@ -80,13 +85,12 @@ static void lcd_task(void *parameter) {
     lcd->pm2_5 = pool.pm2_5;
     lcd->loop();
     vTaskDelay(100/portTICK_PERIOD_MS);
-    // SERIAL0.println(".");
   }
 }
 
 static void tasks_init() {
   int priority = 1;
   xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
-  // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
   xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 1, NULL);
+  // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
 }

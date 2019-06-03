@@ -12,6 +12,7 @@
 
 SCREEN_PAGE xpage = LCD_LOGO;
 char ap_name[20];
+char magel_token[40];
 
 CMMC_Legend *os;
 HardwareSerial SERIAL0(0);
@@ -27,12 +28,20 @@ void hook_init_ap(char* name, IPAddress ip) {
 
 void hook_button_pressed() {
   SERIAL0.println("[user] hook_button_pressed");
-  xpage = LCD_BUTTON_PRESSED;
+  // xpage = LCD_BUTTON_PRESSED;
 }
 
 void hook_button_released() {
   SERIAL0.println("[user] hook_button_released");
-  xpage = LCD_RUN;
+  if (xpage == LCD_RUN) {
+    xpage = LCD_DETAIL_PACKET;
+  }
+  else if (xpage == LCD_DETAIL_PACKET){
+    xpage = LCD_RUN;
+  }
+  else {
+    xpage = LCD_RUN;
+  }
 }
 
 void hook_button_long_pressed() {
@@ -74,13 +83,12 @@ void setup()
     .hook_button_released = hook_button_released,
   };
 
-  // os->addModule(new ConfigModule());
+  os->addModule(new ConfigModule());
 
   tasks_init();
 
   os->setup(&config);
   xpage = LCD_RUN;
-  //
   SERIAL0.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   SERIAL0.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
 }
