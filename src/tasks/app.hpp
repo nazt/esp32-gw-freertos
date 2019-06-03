@@ -83,6 +83,8 @@ static void task_serial1(void *parameter) {
         BaseType_t xStatus = xQueueSendToBack(xQueueMain, &p2, xTicksToWait);
         if ( xStatus == pdPASS ) {
           SERIAL0.println("ENQUEUE!!!");
+          SERIAL0.printf("queue size = %lu \r\n", uxQueueMessagesWaiting(xQueueMain));
+
         }
         else {
           SERIAL0.println("FAIL TO ENQUEUE.");

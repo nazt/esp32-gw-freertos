@@ -6,8 +6,6 @@
 #include <Arduino.h>
 #include <CMMC_Module.h>
 #include <U8g2lib.h>
-#include <CMMC_Modem.h>
-// #include <CMMC_RTC.h>
 
 class CMMC_LCD: public CMMC_Module{
   uint32_t counter = 0;
