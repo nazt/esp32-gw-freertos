@@ -10,7 +10,7 @@
 #include "tasks/lcd/CMMC_LCD.h"
 #include "utils.hpp"
 
-SCREEN_PAGE xpage = LCD_RUN;
+SCREEN_PAGE xpage = LCD_LOGO;
 char ap_name[20];
 
 CMMC_Legend *os;
@@ -23,7 +23,6 @@ void hook_init_ap(char* name, IPAddress ip) {
   SERIAL0.println(ip);
   SERIAL0.println("/----------- hook_init_ap -----------");
   xpage = LCD_CONFIG;
-  // lcd->setApName(ap_name);
 }
 
 void hook_button_pressed() {
@@ -80,6 +79,7 @@ void setup()
   tasks_init();
 
   os->setup(&config);
+  xpage = LCD_RUN;
   //
   SERIAL0.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   SERIAL0.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));

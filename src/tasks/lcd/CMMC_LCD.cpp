@@ -72,7 +72,10 @@ void CMMC_LCD::paintScreen() {
   factor = +0;
     u8g2->setFont(u8g2_font_p01type_tn);
     u8g2->setCursor(60, 6);
-    if (xpage == LCD_RUN) {
+    if (xpage == LCD_LOGO) {
+      displayLogo();
+    }
+    else if (xpage == LCD_RUN) {
       paintRunPage();
     }
     else if (xpage == LCD_BUTTON_PRESSED) {
@@ -101,6 +104,5 @@ void CMMC_LCD::displayLogo() {
     u8g2->print("NB-IoT");
     u8g2->setCursor(40, 46);
     u8g2->setFont(u8g2_font_10x20_te);
-    // u8g2->print("Starting...");
     u8g2->sendBuffer();
 }

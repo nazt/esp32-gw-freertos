@@ -3,7 +3,8 @@
 
 
 enum SCREEN_PAGE {
-  LCD_BOOT = 1,
+  LCD_LOGO = 1,
+  LCD_BOOT,
   LCD_RUN,
   LCD_CONFIG,
   LCD_BUTTON_PRESSED,
