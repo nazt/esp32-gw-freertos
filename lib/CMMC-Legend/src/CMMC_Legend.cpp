@@ -34,11 +34,11 @@ bool CMMC_Legend::enable_run_mode(bool status) {
 
 void CMMC_Legend::isLongPressed() {
   uint32_t prev = millis();
-  if (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {       
+  if (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
+    this->_hook_button_pressed();
     while (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
       blinker->high();
-      this->_hook_button_pressed();
-      if ( (millis() - prev) > 5L * 1000L) {
+      if ( (millis() - prev) > 3L * 1000L) {
         _serial_legend->println("LONG PRESSED.");
         this->_hook_button_long_pressed();
         blinker->blink(50);

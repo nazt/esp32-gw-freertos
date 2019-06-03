@@ -1,20 +1,20 @@
 #include <Arduino.h>
 #include "defs.h"
-#include <CMMC_Legend.h>
+#include <HardwareSerial.h>
 #include <WiFi.h>
 #include <rom/rtc.h>
+#include <CMMC_Legend.h>
+
 
 #include "modules/ConfigModule.h"
-#include <HardwareSerial.h>
 #include "tasks/lcd/CMMC_LCD.h"
-static CMMC_LCD *lcd;
-// #include <CMMC_DustSensor.h>
-// #include <CMMC_RTC.h>
+#include "utils.hpp"
+
 SCREEN_PAGE xpage = LCD_RUN;
+char ap_name[20];
 
 CMMC_Legend *os;
 HardwareSerial SERIAL0(0);
-const char ap_name[20];
 
 void hook_init_ap(char* name, IPAddress ip) {
   strcpy(ap_name, name);
@@ -23,6 +23,7 @@ void hook_init_ap(char* name, IPAddress ip) {
   SERIAL0.println(ip);
   SERIAL0.println("/----------- hook_init_ap -----------");
   xpage = LCD_CONFIG;
+  // lcd->setApName(ap_name);
 }
 
 void hook_button_pressed() {
@@ -52,6 +53,13 @@ void setup()
   taskMessage = taskMessage + xPortGetCoreID();
   SERIAL0.println(taskMessage);
   // delay(200);
+  SERIAL0.println("CPU0 reset reason:");
+  print_reset_reason(rtc_get_reset_reason(0), &SERIAL0);
+  verbose_print_reset_reason(rtc_get_reset_reason(0), &SERIAL0);
+
+  SERIAL0.println("CPU1 reset reason:");
+  print_reset_reason(rtc_get_reset_reason(1), &SERIAL0);
+  verbose_print_reset_reason(rtc_get_reset_reason(1), &SERIAL0);
 
   os = new CMMC_Legend(&SERIAL0);
 
@@ -88,9 +96,9 @@ void loop()
   // lcd->pm10 = pool.pm10;
   // // SERIAL0.println(taskMessage);
   if ( (millis() - prev) > 1*1000L) {
-    SERIAL0.println(ESP.getFreeHeap());
+    // SERIAL0.println(ESP.getFreeHeap());
+    prev = millis();
   //   // lcd->pm10 = millis()/1000;
-  //   prev = millis();
   //   lcd->loop();
   }
 }

@@ -1,18 +1,10 @@
 #include "CMMC_LCD.h"
 #include "logo.h"
-// #include <CMMC_Modem.h>
-// #include <CMMC_DustSensor.h>
 #include <TimeLib.h>
-// extern CMMC_GPS *gps;
-// extern CMMC_GPS *gps;
 
-// extern CMMC_Modem *modem;
-// extern CMMC_RTC *rtc;
-// extern CMMC_DustSensor *dustSensor;
-
-const char ap_name[20];
 extern struct shared_pool pool;
 extern SCREEN_PAGE xpage;
+extern char ap_name[20];
 
 String pm10Value = "999.88";
 String pm2_5Value = "45.49";
@@ -45,11 +37,16 @@ void CMMC_LCD::configSetup() {
 void CMMC_LCD::setup() {
 }
 
+void CMMC_LCD::setApName(char* ap_name) {
+  strcpy(_ap_name, ap_name);
+}
+
+
 void CMMC_LCD::loop() {
-  int state = digitalRead(0);
-  if (state == LOW) {
-    page = ++page % (MAX_PAGE);
-  }
+  // int state = digitalRead(0);
+  // if (state == LOW) {
+  //   page = ++page % (MAX_PAGE);
+  // }
   paintScreen();
 }
 
@@ -65,6 +62,8 @@ void CMMC_LCD::hello() {
 #include "_lcd_run.hpp"
 #include "_lcd_config.hpp"
 #include "_lcd_detail.hpp"
+#include "_lcd_pressed.hpp"
+#include "_lcd_long_pressed.hpp"
 
 void CMMC_LCD::paintScreen() {
   u8g2->clearBuffer();
@@ -77,31 +76,17 @@ void CMMC_LCD::paintScreen() {
       paintRunPage();
     }
     else if (xpage == LCD_BUTTON_PRESSED) {
-      int lineSpacing = 2;
-      int factor = micros() % 6;
-      factor = +0;
-      u8g2->setCursor(5, 35 + (4 * lineSpacing));
-      u8g2->setFont(u8g2_font_siji_t_6x10);
-      u8g2->print("LCD PRESSED.");
+      paintPressedButton();
     }
     else if (xpage == LCD_BUTTON_LONG_PRESSED) {
-      int lineSpacing = 2;
-      u8g2->setFont(u8g2_font_siji_t_6x10);
-      u8g2->setCursor(5, 35 + (4 * lineSpacing));
-      u8g2->setFont(u8g2_font_siji_t_6x10);
-      u8g2->print("LCD LONG PRESSED... Restarting..");
+      paintLongPressedButton();
     }
     else if (xpage == LCD_DETAIL_PACKET) {
       paintDetailPage();
     }
     else if (xpage == LCD_CONFIG) {
-      char statusBuffer[60];
-      int lineSpacing = 2;
-      sprintf(statusBuffer, "AP=%s", ap_name);
-      u8g2->setFont(u8g2_font_siji_t_6x10);
-      u8g2->setCursor(5, 35 + (4 * lineSpacing));
-      u8g2->setFont(u8g2_font_siji_t_6x10);
-      u8g2->print("IN CONFIG MODE.");
+      setApName(ap_name);
+      paintConfigPage();
     }
     u8g2->sendBuffer();
 }

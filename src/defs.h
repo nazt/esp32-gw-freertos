@@ -1,6 +1,7 @@
 #ifndef APP_DEFS
 #define APP_DEFS
 
+
 enum SCREEN_PAGE {
   LCD_BOOT = 1,
   LCD_RUN,
@@ -10,5 +11,4 @@ enum SCREEN_PAGE {
   LCD_DETAIL_PACKET,
   LCD_BUTTON_RELEASED
 };
-
 #endif

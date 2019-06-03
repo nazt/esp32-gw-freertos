@@ -14,6 +14,7 @@ struct shared_pool {
 };
 
 struct shared_pool pool;
+static CMMC_LCD *lcd;
 
 void showDate(const char* txt, const DateTime& dt) {
     SERIAL0.print(txt);
@@ -49,7 +50,7 @@ static void task_serial1(void *parameter) {
     while(1) {
       dustSensor->loop();
       gps->loop();
-      // rtc->loop();
+      rtc->loop();
       pool.pm10 = dustSensor->getPMValue(DustPM10);
       pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
       pool.dt = rtc->getDateTime();
@@ -62,30 +63,30 @@ static void task_serial1(void *parameter) {
       }
       else {
       }
-      SERIAL0.printf("pool.pm10 = %f\r\n", pool.pm10);
-      SERIAL0.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
+      // SERIAL0.printf("pool.pm10 = %f\r\n", pool.pm10);
+      // SERIAL0.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
       // SERIAL0.printf("pool.location = %s\r\n", pool.locationString.c_str());
       // SERIAL0.printf("pool.dt = ");
       // pool.printDt();
-      vTaskDelay(100/portTICK_PERIOD_MS);
+      vTaskDelay(500/portTICK_PERIOD_MS);
     }
 }
 
 static void lcd_task(void *parameter) {
-  static CMMC_LCD *lcd = new CMMC_LCD();
+  lcd = new CMMC_LCD();
   lcd->setup();
   while(1) {
     lcd->pm10 = pool.pm10;
     lcd->pm2_5 = pool.pm2_5;
     lcd->loop();
-    // vTaskDelay(100/portTICK_PERIOD_MS);
+    vTaskDelay(100/portTICK_PERIOD_MS);
     // SERIAL0.println(".");
   }
 }
 
 static void tasks_init() {
   int priority = 1;
-  xTaskCreate(task_serial1, "task_serial1", 4096, NULL, priority, NULL);
-  // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 4096, NULL, priority, NULL, 1);
+  xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
+  // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
   xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 1, NULL);
 }

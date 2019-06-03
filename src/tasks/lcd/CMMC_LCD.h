@@ -34,6 +34,7 @@ class CMMC_LCD: public CMMC_Module{
   String softap_mac;
   const int logoMargin = 36;
   const int marginLeft = 6;
+  char _ap_name[20];
   protected:
     // char path[20];
     // String saveConfig(AsyncWebServerRequest *request, CMMC_ConfigManager* configManager);
@@ -51,6 +52,12 @@ class CMMC_LCD: public CMMC_Module{
     void displayLogo();
     void paintRunPage();
     void paintDetailPage();
+    void paintConfigPage();
+    void paintLongPressedButton();
+    void paintPressedButton();
+    void setApName(char*);
+
+
     const char* formatedNumber(char* buffer, int n);
     const char* name() {
       return "CMMC_LCD";
