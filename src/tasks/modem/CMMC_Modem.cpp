@@ -26,8 +26,9 @@ RTC_DATA_ATTR int rebootCount = -1;
 // extern CMMC_GPS *gps;
 // extern CMMC_RTC *rtc;
 
-CMMC_Modem::CMMC_Modem(Stream* s)   {
+CMMC_Modem::CMMC_Modem(Stream* s, HardwareSerial* hwSerial)   {
   this->_modemSerial = s;
+  this->hwSerial = hwSerial;
 }
 
 void CMMC_Modem::configLoop() {
@@ -39,7 +40,7 @@ void CMMC_Modem::configSetup() {
 }
 
 void CMMC_Modem::updateStatus(String s) {
-  Serial.println(s);
+  this->hwSerial->println(s);
   this->status = s;
 }
 
@@ -79,16 +80,16 @@ void CMMC_Modem::setup() {
   });
 
   nb->onDeviceReady([]() {
-    Serial.println("[user] Device Ready!");
+    that->hwSerial->println("[user] Device Ready!");
   });
 
   nb->onDeviceInfo([](CMMC_NB_IoT::DeviceInfo device) {
-    Serial.print(F("# Module IMEI-->  "));
-    Serial.println(device.imei);
-    Serial.print(F("# Firmware ver-->  "));
-    Serial.println(device.firmware);
-    Serial.print(F("# IMSI SIM-->  "));
-    Serial.println(device.imsi);
+    that->hwSerial->print(F("# Module IMEI-->  "));
+    that->hwSerial->println(device.imei);
+    that->hwSerial->print(F("# Firmware ver-->  "));
+    that->hwSerial->println(device.firmware);
+    that->hwSerial->print(F("# IMSI SIM-->  "));
+    that->hwSerial->println(device.imsi);
   });
 
   nb->onMessageArrived([](char *text, size_t len, uint8_t socketId, char* ip, uint16_t port) {
@@ -121,9 +122,9 @@ void CMMC_Modem::setup() {
 
   nb->onConnected([](void * parameter ) {
     that->updateStatus("Connected.");
-    Serial.print("[user] NB-IoT Network connected at (");
-    Serial.print(millis());
-    Serial.println("ms)");
+    that->hwSerial->print("[user] NB-IoT Network connected at (");
+    that->hwSerial->print(millis());
+    that->hwSerial->println("ms)");
     that->nb->createUdpSocket("103.20.205.85", 5683, UDPConfig::ENABLE_RECV);
     that->isNbConnected = 1;
     // BaseType_t xStatus;
@@ -137,49 +138,49 @@ void CMMC_Modem::setup() {
 
   nb->hello();
   nb->rebootModule();
-  this->xQueue = xQueueCreate(20, sizeof(Data));
-  xTaskCreate([&](void * parameter) -> void {
-    /* keep the status of receiving data */
-    BaseType_t xStatus;
-    // /* time to block the task until data is available */
-    const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
-    Data data;
-
-    static char jsonBuffer[1024];
-    uint8_t _buffer[2000];
-
-    for (;;) {
-      /* receive data from the queue */
-      // if (!that->isNbConnected) {
-      //   continue;
-      // }
-      xStatus = xQueueReceive( that->xQueue, &data, xTicksToWait );
-      bzero(_buffer, sizeof(_buffer));
-      if (xStatus == pdPASS) {
-        /* print the data to terminal */
-        Serial.print("receiveTask got data: ");
-        Serial.print("packet type = ");
-        Serial.println(data.packet_type);
-        if (data.packet_type == TYPE_KEEP_ALIVE) {
-          Serial.println(">>> TYPE_KEEP_ALIVE");
-          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"loc\":\"%s\",\"reset\":%d,\"type\":%d,\"uptime_s\":%lu,\"unixtime\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\"}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(), data.latlngC, data.rebootCount, TYPE_KEEP_ALIVE, data.uptime_s, data.unixtime,  ESP.getFreeHeap(), String(data.batt).c_str(), data.ct++, 0, "X");
-
-          Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
-          // Serial.printf("   buffer = %s\r\n", _buffer);
-          // DUSTBOY2_1
-          uint16_t buflen = generate(_buffer, aisip, 5683, ("NBIoT/" DUSTBOY_ID),
-          COAP_CON, COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
-          Serial.printf("      len = %d\r\n", buflen);
-          that->sendPacket((uint8_t*)_buffer, buflen);
-        }
-      }
-      else {
-        // Serial.println("QQQQ");
-      }
-    }
-    vTaskDelete( NULL );
-  }, "receiveTask", 10000, NULL, 1, NULL);                    /* Task handle to keep track of created task */
-
+  // this->xQueue = xQueueCreate(20, sizeof(Data));
+  // xTaskCreate([&](void * parameter) -> void {
+  //   /* keep the status of receiving data */
+  //   BaseType_t xStatus;
+  //   // /* time to block the task until data is available */
+  //   const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
+  //   Data data;
+  //
+  //   static char jsonBuffer[1024];
+  //   uint8_t _buffer[2000];
+  //
+  //   for (;;) {
+  //     /* receive data from the queue */
+  //     // if (!that->isNbConnected) {
+  //     //   continue;
+  //     // }
+  //     xStatus = xQueueReceive( that->xQueue, &data, xTicksToWait );
+  //     bzero(_buffer, sizeof(_buffer));
+  //     if (xStatus == pdPASS) {
+  //       /* print the data to terminal */
+  //       this->hwSerial->print("receiveTask got data: ");
+  //       this->hwSerial->print("packet type = ");
+  //       this->hwSerial->println(data.packet_type);
+  //       if (data.packet_type == TYPE_KEEP_ALIVE) {
+  //         this->hwSerial->println(">>> TYPE_KEEP_ALIVE");
+  //         sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"loc\":\"%s\",\"reset\":%d,\"type\":%d,\"uptime_s\":%lu,\"unixtime\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\"}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(), data.latlngC, data.rebootCount, TYPE_KEEP_ALIVE, data.uptime_s, data.unixtime,  ESP.getFreeHeap(), String(data.batt).c_str(), data.ct++, 0, "X");
+  //
+  //         this->hwSerial->printf("jsonBuffer= %s\r\n", jsonBuffer);
+  //         // this->hwSerial->printf("   buffer = %s\r\n", _buffer);
+  //         // DUSTBOY2_1
+  //         uint16_t buflen = generate(_buffer, aisip, 5683, ("NBIoT/" DUSTBOY_ID),
+  //         COAP_CON, COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
+  //         this->hwSerial->printf("      len = %d\r\n", buflen);
+  //         that->sendPacket((uint8_t*)_buffer, buflen);
+  //       }
+  //     }
+  //     else {
+  //       // this->hwSerial->println("QQQQ");
+  //     }
+  //   }
+  //   vTaskDelete( NULL );
+  // }, "receiveTask", 10000, NULL, 1, NULL);                    /* Task handle to keep track of created task */
+  //
 }
 
 void CMMC_Modem::loop() {
@@ -187,7 +188,7 @@ void CMMC_Modem::loop() {
   static CMMC_Modem *that;
   that = this;
   keepAliveInterval.every_ms(10*1000, []() {
-    Serial.println("KEEP ALIVE INTERAL...");
+    that->hwSerial->println("KEEP ALIVE INTERAL...");
     printf(">> CASE; keep alive..\n");
     BaseType_t xStatus;
     const TickType_t xTicksToWait = pdMS_TO_TICKS(300);
@@ -200,20 +201,20 @@ void CMMC_Modem::loop() {
     data.uptime_s = millis() / 1000;
     // data.unixtime = rtc->getCurrentTimestamp();
     // strcpy(data.latlngC, gps->getLocation().c_str());
-    Serial.println("> sendTask2 is sending data");
+    that->hwSerial->println("> sendTask2 is sending data");
 
     if (!that->isNbConnected) {
-      Serial.println("NB IoT is not connected! skipped.");
+      that->hwSerial->println("NB IoT is not connected! skipped.");
       return;
     }
     else {
-      xStatus = xQueueSendToFront(that->xQueue, &data, xTicksToWait);
-      if ( xStatus == pdPASS ) {
-        Serial.println("ENQUEUE!!!");
-      }
-      else {
-        Serial.println("FAIL TO ENQUEUE.");
-      }
+      // xStatus = xQueueSendToFront(that->xQueue, &data, xTicksToWait);
+      // if ( xStatus == pdPASS ) {
+      //   that->hwSerial->println("ENQUEUE!!!");
+      // }
+      // else {
+      //   that->hwSerial->println("FAIL TO ENQUEUE.");
+      // }
     }
     // BaseType_t xStatusMain;
     // /* time to block the task until the queue has free space */
@@ -227,7 +228,7 @@ void CMMC_Modem::loop() {
 
 void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
   if (!isNbConnected) {
-    Serial.println("NB IoT is not connected! skipped.");
+    this->hwSerial->println("NB IoT is not connected! skipped.");
     return;
   }
   int rt = 0;

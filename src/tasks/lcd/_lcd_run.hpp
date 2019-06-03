@@ -1,3 +1,4 @@
+extern String nb_status_string;
 void CMMC_LCD::paintRunPage() {
   // SERIAL0.println("DRAWING..");
   static int ct = 0;
@@ -23,7 +24,7 @@ void CMMC_LCD::paintRunPage() {
 
   u8g2->setFont(u8g2_font_micro_tr);
   u8g2->setCursor(logoMargin + 44, 27 + 1);
-  // u8g2->print(modem->getStatus());
+  u8g2->print(nb_status_string);
   // u8g2->setFont(u8g2_font_logisoso16_tf);
   u8g2->setFont(u8g2_font_siji_t_6x10);
   u8g2->setCursor(marginLeft, 50);

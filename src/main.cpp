@@ -61,6 +61,7 @@ QueueHandle_t xQueueMain;
 
 void setup()
 {
+  WiFi.mode(WIFI_AP_STA);
   strcpy(sta_mac, WiFi.macAddress().c_str());
   strcpy(softap_mac, WiFi.softAPmacAddress().c_str());
 

@@ -34,16 +34,14 @@ class CMMC_Modem: public CMMC_Module{
   protected:
     CMMC_NB_IoT *nb;
     Stream *_modemSerial;
+    HardwareSerial *hwSerial;
     int isNbConnected = 0;
-    String status;
     uint32_t nbSentCounter = 1;
     void updateStatus(String s);
     // void resetModem();
     void sendPacket(uint8_t *text, int buflen);
 
     CMMC_Interval keepAliveInterval;
-    xQueueHandle xQueue;
-
     void receiveTask( void * parameter  );
     const char* name() {
       return "CMMC_Modem";
@@ -52,7 +50,7 @@ class CMMC_Modem: public CMMC_Module{
 
 
   public:
-    CMMC_Modem(Stream*);
+    CMMC_Modem(Stream*, HardwareSerial*);
     void hello();
     void setup();
     void loop();
@@ -61,6 +59,7 @@ class CMMC_Modem: public CMMC_Module{
     void paintScreen();
     String getStatus();
     uint32_t lastSentOkMillis = 0;
+    String status;
 };
 
 #endif

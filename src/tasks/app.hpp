@@ -12,6 +12,8 @@ struct shared_pool {
   String locationString;
 };
 
+String nb_status_string = "...";
+
 struct shared_pool pool;
 static CMMC_LCD *lcd = NULL;
 // extern static QueueHandle_t xQueueMain;
@@ -71,10 +73,10 @@ static void task_serial1(void *parameter) {
     }
     else {
     }
-    SERIAL0.printf("pool.pm10 = %f\r\n", pool.pm10);
-    SERIAL0.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
-    SERIAL0.printf("pool.location = %s\r\n", pool.locationString.c_str());
-    SERIAL0.printf("pool.dt = ");
+    // SERIAL0.printf("pool.pm10 = %f\r\n", pool.pm10);
+    // SERIAL0.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
+    // SERIAL0.printf("pool.location = %s\r\n", pool.locationString.c_str());
+    // SERIAL0.printf("pool.dt = ");
     // pool.printDt();
     showDate("", pool.dt);
     const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
@@ -82,8 +84,7 @@ static void task_serial1(void *parameter) {
       shared_pool p2 = pool;
         BaseType_t xStatus = xQueueSendToBack(xQueueMain, &p2, xTicksToWait);
         if ( xStatus == pdPASS ) {
-          SERIAL0.println("ENQUEUE!!!");
-          SERIAL0.printf("queue size = %lu \r\n", uxQueueMessagesWaiting(xQueueMain));
+          SERIAL0.printf("[ENQUEU!!] queue size = %lu \r\n", uxQueueMessagesWaiting(xQueueMain));
 
         }
         else {
@@ -110,21 +111,28 @@ CMMC_Modem *modem;
 
 
 static void nb_task(void *parameter) {
+    SERIAL0.println("NB_TASK..");
+    SERIAL0.println("NB_TASK..");
+    SERIAL0.println("NB_TASK..");
+    SERIAL0.println("NB_TASK..");
+    SERIAL0.println("NB_TASK..");
+    SERIAL0.println("NB_TASK..");
+    SERIAL0.println("NB_TASK..");
     HardwareSerial NBSerial(2);
     NBSerial.begin(9600, SERIAL_8N1, 26 /*rx*/, 27 /* tx */);
     NBSerial.setTimeout(4);
-    modem = new CMMC_Modem(&NBSerial);
+    modem = new CMMC_Modem(&NBSerial, &SERIAL0);
     modem->setup();
     while (1) {
       modem->loop();
-      delay(10);
+      nb_status_string = modem->status;
     }
     Serial.println("Ending task 2");
     vTaskDelete( NULL );
   // while (1) {
   //   if (xQueueMain != NULL) {
   //     BaseType_t xStatus;
-  //     const TickType_t xTicksToWait = pdMS_TO_TICKS(10);
+  //     const TickType_t xTicksToWait = pdMS_TO_TICKS10);
   //       xStatus = xQueueReceive(xQueueMain, &p, xTicksToWait);
   //       /* check whether receiving is ok or not */
   //       if (xStatus == pdPASS) {
