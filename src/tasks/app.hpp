@@ -105,20 +105,36 @@ static void lcd_task(void *parameter) {
 }
 
 static struct shared_pool p;
+#include "modem/CMMC_Modem.h"
+CMMC_Modem *modem;
+
+
 static void nb_task(void *parameter) {
-  while (1) {
-    if (xQueueMain != NULL) {
-      BaseType_t xStatus;
-      const TickType_t xTicksToWait = pdMS_TO_TICKS(10);
-        xStatus = xQueueReceive(xQueueMain, &p, xTicksToWait);
-        /* check whether receiving is ok or not */
-        if (xStatus == pdPASS) {
-          SERIAL0.println("[X-TASK] QUEUE RECV...");
-          SERIAL0.println(p.pm10);
-          SERIAL0.println(p.pm2_5);
-        }
-      }
-  }
+    HardwareSerial NBSerial(2);
+    NBSerial.begin(9600, SERIAL_8N1, 26 /*rx*/, 27 /* tx */);
+    NBSerial.setTimeout(4);
+    modem = new CMMC_Modem(&NBSerial);
+    modem->setup();
+    while (1) {
+      modem->loop();
+      delay(10);
+    }
+    Serial.println("Ending task 2");
+    vTaskDelete( NULL );
+  // while (1) {
+  //   if (xQueueMain != NULL) {
+  //     BaseType_t xStatus;
+  //     const TickType_t xTicksToWait = pdMS_TO_TICKS(10);
+  //       xStatus = xQueueReceive(xQueueMain, &p, xTicksToWait);
+  //       /* check whether receiving is ok or not */
+  //       if (xStatus == pdPASS) {
+  //         SERIAL0.println("[X-TASK] QUEUE RECV...");
+  //         SERIAL0.println(p.pm10);
+  //         SERIAL0.println(p.pm2_5);
+  //       }
+  //     }
+  // }
+
 }
 
 static void tasks_init() {

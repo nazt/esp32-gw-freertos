@@ -18,6 +18,8 @@ SCREEN_PAGE xpage = LCD_LOGO;
 char ap_name[20];
 char magel_token[40];
 
+char sta_mac[18];
+char softap_mac[18];
 CMMC_Legend *os;
 HardwareSerial SERIAL0(0);
 
@@ -59,9 +61,15 @@ QueueHandle_t xQueueMain;
 
 void setup()
 {
+  strcpy(sta_mac, WiFi.macAddress().c_str());
+  strcpy(softap_mac, WiFi.softAPmacAddress().c_str());
+
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);
   SERIAL0.begin(115200);
+
+  SERIAL0.printf("STA MAC: %s\r\n", sta_mac);
+  SERIAL0.printf(" AP MAC: %s\r\n", softap_mac);
 
   xQueueMain = xQueueCreate(30, sizeof(struct shared_pool));
 

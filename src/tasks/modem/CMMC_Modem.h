@@ -43,7 +43,14 @@ class CMMC_Modem: public CMMC_Module{
 
     CMMC_Interval keepAliveInterval;
     xQueueHandle xQueue;
+
     void receiveTask( void * parameter  );
+    const char* name() {
+      return "CMMC_Modem";
+    }
+    void config(CMMC_System *os, AsyncWebServer* server) {} ;
+
+
   public:
     CMMC_Modem(Stream*);
     void hello();

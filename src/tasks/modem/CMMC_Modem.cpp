@@ -14,8 +14,10 @@
 
 #include "coap.h"
 #include "coap-helper.h"
-static QueueHandle_t xQueueMain;
 
+extern char sta_mac[18];
+extern char softap_mac[18];
+// extern static QueueHandle_t xQueueMain;
 
 IPAddress aisip = IPAddress(103, 20, 205, 85);
 RTC_DATA_ATTR int rebootCount = -1;
@@ -176,12 +178,7 @@ void CMMC_Modem::setup() {
       }
     }
     vTaskDelete( NULL );
-  },           /* Task function. */
-  "receiveTask",        /* name of task. */
-  10000,                    /* Stack size of task */
-  NULL,                     /* parameter of the task */
-  1,                        /* priority of the task */
-  NULL);                    /* Task handle to keep track of created task */
+  }, "receiveTask", 10000, NULL, 1, NULL);                    /* Task handle to keep track of created task */
 
 }
 
