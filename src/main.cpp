@@ -1,4 +1,8 @@
 #include <Arduino.h>
+
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
 #include "defs.h"
 #include <HardwareSerial.h>
 #include <WiFi.h>
@@ -49,6 +53,7 @@ void hook_button_long_pressed() {
   xpage = LCD_BUTTON_LONG_PRESSED;
 }
 
+QueueHandle_t xQueueMain;
 
 #include "tasks/app.hpp"
 
@@ -57,10 +62,19 @@ void setup()
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);
   SERIAL0.begin(115200);
+
+  xQueueMain = xQueueCreate(30, sizeof(struct shared_pool));
+
   String taskMessage = "[main] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
   SERIAL0.println(taskMessage);
-  // delay(200);
+
+  if(xQueueMain == NULL){
+    SERIAL0.println("Error creating the queue");
+  }
+  else {
+    SERIAL0.println("creating queue done.");
+  }
   SERIAL0.println("CPU0 reset reason:");
   print_reset_reason(rtc_get_reset_reason(0), &SERIAL0);
   verbose_print_reset_reason(rtc_get_reset_reason(0), &SERIAL0);
@@ -98,6 +112,18 @@ uint32_t prev = 0;
 void loop()
 {
   os->run();
+      // if (xQueueMain != NULL) {
+      //   BaseType_t xStatus;
+      //   const TickType_t xTicksToWait = pdMS_TO_TICKS(10);
+      //   struct shared_pool p;
+      //   xStatus = xQueueReceive(xQueueMain, &p, xTicksToWait);
+      //   /* check whether receiving is ok or not */
+      //   if(xStatus == pdPASS){
+      //     SERIAL0.println("[X-TASK] QUEUE RECV...");
+      //   }
+      //   // vTaskDelay(500/portTICK_PERIOD_MS); //wait for 500 ms
+      // }
+
   // String taskMessage = "[main] Task running on core ";
   // taskMessage = taskMessage + xPortGetCoreID();
   // lcd->pm2_5 = pool.pm2_5;

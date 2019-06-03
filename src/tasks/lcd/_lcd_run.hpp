@@ -4,6 +4,11 @@ void CMMC_LCD::paintRunPage() {
   u8g2->drawXBM(7, 0, 30, 36, logo);
 
   u8g2->setFont(u8g2_font_p01type_tn);
+
+  u8g2->setCursor(56, 6);
+  u8g2->print(dateTimeString);
+
+  u8g2->setFont(u8g2_font_p01type_tn);
   u8g2->setCursor(4, 6);
   // uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
   u8g2->print(ct++);
