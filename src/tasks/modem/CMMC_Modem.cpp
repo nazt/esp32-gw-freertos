@@ -12,9 +12,10 @@ extern char softap_mac[18];
 IPAddress aisip = IPAddress(103, 20, 205, 85);
 RTC_DATA_ATTR int rebootCount = -1;
 
-CMMC_Modem::CMMC_Modem(Stream* s, HardwareSerial* hwSerial)   {
+CMMC_Modem::CMMC_Modem(Stream* s, HardwareSerial* hwSerial, MODEM_TYPE modem_type)   {
   this->_modemSerial = s;
   this->hwSerial = hwSerial;
+  this->_modemType = modem_type;
 }
 
 void CMMC_Modem::configLoop() {
@@ -33,27 +34,28 @@ void CMMC_Modem::updateStatus(String s) {
 void CMMC_Modem::setup() {
   Serial.println("setup modem..");
   this->status = "Initializing Modem.";
-  // pinMode(13, INPUT);
-  // while(1) {
-  //   Serial.println(digitalRead(13));
-  // }
 
-  // #define TRUE_NB_IOT_CONF 1
-  #define AIS_NB_IOT_CONF 1
 
-  #ifdef TRUE_NB_IOT_CONF
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
-  delay(1);
-  digitalWrite(13, HIGH);
-  #endif
 
-  #ifdef AIS_NB_IOT_CONF
-  pinMode(13, OUTPUT);
-  digitalWrite(13, HIGH);
-  delay(1);
-  digitalWrite(13, LOW);
-  #endif
+  if (this->_modemType == TYPE_AIS_NB_IOT) {
+    pinMode(13, OUTPUT);
+    digitalWrite(13, HIGH);
+    delay(1);
+    digitalWrite(13, LOW);
+  }
+  else if (this->_modemType == TYPE_TRUE_NB_IOT) {
+    pinMode(13, OUTPUT);
+    digitalWrite(13, LOW);
+    delay(1);
+    digitalWrite(13, HIGH);
+  }
+  else {
+    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
+    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
+    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
+    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
+    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
+  }
 
   Serial.println("Initializing CMMC NB-IoT");
   nb = new CMMC_NB_IoT(this->_modemSerial);
@@ -99,12 +101,10 @@ void CMMC_Modem::setup() {
     that->updateStatus(t);
 
     vTaskDelay(500 / portTICK_PERIOD_MS);
-
     if (millis() - prev > (180 * 1000)) {
       ESP.deepSleep(1e6);
-      delay(100);
+      vTaskDelay(500 / portTICK_PERIOD_MS);
       ESP.restart();
-      delay(10);
     }
   });
 
@@ -138,22 +138,21 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
   while (true) {
     updateStatus("dispatching queue...");
     if (nb->sendMessageHex(buffer, buflen, 0)) {
-      updateStatus(">> send ok.");
       lastSentOkMillis = millis();
-      delay(100);
+      vTaskDelay(500/portTICK_PERIOD_MS);
       break;
     }
     else {
       updateStatus(">> send failed.");
       if (++rt > 5) {
             ESP.deepSleep(1e6);
-            delay(100);
+            vTaskDelay(200/portTICK_PERIOD_MS);
             ESP.restart();
             delay(10);
         break;
       }
     }
-    delay(200);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
   }
 }
 

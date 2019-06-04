@@ -65,9 +65,9 @@ void CMMC_RTC::loop() {
         _now = now;
         strcpy(dateTimeCharArrray, print_time(now).c_str());
       }
-      else {
-
-      }
+      // else {
+      //
+      // }
       // sprintf(dateTimeCharArrray, "%02u/%02u/%02u %02u:%02u:%02u",
       // now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second());
       // Serial.println(dateTimeCharArrray);

@@ -29,6 +29,11 @@ typedef struct{
   DATA_COAP_TYPE packet_type;
 } Data;
 
+enum MODEM_TYPE {
+    TYPE_AIS_NB_IOT = 1,
+    TYPE_TRUE_NB_IOT,
+};
+
 class CMMC_Modem: public CMMC_Module{
   protected:
     CMMC_NB_IoT *nb;
@@ -44,10 +49,10 @@ class CMMC_Modem: public CMMC_Module{
       return "CMMC_Modem";
     }
     void config(CMMC_System *os, AsyncWebServer* server) {} ;
-
+    MODEM_TYPE _modemType;
 
   public:
-    CMMC_Modem(Stream*, HardwareSerial*);
+    CMMC_Modem(Stream*, HardwareSerial*, MODEM_TYPE);
     void hello();
     void setup();
     void loop();

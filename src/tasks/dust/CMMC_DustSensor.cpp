@@ -70,7 +70,7 @@ void CMMC_DustSensor::loop() {
 
   while(this->_serial->peek() != 0x42) {
     this->_serial->read();
-    if (millis() - ms > 3000) {
+    if (millis() - ms > 1000) {
       // SERIAL0.println("WAITING.. DUST SENSOR TIMEOUT...");
       break;
     }

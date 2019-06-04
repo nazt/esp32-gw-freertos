@@ -37,7 +37,7 @@ void CMMC_GPS::loop() {
   vTaskDelay(20 / portTICK_PERIOD_MS);
   while(!this->serial->available()) {
     vTaskDelay(1 / portTICK_PERIOD_MS);
-    if (millis() - ms > 2000) {
+    if (millis() - ms > 1000) {
       // SERIAL0.println("GPS_SERIAL timeout!!!");
       break;
     }
