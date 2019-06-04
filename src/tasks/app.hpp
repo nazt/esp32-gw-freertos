@@ -10,7 +10,6 @@ struct shared_pool {
   float pm2_5;
   DateTime dt;
   String locationString;
-  char dateTimeString[30];
 };
 
 String nb_status_string = "...";
@@ -25,41 +24,37 @@ void showDate(const char* txt, const DateTime& dt) {
     dt.year(), dt.hour(), dt.minute()%60, dt.second()%60);
 }
 
-static void rtc_task(void* parameter) {
-  static CMMC_RTC *rtc = new CMMC_RTC();
-  rtc->setup();
-  while(1) {
-    rtc->loop();
-    strcpy(pool.dateTimeString, rtc->getDateTimeString().c_str());
-    vTaskDelay(500 / portTICK_PERIOD_MS);
-  }
-}
-
 static void task_serial1(void *parameter) {
   pool.pm10 = 0;
   pool.pm2_5 = 0;
   static CMMC_DustSensor *dustSensor = new CMMC_DustSensor(&Serial1);
   static CMMC_GPS *gps = new CMMC_GPS(&Serial1);
+  static CMMC_RTC *rtc = new CMMC_RTC();
   dustSensor->setup();
   gps->setup();
+  rtc->setup();
   while (1) {
-    if (lcd) {
-      strcpy(lcd->dateTimeString, pool.dateTimeString);
+    vTaskDelay(200 / portTICK_PERIOD_MS);
+    if (lcd != NULL) {
+      strcpy(lcd->dateTimeString, rtc->getDateTimeString().c_str());
     }
     if (xpage == LCD_CONFIG) {
       continue;
     }
+
     dustSensor->loop();
     gps->loop();
+    rtc->loop();
 
     pool.pm10 = dustSensor->getPMValue(DustPM10);
     pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
+    pool.dt = rtc->getDateTime();
     pool.locationString = gps->getLocationString();
-    // if (gps->_lastSyncRtc > 0) {
-    //   rtc->adjust(gps->getDateTime());
-    // }
-    // else {
-    // }
+    if (gps->_lastSyncRtc > 0) {
+      rtc->adjust(gps->getDateTime());
+    }
+    else {
+    }
     const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
     if (xQueueMain != NULL) {
       shared_pool p2 = pool;
@@ -129,6 +124,5 @@ static void tasks_init() {
   xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
   xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 2, NULL);
   xTaskCreate(nb_task, "nb_task", 8192, NULL, 1, NULL);
-  xTaskCreate(rtc_task, "rtc_task", 4096, NULL, 1, NULL);
   // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
 }
