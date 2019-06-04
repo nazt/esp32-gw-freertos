@@ -20,24 +20,8 @@ static CMMC_LCD *lcd = NULL;
 
 void showDate(const char* txt, const DateTime& dt) {
   SERIAL0.print(txt);
-  SERIAL0.print("");
-  SERIAL0.print(dt.year(), DEC);
-  SERIAL0.print('/');
-  SERIAL0.print(dt.month(), DEC);
-  SERIAL0.print('/');
-  SERIAL0.print(dt.day(), DEC);
-  SERIAL0.print(' ');
-  SERIAL0.print(dt.hour(), DEC);
-  SERIAL0.print(':');
-  SERIAL0.print(dt.minute(), DEC);
-  SERIAL0.print(':');
-  SERIAL0.print(dt.second(), DEC);
-  // SERIAL0.print(" = ");
-  // SERIAL0.print(dt.unixtime());
-  // SERIAL0.print("s / ");
-  // SERIAL0.print(dt.unixtime() / 86400L);
-  // SERIAL0.print("d since 1970");
-  SERIAL0.println();
+  SERIAL0.printf("%d/%d/%d %02d:%02d:%02d", dt.day(), dt.month(),
+    dt.year(), dt.hour(), dt.minute()%60, dt.second()%60);
 }
 
 static void task_serial1(void *parameter) {
@@ -85,7 +69,6 @@ static void task_serial1(void *parameter) {
         BaseType_t xStatus = xQueueSendToBack(xQueueMain, &p2, xTicksToWait);
         if ( xStatus == pdPASS ) {
           SERIAL0.printf("[ENQUEU!!] queue size = %lu \r\n", uxQueueMessagesWaiting(xQueueMain));
-
         }
         else {
           SERIAL0.println("FAIL TO ENQUEUE.");
@@ -126,20 +109,24 @@ static void nb_task(void *parameter) {
     while (1) {
       modem->loop();
       nb_status_string = modem->status;
+      if (xQueueMain != NULL) {
+        const TickType_t xTicksToWait = pdMS_TO_TICKS(10);
+        BaseType_t xStatus;
+        xStatus = xQueueReceive(xQueueMain, &p, xTicksToWait);
+        if (xStatus == pdPASS) {
+          SERIAL0.println("[X-TASK] QUEUE RECV...");
+          SERIAL0.println(p.pm10);
+          SERIAL0.println(p.pm2_5);
+        }
+        else {
+          SERIAL0.println("FAILED TO RECV Q.");
+        }
+      }
     }
-    Serial.println("Ending task 2");
+    SERIAL0.println("Ending task 2");
     vTaskDelete( NULL );
   // while (1) {
-  //   if (xQueueMain != NULL) {
-  //     BaseType_t xStatus;
-  //     const TickType_t xTicksToWait = pdMS_TO_TICKS10);
-  //       xStatus = xQueueReceive(xQueueMain, &p, xTicksToWait);
   //       /* check whether receiving is ok or not */
-  //       if (xStatus == pdPASS) {
-  //         SERIAL0.println("[X-TASK] QUEUE RECV...");
-  //         SERIAL0.println(p.pm10);
-  //         SERIAL0.println(p.pm2_5);
-  //       }
   //     }
   // }
 
