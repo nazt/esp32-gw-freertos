@@ -78,7 +78,7 @@ static void task_serial1(void *parameter) {
     // SERIAL0.printf("pool.location = %s\r\n", pool.locationString.c_str());
     // SERIAL0.printf("pool.dt = ");
     // pool.printDt();
-    showDate("", pool.dt);
+    // showDate("", pool.dt);
     const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
     if (xQueueMain != NULL) {
       shared_pool p2 = pool;

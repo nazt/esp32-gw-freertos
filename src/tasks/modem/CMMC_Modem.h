@@ -25,7 +25,6 @@ typedef struct{
   uint32_t unixtime;
   uint32_t rebootCount = 0;
   char latlngC[80];
-  // DateTime dt;
   unsigned int ct = 1;
   DATA_COAP_TYPE packet_type;
 } Data;
@@ -38,9 +37,7 @@ class CMMC_Modem: public CMMC_Module{
     int isNbConnected = 0;
     uint32_t nbSentCounter = 1;
     void updateStatus(String s);
-    // void resetModem();
     void sendPacket(uint8_t *text, int buflen);
-
     CMMC_Interval keepAliveInterval;
     void receiveTask( void * parameter  );
     const char* name() {
