@@ -45,24 +45,16 @@ static void task_serial1(void *parameter) {
     dustSensor->loop();
     gps->loop();
     rtc->loop();
+
     pool.pm10 = dustSensor->getPMValue(DustPM10);
     pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
     pool.dt = rtc->getDateTime();
-    // pool.location = gps->getLocation();
-    // showDate("[RTC]:", pool.location);
-    // showDate("[GPS]:", pool.location);
     pool.locationString = gps->getLocationString();
     if (gps->_lastSyncRtc > 0) {
       rtc->adjust(gps->getDateTime());
     }
     else {
     }
-    // SERIAL0.printf("pool.pm10 = %f\r\n", pool.pm10);
-    // SERIAL0.printf("pool.pm2_5 = %f\r\n", pool.pm2_5);
-    // SERIAL0.printf("pool.location = %s\r\n", pool.locationString.c_str());
-    // SERIAL0.printf("pool.dt = ");
-    // pool.printDt();
-    // showDate("", pool.dt);
     const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
     if (xQueueMain != NULL) {
       shared_pool p2 = pool;
@@ -125,11 +117,6 @@ static void nb_task(void *parameter) {
     }
     SERIAL0.println("Ending task 2");
     vTaskDelete( NULL );
-  // while (1) {
-  //       /* check whether receiving is ok or not */
-  //     }
-  // }
-
 }
 
 static void tasks_init() {
