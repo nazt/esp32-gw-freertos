@@ -9,6 +9,9 @@
 
 static const int RX_BUF_SIZE = 1024;
 
+extern char sta_mac[18];
+extern char softap_mac[18];
+extern float G_busvoltage;
 
 typedef enum {
   TYPE_KEEP_ALIVE = 1,
@@ -16,12 +19,9 @@ typedef enum {
 } DATA_COAP_TYPE;
 
 typedef struct{
-  float  batt = 0;
-  float  batt_raw = 0;
-  float  batt_percent = 0;
+  float  batt_volt = 0;
   float pm10;
   float pm2_5;
-  int analogValue;
   uint32_t uptime_s;
   uint32_t unixtime;
   uint32_t rebootCount = 0;
@@ -30,6 +30,7 @@ typedef struct{
   DATA_COAP_TYPE packet_type;
   int modem_type;
 } Data;
+
 struct shared_pool {
   float pm10;
   float pm2_5;
@@ -151,10 +152,11 @@ static void nb_task(void *parameter) {
           data.modem_type = modem->_modemType;
           data.uptime_s = millis() / 1000;
           data.unixtime = pool.dt.unixtime();
+          data.batt_volt = G_busvoltage;
           int freshGps = -1;
           strcpy(data.latlngC, pool.locationString.c_str());
           // if (data.packet_type == TYPE_KEEP_ALIVE) {
-          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"loc\":\"%s\",\"reset\":%d,\"freshGps\":%d,\"uptime_s\":%lu,\"unixtime\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\", \"modem_type\": %d}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(), data.latlngC, data.rebootCount, freshGps, data.uptime_s, data.unixtime,  ESP.getFreeHeap(), String(data.batt).c_str(), data.ct++, 0, "X", modem->_modemType);
+          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"loc\":\"%s\",\"reset\":%d,\"freshGps\":%d,\"uptime_s\":%lu,\"unixtime\":%lu,\"heap\":%lu,\"batt_volt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\", \"modem_type\": %d}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(), data.latlngC, data.rebootCount, freshGps, data.uptime_s, data.unixtime,  ESP.getFreeHeap(), String(data.batt_volt).c_str(), data.ct++, 0, "X", modem->_modemType);
           SERIAL0.println(jsonBuffer);
 
           // Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);

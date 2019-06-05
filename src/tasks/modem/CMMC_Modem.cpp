@@ -2,9 +2,6 @@
 #include <RTClib.h>
 #include "CMMC_Modem.h"
 
-extern char sta_mac[18];
-extern char softap_mac[18];
-// extern static QueueHandle_t xQueueMain;
 
 IPAddress aisip = IPAddress(103, 20, 205, 85);
 RTC_DATA_ATTR int rebootCount = -1;
@@ -32,8 +29,6 @@ void CMMC_Modem::setup() {
   Serial.println("setup modem..");
   // this->status = "Initializing Modem.";
   strcpy(this->status, "Initializing Modem.");
-
-
 
   if (this->_modemType == TYPE_AIS_NB_IOT) {
     pinMode(13, OUTPUT);

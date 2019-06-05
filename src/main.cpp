@@ -11,6 +11,8 @@
 
 
 #include "modules/ConfigModule.h"
+#include "modules/PowerModule.h"
+
 #include "tasks/lcd/CMMC_LCD.h"
 #include "utils.hpp"
 
@@ -20,12 +22,15 @@ char ap_name[20];
 char G_magel_token[80];
 char G_device_name[20];
 int G_modem_type = -1;
+float G_busvoltage = 0;
 
 char sta_mac[18];
 char softap_mac[18];
 CMMC_Legend *os;
 HardwareSerial SERIAL0(0);
+
 ConfigModule* configModule;
+PowerModule* powerModule;
 
 void hook_init_ap(char* name, IPAddress ip) {
   strcpy(ap_name, name);
@@ -60,6 +65,7 @@ void hook_button_long_pressed() {
 }
 
 void hook_ready();
+void hook_config_loaded();
 
 QueueHandle_t xQueueMain;
 
@@ -114,18 +120,24 @@ void setup()
   };
 
   configModule = new ConfigModule();
+  powerModule = new PowerModule();
+
   os->addModule(configModule);
-  tasks_init();
+  os->addModule(powerModule);
   os->setup(&config);
 }
 
+void hook_config_loaded() {
+}
+
 void hook_ready() {
-  strcpy(G_magel_token, configModule->magel_token);
-  strcpy(G_device_name, configModule->device_name);
-  G_modem_type = configModule->modem_type;
   xpage = LCD_RUN;
   SERIAL0.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   SERIAL0.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+  strcpy(G_magel_token, configModule->magel_token);
+  strcpy(G_device_name, configModule->device_name);
+  G_modem_type = configModule->modem_type;
+  tasks_init();
 }
 
 uint32_t prev = 0;
