@@ -52,6 +52,18 @@ void ConfigModule::config(CMMC_System *os, AsyncWebServer *server)
         strcpy(that->device_name, "NONAME");
         SERIAL0.println("device_name is NULL.");
       }
+
+      if (root->get<const char*>("modem_type") != NULL) {
+        const char* modem_type = root->get<const char*>("modem_type");
+        SERIAL0.printf("modem_type LOADED = %s\r\n", modem_type);
+        // strcpy(that->modem_type, modem_type);
+        this->modem_type = atoi(modem_type);
+      }
+      else {
+        SERIAL0.println("modem_type is NULL.");
+        this->modem_type = (0);
+      }
+
     }
   });
   this->configWebServer();

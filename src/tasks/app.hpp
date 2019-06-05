@@ -126,7 +126,7 @@ static void nb_task(void *parameter) {
     HardwareSerial NBSerial(2);
     NBSerial.begin(9600, SERIAL_8N1, 26 /*rx*/, 27 /* tx */);
     NBSerial.setTimeout(4);
-    modem = new CMMC_Modem(&NBSerial, &SERIAL0, TYPE_AIS_NB_IOT);
+    modem = new CMMC_Modem(&NBSerial, &SERIAL0, G_modem_type);
     modem->setup();
     while (1) {
       modem->loop();
@@ -150,11 +150,11 @@ static void nb_task(void *parameter) {
           data.ct = ct++;
           data.modem_type = modem->_modemType;
           data.uptime_s = millis() / 1000;
+          data.unixtime = pool.dt.unixtime();
+          int freshGps = -1;
           strcpy(data.latlngC, pool.locationString.c_str());
-
           // if (data.packet_type == TYPE_KEEP_ALIVE) {
-          SERIAL0.println(">>> TYPE_KEEP_ALIVE");
-          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"loc\":\"%s\",\"reset\":%d,\"type\":%d,\"uptime_s\":%lu,\"unixtime\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\", \"modem_type\": %d}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(), data.latlngC, data.rebootCount, TYPE_KEEP_ALIVE, data.uptime_s, data.unixtime,  ESP.getFreeHeap(), String(data.batt).c_str(), data.ct++, 0, "X", modem->_modemType);
+          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"loc\":\"%s\",\"reset\":%d,\"freshGps\":%d,\"uptime_s\":%lu,\"unixtime\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\", \"modem_type\": %d}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(), data.latlngC, data.rebootCount, freshGps, data.uptime_s, data.unixtime,  ESP.getFreeHeap(), String(data.batt).c_str(), data.ct++, 0, "X", modem->_modemType);
           SERIAL0.println(jsonBuffer);
 
           // Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
