@@ -41,6 +41,7 @@ void ConfigModule::config(CMMC_System *os, AsyncWebServer *server)
       else {
         SERIAL0.println("magel_ID is NULL.");
         strcpy(that->magel_token, "FFFF-FFFF-FFFF");
+        SERIAL0.println(that->magel_token);
       }
 
       if (root->get<const char*>("device_name") != NULL) {
@@ -51,16 +52,21 @@ void ConfigModule::config(CMMC_System *os, AsyncWebServer *server)
       else {
         strcpy(that->device_name, "NONAME");
         SERIAL0.println("device_name is NULL.");
+        SERIAL0.print("SO: ");
+        SERIAL0.println(that->device_name);
       }
 
       if (root->get<const char*>("modem_type") != NULL) {
         const char* modem_type = root->get<const char*>("modem_type");
         this->modem_type = atoi(modem_type);
+        SERIAL0.print("SO: ");
         SERIAL0.printf("modem_type LOADED = %d\r\n", this->modem_type);
       }
       else {
         SERIAL0.println("modem_type is NULL.");
         this->modem_type = (0);
+        SERIAL0.print("SO: ");
+        SERIAL0.println(that->device_name);
       }
     }
   });
