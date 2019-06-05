@@ -12,6 +12,7 @@ static const int RX_BUF_SIZE = 1024;
 extern char sta_mac[18];
 extern char softap_mac[18];
 extern float G_busvoltage;
+extern int G_modem_type;
 
 typedef enum {
   TYPE_KEEP_ALIVE = 1,
@@ -41,7 +42,7 @@ struct shared_pool {
 String nb_status_string = "...";
 static uint32_t ct = 0;
 
-struct shared_pool pool;
+static struct shared_pool pool;
 static CMMC_LCD *lcd = NULL;
 // extern static QueueHandle_t xQueueMain;
 
@@ -51,6 +52,7 @@ void showDate(const char* txt, const DateTime& dt) {
     dt.year(), dt.hour(), dt.minute()%60, dt.second()%60);
 }
 
+static shared_pool p2 = pool;
 static void task_serial1(void *parameter) {
   pool.pm10 = 0;
   pool.pm2_5 = 0;
@@ -82,9 +84,9 @@ static void task_serial1(void *parameter) {
     }
     else {
     }
-    const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
+
     if (xQueueMain != NULL) {
-      shared_pool p2 = pool;
+        const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
         BaseType_t xStatus = xQueueSendToBack(xQueueMain, &p2, xTicksToWait);
         if ( xStatus == pdPASS ) {
           SERIAL0.printf("[ENQUEU!!] queue size = %lu \r\n", uxQueueMessagesWaiting(xQueueMain));
@@ -101,10 +103,12 @@ static void lcd_task(void *parameter) {
   lcd = new CMMC_LCD();
   lcd->setup();
   while (1) {
+    // SERIAL0.printf(">>%lu\n", millis());
     lcd->pm10 = pool.pm10;
     lcd->pm2_5 = pool.pm2_5;
     lcd->loop();
-    vTaskDelay(100 / portTICK_PERIOD_MS);
+    // SERIAL0.printf("//%lu\n", millis());
+    vTaskDelay(300 / portTICK_PERIOD_MS);
   }
 }
 
@@ -118,18 +122,13 @@ static uint8_t _buffer[2000];
 
 static void nb_task(void *parameter) {
     SERIAL0.println("NB_TASK..");
-    SERIAL0.println("NB_TASK..");
-    SERIAL0.println("NB_TASK..");
-    SERIAL0.println("NB_TASK..");
-    SERIAL0.println("NB_TASK..");
-    SERIAL0.println("NB_TASK..");
-    SERIAL0.println("NB_TASK..");
     HardwareSerial NBSerial(2);
     NBSerial.begin(9600, SERIAL_8N1, 26 /*rx*/, 27 /* tx */);
     NBSerial.setTimeout(4);
     modem = new CMMC_Modem(&NBSerial, &SERIAL0, G_modem_type);
     modem->setup();
     while (1) {
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
       modem->loop();
       nb_status_string = modem->status;
       SERIAL0.printf("status=%s\r\n", nb_status_string);
@@ -149,7 +148,7 @@ static void nb_task(void *parameter) {
           data.pm10 = pool.pm10;
           data.pm2_5 = pool.pm2_5;
           data.ct = ct++;
-          data.modem_type = modem->_modemType;
+          data.modem_type = G_modem_type;
           data.uptime_s = millis() / 1000;
           data.unixtime = pool.dt.unixtime();
           data.batt_volt = G_busvoltage;
@@ -179,7 +178,6 @@ static void nb_task(void *parameter) {
           nb_status_string = "dispatching...";
           modem->sendPacket((uint8_t*)_buffer, buflen);
           nb_status_string = "sent.";
-          vTaskDelay(200 / portTICK_PERIOD_MS);
         }
         else {
           // SERIAL0.println("FAILED TO RECV Q.");
@@ -193,7 +191,7 @@ static void nb_task(void *parameter) {
 static void tasks_init() {
   int priority = 2;
   xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
-  xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 2, NULL);
+  delay(1000);
   xTaskCreate(nb_task, "nb_task", 8192, NULL, 1, NULL);
   // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
 }

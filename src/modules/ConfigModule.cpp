@@ -23,7 +23,7 @@ void ConfigModule::config(CMMC_System *os, AsyncWebServer *server)
   this->_serverPtr = server;
   this->_managerPtr = new CMMC_ConfigManager("/nbiot.json");
   this->_managerPtr->init();
-  this->_managerPtr->load_config([&](JsonObject *root, const char *content) {
+  this->_managerPtr->load_config([&](JsonObject * root, const char *content) {
     if (root == NULL) {
       SERIAL0.print("config.json failed. >");
       SERIAL0.println(content);
@@ -55,15 +55,13 @@ void ConfigModule::config(CMMC_System *os, AsyncWebServer *server)
 
       if (root->get<const char*>("modem_type") != NULL) {
         const char* modem_type = root->get<const char*>("modem_type");
-        SERIAL0.printf("modem_type LOADED = %s\r\n", modem_type);
-        // strcpy(that->modem_type, modem_type);
         this->modem_type = atoi(modem_type);
+        SERIAL0.printf("modem_type LOADED = %d\r\n", this->modem_type);
       }
       else {
         SERIAL0.println("modem_type is NULL.");
         this->modem_type = (0);
       }
-
     }
   });
   this->configWebServer();
@@ -72,7 +70,7 @@ void ConfigModule::config(CMMC_System *os, AsyncWebServer *server)
 void ConfigModule::configWebServer()
 {
   static ConfigModule *that = this;
-  _serverPtr->on(this->path, HTTP_POST, [&](AsyncWebServerRequest *request) {
+  _serverPtr->on(this->path, HTTP_POST, [&](AsyncWebServerRequest * request) {
     String output = that->saveConfig(request, this->_managerPtr);
     request->send(200, "application/json", output);
   });

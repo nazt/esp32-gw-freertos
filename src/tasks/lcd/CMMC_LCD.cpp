@@ -2,18 +2,9 @@
 #include "logo.h"
 #include <TimeLib.h>
 
-extern struct shared_pool pool;
+// extern struct shared_pool pool;
 extern SCREEN_PAGE xpage;
 extern char ap_name[20];
-
-String pm10Value = "999.88";
-String pm2_5Value = "45.49";
-
-uint32_t counter = 0;
-uint32_t sentCnt = 0;
-uint8_t peerCount = 0;
-int packetRecv = 0;
-int count = 0;
 
 CMMC_LCD::CMMC_LCD() {
   u8g2 = new U8G2_ST7920_128X64_F_SW_SPI(U8G2_R0, /* clock=*/ 18, /* MOSI=*/ 23, /* MISO=*/ 19);
@@ -24,6 +15,7 @@ CMMC_LCD::CMMC_LCD() {
 
 void CMMC_LCD::config(CMMC_System *os, AsyncWebServer *server)
 {
+
 }
 
 void CMMC_LCD::configLoop() {
@@ -50,8 +42,13 @@ void CMMC_LCD::loop() {
   paintScreen();
 }
 
-const char* CMMC_LCD::formatedNumber(char* buffer, int n) {
-  sprintf(buffer, "%3d", n);
+const char* CMMC_LCD::formatedNumber(char* buffer, int n, char* suff) {
+  if (suff) {
+    sprintf(buffer, "%3d%s", n, suff);
+  }
+  else {
+    sprintf(buffer, "%3d", n);
+  }
   return buffer;
 }
 
@@ -92,6 +89,7 @@ void CMMC_LCD::paintScreen() {
       paintConfigPage();
     }
     u8g2->sendBuffer();
+    delay(10);
 }
 
 void CMMC_LCD::displayLogo() {

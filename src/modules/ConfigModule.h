@@ -16,7 +16,7 @@ class ConfigModule: public CMMC_Module {
     }
     char magel_token[80];
     char device_name[40];
-    int modem_type = 0;
+    int modem_type = -2;
   protected:
     void configWebServer();
   private:

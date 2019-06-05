@@ -50,6 +50,44 @@ void PowerModule::configWebServer()
 
 void PowerModule::setup()
 {
+  // byte error, address;
+  // int nDevices;
+  //
+  // SERIAL0.println("Scanning...");
+  // Wire.begin();
+  //
+  // nDevices = 0;
+  // for(address = 1; address < 127; address++ )
+  // {
+  //   // The i2c_scanner uses the return value of
+  //   // the Write.endTransmisstion to see if
+  //   // a device did acknowledge to the address.
+  //   Wire.beginTransmission(address);
+  //   error = Wire.endTransmission();
+  //
+  //   if (error == 0)
+  //   {
+  //     SERIAL0.print("I2C device found at address 0x");
+  //     if (address<16)
+  //       SERIAL0.print("0");
+  //     SERIAL0.print(address,HEX);
+  //     SERIAL0.println("  !");
+  //
+  //     nDevices++;
+  //   }
+  //   else if (error==4)
+  //   {
+  //     SERIAL0.print("Unknown error at address 0x");
+  //     if (address<16)
+  //       SERIAL0.print("0");
+  //     SERIAL0.println(address,HEX);
+  //   }
+  // }
+  // if (nDevices == 0)
+  //   SERIAL0.println("No I2C devices found\n");
+  // else
+  //   SERIAL0.println("done\n");
+
   ina219->begin();
   ina219->setCalibration_16V_400mA();
 
@@ -57,21 +95,14 @@ void PowerModule::setup()
   busvoltage = ina219->getBusVoltage_V();
   current_mA = ina219->getCurrent_mA();
   power_mW = ina219->getPower_mW();
-  loadvoltage = busvoltage + (shuntvoltage / 1000);   
+  loadvoltage = busvoltage + (shuntvoltage / 1000);
 }
 
 void PowerModule::loop() {
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
   shuntvoltage = ina219->getShuntVoltage_mV();
   busvoltage = ina219->getBusVoltage_V();
   current_mA = ina219->getCurrent_mA();
   power_mW = ina219->getPower_mW();
   loadvoltage = busvoltage + (shuntvoltage / 1000);
-
-  SERIAL0.print("Bus Voltage:   "); SERIAL0.print(busvoltage); SERIAL0.println(" V");
-  SERIAL0.print("Shunt Voltage: "); SERIAL0.print(shuntvoltage); SERIAL0.println(" mV");
-  SERIAL0.print("Load Voltage:  "); SERIAL0.print(loadvoltage); SERIAL0.println(" V");
-  SERIAL0.print("Current:       "); SERIAL0.print(current_mA); SERIAL0.println(" mA");
-  SERIAL0.print("Power:         "); SERIAL0.print(power_mW); SERIAL0.println(" mW");
-  SERIAL0.println("");
-  vTaskDelay(1000 / portTICK_PERIOD_MS);
 }

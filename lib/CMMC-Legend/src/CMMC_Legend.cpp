@@ -13,11 +13,11 @@ void CMMC_Legend::addModule(CMMC_Module* module) {
 void CMMC_Legend::run() {
   // static CMMC_Legend *that;
   // that = this;
+  isLongPressed();
   int size = _modules.size();
   for (int i = 0 ; i < size; i++) {
     _modules[i]->loop();
   }
-  isLongPressed();
   yield();
   // vTaskDelay(10)
 }
@@ -67,6 +67,7 @@ void CMMC_Legend::setup(os_config_t *config) {
     this->_hook_button_released = config->hook_button_released;
     this->_hook_button_long_pressed = config->hook_button_long_pressed;
 
+    this->_hook_config_loaded= config->hook_config_loaded;
     this->_hook_ready = config->hook_ready;
 
     init_gpio();
@@ -78,7 +79,9 @@ void CMMC_Legend::setup(os_config_t *config) {
     this->_serial_legend->println();
 
     init_fs();
+
     init_user_config();
+
     init_user_sensor();
     init_network();
 
@@ -87,6 +90,7 @@ void CMMC_Legend::setup(os_config_t *config) {
       _serial_legend->printf("calling %s.setup()\r\n", _modules[i]->name());
       _modules[i]->setup();
     }
+
     _serial_legend->println("---------------------------");
 
     if(this->_hook_ready) {
@@ -101,6 +105,7 @@ void CMMC_Legend::init_gpio() {
 
 void CMMC_Legend::init_fs() {
   _serial_legend->println("OS::Init FS..");
+  // _serial_legend->println("starting SPIFFS..");
   SPIFFS.begin();
   // Dir dir = SPIFFS.openDir("/");
   // isLongPressed();
@@ -114,9 +119,11 @@ void CMMC_Legend::init_fs() {
    *******************************************/
   this->_serial_legend->println("--------------------------");
   if (!SPIFFS.exists("/enabled")) {
+    _serial_legend->println("no /enabled file.");
     mode = CONFIG;
   }
   else {
+    _serial_legend->println("found /enabled file.");
     mode = RUN;
   }
 }
@@ -134,11 +141,13 @@ void CMMC_Legend::init_user_config() {
 
 void CMMC_Legend::init_network() {
   _serial_legend->println("Initializing network.");
-
     _serial_legend->println("------- config ----------");
   for (int i = 0 ; i < _modules.size(); i++) {
     _serial_legend->printf("calling %s.config()\r\n", _modules[i]->name());
     _modules[i]->config(this, &server);
+  }
+  if(this->_hook_config_loaded) {
+    this->_hook_config_loaded();
   }
   _serial_legend->println("---------------------------");
 
@@ -148,11 +157,12 @@ void CMMC_Legend::init_network() {
     _serial_legend->printf("calling %s.configSetup()\r\n", _modules[i]->name());
       _modules[i]->configSetup();
     }
-    _serial_legend->println("---------------------------");
 
+    _serial_legend->println("---------------------------");
     _init_ap();
 
     setupWebServer(&server, &ws, &events);
+
     _serial_legend->printf("after setupWebserver\r\n");
     if (blinker) {
       blinker->blink(50);
@@ -160,6 +170,7 @@ void CMMC_Legend::init_network() {
     else {
       _serial_legend->println("no blinker");
     }
+
     uint32_t startConfigLoopAtMs = millis();
     while (1 && !stopFlag) {
       if (digitalRead(this->button_gpio) == this->SWITCH_PRESSED_LOGIC) {
@@ -169,7 +180,7 @@ void CMMC_Legend::init_network() {
           delay(300);
           ESP.restart();
       }
-      // _serial_legend->println("1.");
+
       for (int i = 0 ; i < _modules.size(); i++) {
         _modules[i]->configLoop();
         yield();
@@ -183,7 +194,6 @@ void CMMC_Legend::init_network() {
       }
     }
 
-    _serial_legend->println("starting SPIFFS..");
 
     File f = SPIFFS.open("/enabled", "a+");
     blinker->blink(50);

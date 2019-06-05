@@ -1,4 +1,5 @@
 extern char G_magel_token[40];
+extern float G_busvoltage;
 
 void CMMC_LCD::paintDetailPage() {
   static int ct = 0;
@@ -15,10 +16,10 @@ void CMMC_LCD::paintDetailPage() {
   // u8g2->print(formatedNumber(numBuffer, packetRecv));
   //
   //
-  // u8g2->setCursor(5, 20 + (1 * lineSpacing));
-  // u8g2->print("Keep Alive Packet");
-  // u8g2->setCursor(80 + 5, 20 + (1 * lineSpacing));
-  // u8g2->print(formatedNumber(numBuffer, keepAliveSent));
+  u8g2->setCursor(5, 10 + (1 * lineSpacing));
+  u8g2->print("Voltage");
+  u8g2->setCursor(80 + 5, 10 + (1 * lineSpacing));
+  u8g2->print(formatedNumber(numBuffer, G_busvoltage, "v"));
 
 
   u8g2->setCursor(5, 25 + (2 * lineSpacing));
@@ -45,7 +46,7 @@ void CMMC_LCD::paintDetailPage() {
   // u8g2->setCursor(5, 40 + (5 * lineSpacing));
   // u8g2->print(statusBuffer);
 
-  u8g2->setCursor(5, 45 + (6 * lineSpacing));
+  u8g2->setCursor(5, 44 + (6 * lineSpacing));
   u8g2->print(G_magel_token);
 
   u8g2->setCursor(5, 50 + (7 * lineSpacing));

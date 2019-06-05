@@ -57,7 +57,7 @@ class CMMC_LCD: public CMMC_Module{
     void setApName(char*);
 
 
-    const char* formatedNumber(char* buffer, int n);
+    const char* formatedNumber(char* buffer, int n, char* suff = NULL);
     const char* name() {
       return "CMMC_LCD";
     }

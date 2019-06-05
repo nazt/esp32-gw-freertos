@@ -5,6 +5,7 @@
 
 IPAddress aisip = IPAddress(103, 20, 205, 85);
 RTC_DATA_ATTR int rebootCount = -1;
+extern HardwareSerial SERIAL0;
 
 CMMC_Modem::CMMC_Modem(Stream* s, HardwareSerial* hwSerial, MODEM_TYPE modem_type)   {
   this->_modemSerial = s;
@@ -26,7 +27,7 @@ void CMMC_Modem::updateStatus(String s) {
 }
 
 void CMMC_Modem::setup() {
-  Serial.println("setup modem..");
+  SERIAL0.println("setup modem..");
   // this->status = "Initializing Modem.";
   strcpy(this->status, "Initializing Modem.");
 
@@ -43,18 +44,14 @@ void CMMC_Modem::setup() {
     digitalWrite(13, HIGH);
   }
   else {
-    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
-    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
-    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
-    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
-    this->hwSerial->println("INVALID MODEM TYPE CONFIG.");
+    this->hwSerial->printf("[type=%d] INVALID MODEM TYPE CONFIG.", this->_modemType);
   }
 
-  Serial.println("Initializing CMMC NB-IoT");
+  SERIAL0.println("Initializing CMMC NB-IoT");
   nb = new CMMC_NB_IoT(this->_modemSerial);
   static CMMC_Modem *that;
   that = this;
-  nb->setDebugStream(&Serial);
+  nb->setDebugStream(&SERIAL0);
   nb->onDeviceReboot([]() {
     that->updateStatus(F("[user] Device rebooted."));
     delay(100);
