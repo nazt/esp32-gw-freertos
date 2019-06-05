@@ -2,9 +2,6 @@
 #include <RTClib.h>
 #include "CMMC_Modem.h"
 
-#include "coap.h"
-#include "coap-helper.h"
-
 extern char sta_mac[18];
 extern char softap_mac[18];
 // extern static QueueHandle_t xQueueMain;
@@ -28,12 +25,13 @@ void CMMC_Modem::configSetup() {
 
 void CMMC_Modem::updateStatus(String s) {
   this->hwSerial->println(s);
-  this->status = s;
+  strcpy(this->status, s.c_str());
 }
 
 void CMMC_Modem::setup() {
   Serial.println("setup modem..");
-  this->status = "Initializing Modem.";
+  // this->status = "Initializing Modem.";
+  strcpy(this->status, "Initializing Modem.");
 
 
 
@@ -115,6 +113,7 @@ void CMMC_Modem::setup() {
     that->hwSerial->println("ms)");
     that->nb->createUdpSocket("103.20.205.85", 5683, UDPConfig::ENABLE_RECV);
     that->isNbConnected = 1;
+    that->_locked = false;
   });
 
   nb->hello();
@@ -132,6 +131,7 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
     this->hwSerial->println("NB IoT is not connected! skipped.");
     return;
   }
+  this->_locked = true;
   int rt = 0;
   uint8_t buffer[buflen];
   memcpy(buffer, text, buflen);
@@ -139,7 +139,9 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
     updateStatus("dispatching queue...");
     if (nb->sendMessageHex(buffer, buflen, 0)) {
       lastSentOkMillis = millis();
-      vTaskDelay(500/portTICK_PERIOD_MS);
+      // vTaskDelay(500/portTICK_PERIOD_MS);
+      updateStatus("send ok.");
+      delay(500);
       break;
     }
     else {
@@ -152,10 +154,16 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
         break;
       }
     }
-    vTaskDelay(200 / portTICK_PERIOD_MS);
+    // vTaskDelay(200 / portTICK_PERIOD_MS);
+    delay(200);
   }
+  this->_locked = false;
 }
 
 String CMMC_Modem::getStatus() {
-  return this->status;
+  return String(this->status);
+}
+
+bool CMMC_Modem::isLocked() {
+  return this->_locked;
 }

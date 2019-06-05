@@ -35,9 +35,13 @@ typedef struct
     bool SWITCH_PRESSED_LOGIC;
     uint32_t delay_after_init_ms;
     std::function<void(char*, IPAddress&)> hook_init_ap;
+
     std::function<void(void)> hook_button_pressed;
     std::function<void(void)> hook_button_long_pressed;
     std::function<void(void)> hook_button_released;
+
+    std::function<void(void)> hook_ready;
+
 } os_config_t;
 
 
@@ -75,6 +79,7 @@ class CMMC_Legend: public CMMC_System {
     std::function<void(void)> _hook_button_pressed;
     std::function<void(void)> _hook_button_long_pressed;
     std::function<void(void)> _hook_button_released;
+    std::function<void(void)> _hook_ready;
     HardwareSerial *_serial = NULL;
     HardwareSerial *_serial_legend = NULL;
 };

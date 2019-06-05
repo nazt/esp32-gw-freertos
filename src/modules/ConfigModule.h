@@ -14,6 +14,8 @@ class ConfigModule: public CMMC_Module {
     const char* name() {
       return "ConfigModule";
     }
+    char magel_token[80];
+    char device_name[40];
   protected:
     void configWebServer();
   private:

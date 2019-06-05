@@ -4,7 +4,32 @@
 #include "tasks/lcd/CMMC_LCD.h"
 #include <TinyGPS++.h>
 
+#include "coap.h"
+#include "coap-helper.h"
+
 static const int RX_BUF_SIZE = 1024;
+
+
+typedef enum {
+  TYPE_KEEP_ALIVE = 1,
+  TYPE_SENSOR_NODE
+} DATA_COAP_TYPE;
+
+typedef struct{
+  float  batt = 0;
+  float  batt_raw = 0;
+  float  batt_percent = 0;
+  float pm10;
+  float pm2_5;
+  int analogValue;
+  uint32_t uptime_s;
+  uint32_t unixtime;
+  uint32_t rebootCount = 0;
+  char latlngC[80];
+  unsigned int ct = 1;
+  DATA_COAP_TYPE packet_type;
+  int modem_type;
+} Data;
 struct shared_pool {
   float pm10;
   float pm2_5;
@@ -13,6 +38,7 @@ struct shared_pool {
 };
 
 String nb_status_string = "...";
+static uint32_t ct = 0;
 
 struct shared_pool pool;
 static CMMC_LCD *lcd = NULL;
@@ -66,6 +92,7 @@ static void task_serial1(void *parameter) {
           SERIAL0.println("FAIL TO ENQUEUE.");
         }
       }
+      vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
 }
 
@@ -85,6 +112,9 @@ static struct shared_pool p;
 CMMC_Modem *modem;
 
 
+static char jsonBuffer[1024];
+static uint8_t _buffer[2000];
+
 static void nb_task(void *parameter) {
     SERIAL0.println("NB_TASK..");
     SERIAL0.println("NB_TASK..");
@@ -101,6 +131,11 @@ static void nb_task(void *parameter) {
     while (1) {
       modem->loop();
       nb_status_string = modem->status;
+      SERIAL0.printf("status=%s\r\n", nb_status_string);
+      if (modem->isLocked()) {
+        SERIAL0.println("NB-IoT LOCKED.");
+        continue;
+      }
       if (xQueueMain != NULL) {
         const TickType_t xTicksToWait = pdMS_TO_TICKS(10);
         BaseType_t xStatus;
@@ -109,6 +144,40 @@ static void nb_task(void *parameter) {
           SERIAL0.println("[X-TASK] QUEUE RECV...");
           SERIAL0.println(p.pm10);
           SERIAL0.println(p.pm2_5);
+          Data data;
+          data.pm10 = pool.pm10;
+          data.pm2_5 = pool.pm2_5;
+          data.ct = ct++;
+          data.modem_type = modem->_modemType;
+          data.uptime_s = millis() / 1000;
+          strcpy(data.latlngC, pool.locationString.c_str());
+
+          // if (data.packet_type == TYPE_KEEP_ALIVE) {
+          SERIAL0.println(">>> TYPE_KEEP_ALIVE");
+          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"loc\":\"%s\",\"reset\":%d,\"type\":%d,\"uptime_s\":%lu,\"unixtime\":%lu,\"heap\":%lu,\"batt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\", \"modem_type\": %d}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(), data.latlngC, data.rebootCount, TYPE_KEEP_ALIVE, data.uptime_s, data.unixtime,  ESP.getFreeHeap(), String(data.batt).c_str(), data.ct++, 0, "X", modem->_modemType);
+          SERIAL0.println(jsonBuffer);
+
+          // Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
+          // // Serial.printf("   buffer = %s\r\n", _buffer);
+          // // DUSTBOY2_1
+          // uint16_t buflen = generate(_buffer, aisip, 5683, ("NBIoT/" DUSTBOY_ID),
+          // COAP_CON, COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
+          // Serial.printf("      len = %d\r\n", buflen);
+          // that->sendPacket((uint8_t*)_buffer, buflen);
+          // 6229a600-62da-11e9-96dd-9fb5d8a71344
+
+          static char path[100];
+          strcpy(path, "NBIoT/");
+          strcpy(path+6, G_magel_token);
+          SERIAL0.println(path);
+          IPAddress aisip = IPAddress(103, 20, 205, 85);
+          uint16_t buflen = generate(_buffer, aisip, 5683, path,
+          COAP_CON, COAP_POST, NULL, 0, (uint8_t*) jsonBuffer, strlen(jsonBuffer));
+          SERIAL0.printf("      len = %d\r\n", buflen);
+          nb_status_string = "dispatching...";
+          modem->sendPacket((uint8_t*)_buffer, buflen);
+          nb_status_string = "sent.";
+          vTaskDelay(200 / portTICK_PERIOD_MS);
         }
         else {
           // SERIAL0.println("FAILED TO RECV Q.");

@@ -1,4 +1,4 @@
-extern char magel_token[40];
+extern char G_magel_token[40];
 
 void CMMC_LCD::paintDetailPage() {
   static int ct = 0;
@@ -44,12 +44,12 @@ void CMMC_LCD::paintDetailPage() {
   // sprintf(statusBuffer, "Status: (Queue=%d)", pArrIdx);
   // u8g2->setCursor(5, 40 + (5 * lineSpacing));
   // u8g2->print(statusBuffer);
-  
+
   u8g2->setCursor(5, 45 + (6 * lineSpacing));
-  u8g2->print(magel_token);
+  u8g2->print(G_magel_token);
 
   u8g2->setCursor(5, 50 + (7 * lineSpacing));
-  u8g2->print(magel_token+31);
+  u8g2->print(G_magel_token+31);
 
   // u8g2->setFont(u8g2_font_p01type_tn);
   // u8g2->setFont(u8g2_font_micro_tr);

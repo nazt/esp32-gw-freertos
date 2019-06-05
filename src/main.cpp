@@ -16,12 +16,15 @@
 
 SCREEN_PAGE xpage = LCD_LOGO;
 char ap_name[20];
-char magel_token[40];
+
+char G_magel_token[80];
+char G_device_name[20];
 
 char sta_mac[18];
 char softap_mac[18];
 CMMC_Legend *os;
 HardwareSerial SERIAL0(0);
+ConfigModule* configModule;
 
 void hook_init_ap(char* name, IPAddress ip) {
   strcpy(ap_name, name);
@@ -54,6 +57,8 @@ void hook_button_long_pressed() {
   SERIAL0.println("[user] hook_button_long_pressed");
   xpage = LCD_BUTTON_LONG_PRESSED;
 }
+
+void hook_ready();
 
 QueueHandle_t xQueueMain;
 
@@ -104,13 +109,19 @@ void setup()
     .hook_button_pressed =  hook_button_pressed,
     .hook_button_long_pressed = hook_button_long_pressed,
     .hook_button_released = hook_button_released,
+    .hook_ready = hook_ready,
   };
 
-  os->addModule(new ConfigModule());
-
+  configModule = new ConfigModule();
+  os->addModule(configModule);
   tasks_init();
-
   os->setup(&config);
+
+}
+
+void hook_ready() {
+  strcpy(G_magel_token, configModule->magel_token);
+  strcpy(G_device_name, configModule->device_name);
   xpage = LCD_RUN;
   SERIAL0.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   SERIAL0.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));

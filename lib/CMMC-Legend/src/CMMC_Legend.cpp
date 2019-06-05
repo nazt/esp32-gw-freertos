@@ -66,6 +66,9 @@ void CMMC_Legend::setup(os_config_t *config) {
     this->_hook_button_pressed = config->hook_button_pressed;
     this->_hook_button_released = config->hook_button_released;
     this->_hook_button_long_pressed = config->hook_button_long_pressed;
+
+    this->_hook_ready = config->hook_ready;
+
     init_gpio();
 
     pinMode(this->button_gpio, this->SWITCH_PIN_MODE);
@@ -85,6 +88,10 @@ void CMMC_Legend::setup(os_config_t *config) {
       _modules[i]->setup();
     }
     _serial_legend->println("---------------------------");
+
+    if(this->_hook_ready) {
+      this->_hook_ready();
+    }
 }
 
 void CMMC_Legend::init_gpio() {
