@@ -158,7 +158,7 @@ static void nb_task(void *parameter) {
       vTaskDelay(1000 / portTICK_PERIOD_MS);
       modem->loop();
       nb_status_string = modem->status;
-      SERIAL0.printf("status=%s\r\n", nb_status_string);
+      SERIAL0.printf("status=%s\r\n", nb_status_string.c_str());
       if (modem->isLocked()) {
         SERIAL0.println("NB-IoT LOCKED.");
         continue;
