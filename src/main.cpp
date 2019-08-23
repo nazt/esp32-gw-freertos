@@ -123,7 +123,7 @@ void setup()
   configModule = new ConfigModule();
   powerModule = new PowerModule();
 
-  xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 2, NULL);
+  xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 1, NULL);
 
   os->addModule(configModule);
   os->addModule(powerModule);
@@ -140,8 +140,6 @@ void hook_config_loaded() {
 
 void hook_ready() {
   xpage  = LCD_RUN;
-  SERIAL0.println("[hook_ready]");
-  SERIAL0.println("[hook_ready]");
   SERIAL0.println("[hook_ready]");
   SERIAL0.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   SERIAL0.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));

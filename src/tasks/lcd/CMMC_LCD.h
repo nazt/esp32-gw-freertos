@@ -39,7 +39,7 @@ class CMMC_LCD: public CMMC_Module{
   public:
     float pm10 = 0;
     float pm2_5 = 0;
-  char dateTimeString[30] = "";
+    char dateTimeString[80];
     CMMC_LCD();
     void config(CMMC_System *os, AsyncWebServer* server);
     void hello();

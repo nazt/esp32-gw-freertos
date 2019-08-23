@@ -6,8 +6,6 @@
 #include <CMMC_NB_IoT.h>
 #include <TinyGPS++.h>
 
-;
-
 enum MODEM_TYPE {
     TYPE_AIS_NB_IOT = 1,
     TYPE_TRUE_NB_IOT,

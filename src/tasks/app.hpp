@@ -52,33 +52,59 @@ void showDate(const char* txt, const DateTime& dt) {
     dt.year(), dt.hour(), dt.minute()%60, dt.second()%60);
 }
 
+#define RTC_MODULE 1
+#define GPS_MODULE 1
+
 static shared_pool p2 = pool;
 static void task_serial1(void *parameter) {
+  SERIAL0.println("Initializing task_serial1.");
   pool.pm10 = 0;
   pool.pm2_5 = 0;
+
+  SERIAL0.println("Initializing dust.");
   static CMMC_DustSensor *dustSensor = new CMMC_DustSensor(&Serial1);
-  static CMMC_GPS *gps = new CMMC_GPS(&Serial1);
-  static CMMC_RTC *rtc = new CMMC_RTC();
   dustSensor->setup();
+
+  #ifdef GPS_MODULE
+  SERIAL0.println("Initializing gps.");
+  static CMMC_GPS *gps = new CMMC_GPS(&Serial1);
   gps->setup();
+  #endif
+
+  #ifdef RTC_MODULE
+  SERIAL0.println("Initializing rtc.");
+  static CMMC_RTC *rtc = new CMMC_RTC();
   rtc->setup();
+  #endif
+
+
   while (1) {
+    SERIAL0.println("looping..");
     vTaskDelay(200 / portTICK_PERIOD_MS);
     if (lcd != NULL) {
-      strcpy(lcd->dateTimeString, rtc->getDateTimeString().c_str());
+      #ifdef RTC_MODULE
+      // (rtc->getDateTimeString().c_str());
+      // strcpy(lcd->dateTimeString, rtc->getDateTimeString().c_str());
+      #endif
     }
     if (xpage == LCD_CONFIG) {
       continue;
     }
 
     dustSensor->loop();
+    #ifdef GPS_MODULE
     gps->loop();
+    pool.locationString = gps->getLocationString();
+    #endif
+
+    #ifdef RTC_MODULE
     rtc->loop();
+    pool.dt = rtc->getDateTime();
+    #endif
 
     pool.pm10 = dustSensor->getPMValue(DustPM10);
     pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
-    pool.dt = rtc->getDateTime();
-    pool.locationString = gps->getLocationString();
+
     if (gps->_lastSyncRtc > 0) {
       rtc->adjust(gps->getDateTime());
     }
@@ -128,6 +154,7 @@ static void nb_task(void *parameter) {
     modem = new CMMC_Modem(&NBSerial, &SERIAL0, G_modem_type);
     modem->setup();
     while (1) {
+      SERIAL0.println("NB_STASKING...");
       vTaskDelay(1000 / portTICK_PERIOD_MS);
       modem->loop();
       nb_status_string = modem->status;
@@ -195,9 +222,9 @@ static void nb_task(void *parameter) {
 }
 
 static void tasks_init() {
-  int priority = 2;
+  int priority = 1;
   xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
   delay(1000);
-  xTaskCreate(nb_task, "nb_task", 8192, NULL, 1, NULL);
+  xTaskCreate(nb_task, "nb_task", 8192, NULL, priority, NULL);
   // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
 }

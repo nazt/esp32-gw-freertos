@@ -11,6 +11,7 @@ CMMC_LCD::CMMC_LCD() {
   u8g2->begin();
   String taskMessage = "[CMMC_LCD] Task running on core ";
   taskMessage = taskMessage + xPortGetCoreID();
+  strcpy(dateTimeString, "");
 }
 
 void CMMC_LCD::config(CMMC_System *os, AsyncWebServer *server)
@@ -39,6 +40,7 @@ void CMMC_LCD::loop() {
   // if (state == LOW) {
   //   page = ++page % (MAX_PAGE);
   // }
+  Serial.println("lcd.loop()");
   paintScreen();
 }
 
