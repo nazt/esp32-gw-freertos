@@ -1,5 +1,7 @@
-extern char G_magel_token[40];
+extern char G_magel_token[80];
+extern char G_device_name[40];
 extern float G_busvoltage;
+extern unsigned int G_sent;
 
 void CMMC_LCD::paintDetailPage() {
   static int ct = 0;
@@ -19,14 +21,14 @@ void CMMC_LCD::paintDetailPage() {
   u8g2->setCursor(5, 10 + (1 * lineSpacing));
   u8g2->print("Name: ");
   // u8g2->setCursor(80 + 5, 10 + (1 * lineSpacing));
-  u8g2->print("deviceName");
+  u8g2->print(G_device_name);
   // u8g2->print(formatedNumber(numBuffer, G_busvoltage, "v"));
 
 
   u8g2->setCursor(5, 25 + (2 * lineSpacing));
   u8g2->print("NB-IoT Packet Sent");
   u8g2->setCursor(80 + 5, 25 + (2 * lineSpacing));
-  u8g2->print(formatedNumber(numBuffer, nbSentOk));
+  u8g2->print(formatedNumber(numBuffer, G_sent));
 
   // u8g2->setCursor(5, 30 + (3 * lineSpacing));
   // u8g2->print("Reboot");

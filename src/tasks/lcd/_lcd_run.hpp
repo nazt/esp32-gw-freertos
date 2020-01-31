@@ -1,4 +1,6 @@
+#include "../modem/CMMC_Modem.h"
 extern String nb_status_string;
+extern CMMC_Modem* modem;
 void CMMC_LCD::paintRunPage() {
   // SERIAL0.println("DRAWING..");
   static int ct = 0;
@@ -9,10 +11,22 @@ void CMMC_LCD::paintRunPage() {
   u8g2->setCursor(56, 6);
   u8g2->print(dateTimeString);
 
-  u8g2->setFont(u8g2_font_p01type_tn);
-  u8g2->setCursor(4, 6);
+  // ct  top left
+  // u8g2->setFont(u8g2_font_p01type_tn);
+  // u8g2->setCursor(4, 6);
+  // // uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
+  // u8g2->print(ct++);
+
+  u8g2->setFont(u8g2_font_u8glib_4_tr);
+  u8g2->setCursor(86, 6);
+  u8g2->print("SIGNAL ");
+  u8g2->setCursor(115, 6);
   // uint32_t lastSentInSeconds = (millis() - modem->lastSentOkMillis)/1000;
-  u8g2->print(ct++);
+  if (modem != NULL) {
+    // u8g2->print("signal: ");
+    u8g2->print(modem->signal);
+    u8g2->print("%");
+  }
 
   u8g2->setFont(u8g2_font_siji_t_6x10);
   u8g2->setCursor(logoMargin + 6, 16 + 1);
@@ -25,6 +39,15 @@ void CMMC_LCD::paintRunPage() {
   u8g2->setFont(u8g2_font_micro_tr);
   u8g2->setCursor(logoMargin + 44, 27 + 1);
   u8g2->print(nb_status_string);
+
+  u8g2->setFont(u8g2_font_micro_tr);
+  u8g2->setCursor(logoMargin + 6, 38);
+  if (modem) {
+    // u8g2->print("SIGNAL ");
+    // u8g2->print(modem->signal);
+    // u8g2->print("%");
+  }
+
   // u8g2->setFont(u8g2_font_logisoso16_tf);
   u8g2->setFont(u8g2_font_siji_t_6x10);
   u8g2->setCursor(marginLeft, 50);

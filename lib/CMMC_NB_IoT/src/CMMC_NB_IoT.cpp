@@ -3,12 +3,13 @@
 // #define debugPrintLn(...) { Serial.println(__VA_ARGS__); }
 // #define debugPrint(...) { Serial.print(__VA_ARGS__); }
 // #ifdef CMMC_DEBUG
+
+#define debugPrintLn(...)
+#define debugPrint(...)
+
 // #warning "Debug mode is ON"
-// #define debugPrintLn(...)
-// #define debugPrint(...)
-//
-  #define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
-  #define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
+  // #define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
+  // #define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
 // #else
 // #define debugPrintLn(...)
 // #define debugPrint(...)
@@ -69,7 +70,35 @@ void CMMC_NB_IoT::activate() {
 void CMMC_NB_IoT::rebootModule() {
   while (!callCommand(F("AT+NRB"), TIMEOUT_5s));
   _user_onDeviceReboot_cb();
+  this->queryDeviceInfo();
 }
+
+int CMMC_NB_IoT::getSignal() {
+    char csq[60];
+    while (!callCommand(F("AT+CSQ"), TIMEOUT_5s, 5, csq));
+    String _csq = String(csq);
+    int index = _csq.indexOf(F(":"));
+		int index2 = _csq.indexOf(F(","));
+    String tmp = _csq.substring(index+1,index2);
+
+    String rssi;
+    int at_csq_rssi;
+    if (tmp == String("99")) {
+				// sig.csq = F("N/A");
+				rssi = String("N/A");
+			}
+			else {
+				// sig.csq = tmp;
+				at_csq_rssi = tmp.toInt();
+				at_csq_rssi = (2*at_csq_rssi)-113;
+				rssi = String(at_csq_rssi);
+			}
+    // debugPrint("csq> ");
+    // debugPrint();
+
+    return tmp.toInt();
+}
+
 
 void CMMC_NB_IoT::hello() {
   while (!callCommand(F("AT"), TIMEOUT_5s));

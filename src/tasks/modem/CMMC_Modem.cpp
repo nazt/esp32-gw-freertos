@@ -63,8 +63,8 @@ void CMMC_Modem::setup() {
   });
 
   nb->onDeviceInfo([](CMMC_NB_IoT::DeviceInfo device) {
-    that->hwSerial->print(F("# Module IMEI-->  "));
-    that->hwSerial->println(device.imei);
+    SERIAL0.print(F("# Module IMEI-->  "));
+    SERIAL0.println(device.imei);
     that->hwSerial->print(F("# Firmware ver-->  "));
     that->hwSerial->println(device.firmware);
     that->hwSerial->print(F("# IMSI SIM-->  "));
@@ -124,10 +124,14 @@ void CMMC_Modem::loop() {
   that = this;
 }
 
+// int CMMC_Modem::getSignal() {
+//
+// }
+
 int CMMC_Modem::sendOverSocket(uint8_t *buffer, int buflen, int socketId) {
     if (nb->sendMessageHex(buffer, buflen, socketId)) {
       lastSentOkMillis = millis();
-      updateStatus("send ok.");
+      updateStatus("sent.");
       delay(500);
     }
 }
@@ -137,7 +141,27 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
     this->hwSerial->println("NB IoT is not connected! skipped.");
     return;
   }
+
   this->_locked = true;
+  this->raw_csq = nb->getSignal();
+  int n = this->raw_csq;
+  int8_t r;
+  if (n == 0) r = -113;
+  if (n == 1) r = -111;
+  if (n == 31) r = -52;
+  if ((n >= 2) && (n <= 30)) {
+    r = map(n, 2, 30, -109, -53);
+  }
+  if (n > 30) {
+    r = -115;
+  }
+
+  int x = map(r, -115, -53, 0, 100);
+  this->rssi= r;
+  this->signal = x;
+  // this->hwSerial->print("Signal = ");
+  // this->hwSerial->println(nb->getSignal());
+  // updateStatus(String("Signal = ") +  nb->getSignal());
   int rt = 0;
   uint8_t buffer[buflen];
   memcpy(buffer, text, buflen);
@@ -146,7 +170,6 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
   // vTaskDelay(200 / portTICK_PERIOD_MS);
   delay(500);
   sendOverSocket(buffer, buflen, 1);
-  updateStatus("send ok. [2]");
   delay(500);
   this->_locked = false;
 }

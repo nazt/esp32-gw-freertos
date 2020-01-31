@@ -42,6 +42,9 @@ class CMMC_Modem: public CMMC_Module{
     bool isLocked();
     String getStatus();
     uint32_t lastSentOkMillis = 0;
+    int raw_csq = -1;
+    int signal = -1;
+    int rssi = -1;
     char status[100];
     MODEM_TYPE _modemType;
 };

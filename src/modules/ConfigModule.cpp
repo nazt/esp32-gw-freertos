@@ -33,10 +33,10 @@ void ConfigModule::config(CMMC_System *os, AsyncWebServer *server)
       SERIAL0.println("[user] config json loaded..");
       root->printTo(SERIAL0);
       SERIAL0.println();
-      if (root->get<const char*>("magel_id") != NULL) {
-        const char* magel_id = root->get<const char*>("magel_id");
-        SERIAL0.printf("magel_ID LOADED = %s\r\n", magel_id);
-        strcpy(that->magel_token, magel_id);
+      if (root->get<const char*>("magel_token") != NULL) {
+        const char* magel_token = root->get<const char*>("magel_token");
+        SERIAL0.printf("magel_ID LOADED = %s\r\n", magel_token);
+        strcpy(that->magel_token, magel_token);
       }
       else {
         SERIAL0.println("magel_ID is NULL.");
@@ -64,7 +64,7 @@ void ConfigModule::config(CMMC_System *os, AsyncWebServer *server)
       }
       else {
         SERIAL0.println("modem_type is NULL.");
-        this->modem_type = (0);
+        this->modem_type = (1); // 1 = TYPE_AIS_NB_IOT
         SERIAL0.print("SO: ");
         SERIAL0.println(that->device_name);
       }

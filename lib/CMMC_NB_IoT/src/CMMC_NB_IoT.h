@@ -49,6 +49,7 @@ class CMMC_NB_IoT
     // void deactivate();
     Stream* getModemSerial();
     int createUdpSocket(String hostname, uint16_t port, UDPConfig config = DISABLE_RECV);
+    int getSignal();
     bool _writeCommand(String at, uint32_t timeoutMs, char *s = NULL, bool silent = false);
     bool sendMessage(uint8_t *msg, size_t len, uint8_t socketId = 0);
     bool callCommand(String at, uint8_t timeout = 10, int retries = 5, char *outStr = NULL);

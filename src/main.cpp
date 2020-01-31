@@ -18,9 +18,10 @@
 SCREEN_PAGE xpage = LCD_LOGO;
 char ap_name[20];
 
+unsigned int G_sent = 0;
 char G_magel_token[80];
-char G_device_name[20];
-int G_modem_type = -1;
+char G_device_name[40];
+int G_modem_type = 1;
 float G_busvoltage = 0;
 
 char sta_mac[18];

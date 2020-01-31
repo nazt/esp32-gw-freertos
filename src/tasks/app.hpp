@@ -10,7 +10,10 @@ static const int RX_BUF_SIZE = 1024;
 extern char sta_mac[18];
 extern char softap_mac[18];
 extern float G_busvoltage;
+extern unsigned int G_sent;
 extern int G_modem_type;
+extern char G_device_name[40];
+
 
 typedef enum {
   TYPE_KEEP_ALIVE = 1,
@@ -41,6 +44,10 @@ static uint32_t ct = 0;
 
 static struct shared_pool pool;
 static CMMC_LCD *lcd = NULL;
+
+static struct shared_pool p;
+#include "modem/CMMC_Modem.h"
+CMMC_Modem *modem;
 // extern static QueueHandle_t xQueueMain;
 
 // void showDate(const char* txt, const DateTime& dt) {
@@ -58,7 +65,7 @@ static void task_serial1(void *parameter) {
   // pool.pm10 = 0;
   // pool.pm2_5 = 0;
 
-  SERIAL0.println("Initializing dust.");
+  // SERIAL0.println("Initializing dust.");
   static CMMC_DustSensor *dustSensor = new CMMC_DustSensor(&Serial1);
   dustSensor->setup();
 
@@ -76,14 +83,12 @@ static void task_serial1(void *parameter) {
 
 
   while (1) {
-    SERIAL0.println("looping..");
     vTaskDelay(200 / portTICK_PERIOD_MS);
     if (lcd != NULL) {
     }
     if (xpage == LCD_CONFIG) {
       continue;
     }
-
     dustSensor->loop();
 
     pool.pm10 = dustSensor->getPMValue(DustPM10);
@@ -93,13 +98,15 @@ static void task_serial1(void *parameter) {
         const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
         BaseType_t xStatus = xQueueSendToBack(xQueueMain, &p2, xTicksToWait);
         if ( xStatus == pdPASS ) {
-          SERIAL0.printf("[ENQUEU!!] queue size = %lu \r\n", uxQueueMessagesWaiting(xQueueMain));
+          // if (!modem->isLocked())
+            // SERIAL0.printf("[ENQUEU!!] queue size = %lu \r\n", uxQueueMessagesWaiting(xQueueMain));
         }
         else {
-          SERIAL0.println("FAIL TO ENQUEUE.");
+          // if (!modem->isLocked())
+          //   SERIAL0.println("FAIL TO ENQUEUE.");
         }
       }
-      vTaskDelay(2000 / portTICK_PERIOD_MS);
+      vTaskDelay(4000 / portTICK_PERIOD_MS);
   }
 }
 
@@ -117,9 +124,6 @@ static void lcd_task(void *parameter) {
   }
 }
 
-static struct shared_pool p;
-#include "modem/CMMC_Modem.h"
-CMMC_Modem *modem;
 
 
 static char jsonBuffer[1024];
@@ -167,7 +171,7 @@ static void nb_task(void *parameter) {
             freshGps = 1;
           }
           // if (data.packet_type == TYPE_KEEP_ALIVE) {
-          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"boot_count\":%d,\"uptime_s\":%lu,\"heap\":%lu,\"ct\":%lu, \"nickname\": \"%s\"}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(),  data.rebootCount, data.uptime_s,  ESP.getFreeHeap(), data.ct++, "NAT");
+          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"boot_count\":%d,\"uptime_s\":%lu,\"heap\":%lu,\"ct\":%lu, \"nickname\": \"%s\"}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(),  data.rebootCount, data.uptime_s,  ESP.getFreeHeap(), data.ct++, G_device_name);
           SERIAL0.println(jsonBuffer);
 
           // Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
@@ -190,6 +194,7 @@ static void nb_task(void *parameter) {
           nb_status_string = "dispatching...";
           modem->sendPacket((uint8_t*)_buffer, buflen);
           nb_status_string = "sent.";
+          G_sent++;
         }
         else {
           // SERIAL0.println("FAILED TO RECV Q.");
@@ -203,7 +208,7 @@ static void nb_task(void *parameter) {
 static void tasks_init() {
   int priority = 1;
   xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
-  // delay(1000);
+  delay(1000);
   xTaskCreate(nb_task, "nb_task", 8192, NULL, priority, NULL);
   // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
 }
