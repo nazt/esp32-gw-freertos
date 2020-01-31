@@ -17,9 +17,10 @@ void CMMC_LCD::paintDetailPage() {
   //
   //
   u8g2->setCursor(5, 10 + (1 * lineSpacing));
-  u8g2->print("Voltage");
-  u8g2->setCursor(80 + 5, 10 + (1 * lineSpacing));
-  u8g2->print(formatedNumber(numBuffer, G_busvoltage, "v"));
+  u8g2->print("Name: ");
+  // u8g2->setCursor(80 + 5, 10 + (1 * lineSpacing));
+  u8g2->print("deviceName");
+  // u8g2->print(formatedNumber(numBuffer, G_busvoltage, "v"));
 
 
   u8g2->setCursor(5, 25 + (2 * lineSpacing));
