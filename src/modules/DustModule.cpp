@@ -1,4 +1,6 @@
 #include "DustModule.h"
+extern HardwareSerial SERIAL0;
+
 // extern LCDModule* lcdModule;
 DustModule::DustModule(HardwareSerial *s) {
     pms = new PMS(*s);
@@ -37,12 +39,12 @@ void DustModule::setup()
 
       _pm2_5 = _pm2_5_bucket.add(0.0);
       _pm10 = _pm10_bucket.add(0.0);
-      Serial.println("---------------");
-      Serial.print("pm2.5> ");
-      Serial.println(_pm2_5);
-      Serial.print("pm10> ");
-      Serial.println(_pm2_5);
-      Serial.println("---------------");
+      SERIAL0.println("---------------");
+      SERIAL0.print("pm2.5> ");
+      SERIAL0.println(_pm2_5);
+      SERIAL0.print("pm10> ");
+      SERIAL0.println(_pm2_5);
+      SERIAL0.println("---------------");
 
 }
 
@@ -57,29 +59,31 @@ float DustModule::getPm2_5() {
 }
 
 void DustModule::loop() {
+    Serial1.begin(9600, SERIAL_8N1, 32 /*rx*/, 33 /* tx */);
+    pms = new PMS(Serial1);
   // ti.every_ms(1, [&]() {
     if (pms->read(data)) {
       _invalid_count = 0;
-      // // Serial.println();
-      // // Serial.print("PM 1.0 (ug/m3): ");
-      // // Serial.println(data.PM_AE_UG_1_0);
-      // //
-      // // Serial.print("PM 2.5 (ug/m3): ");
-      // Serial.println(data.PM_AE_UG_2_5);
+      // SERIAL0.println();
+      // SERIAL0.print("PM 1.0 (ug/m3): ");
+      // SERIAL0.println(data.PM_AE_UG_1_0);
+      //
+      SERIAL0.print("PM 2.5 (ug/m3): ");
+      SERIAL0.println(data.PM_AE_UG_2_5);
+      SERIAL0.print("PM 10.0 (ug/m3): ");
+      SERIAL0.println(data.PM_AE_UG_10_0);
       _pm2_5 = _pm2_5_bucket.add((float)data.PM_AE_UG_2_5);
-      // Serial.print("PM 10.0 (ug/m3): ");
-      // Serial.println(data.PM_AE_UG_10_0);
       _pm10 = _pm10_bucket.add((float)data.PM_AE_UG_10_0);
-      // Serial.println();
+      // SERIAL0.println();
     }
     else {
-      // Serial.println("Invalid PM2.5 Sensor.");
+      SERIAL0.println("Invalid PM2.5 Sensor.");
       // _pm2_5 = _pm2_5_bucket.add(0.0);
       // _pm10 = _pm10_bucket.add(0.0);
       _invalid_count++;
       if (_invalid_count % 100000 == 0) {
-        // Serial.print(".");
-        // Serial.printf("invalid count =%d\r\n", _invalid_count);
+        // SERIAL0.print(".");
+        // SERIAL0.printf("invalid count =%d\r\n", _invalid_count);
       }
 
     //   if (_invalid_count/1000 > 500) {

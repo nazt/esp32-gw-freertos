@@ -52,8 +52,13 @@ static CMMC_LCD *lcd = NULL;
 // #define RTC_MODULE 1
 // #define GPS_MODULE 1
 
+#include "modules/DustModule.h"
 static shared_pool p2 = pool;
 static void task_serial1(void *parameter) {
+  Serial1.begin(9600, SERIAL_8N1, 32 /*rx*/, 33 /* tx */);
+  DustModule *dustModule = new DustModule(&Serial1);
+  dustModule->setup();
+  // DustMo
   // SERIAL0.println("Initializing task_serial1.");
   // pool.pm10 = 0;
   // pool.pm2_5 = 0;
@@ -84,7 +89,7 @@ static void task_serial1(void *parameter) {
       continue;
     }
 
-    // dustSensor->loop();
+    dustModule->loop();
 
     // pool.pm10 = dustSensor->getPMValue(DustPM10);
     // pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
@@ -202,8 +207,9 @@ static void nb_task(void *parameter) {
 
 static void tasks_init() {
   int priority = 1;
-  // xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
+  xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
+  // xTaskCreate(dust_task, "dust_task", 8192, NULL, priority, NULL);
   // delay(1000);
-  xTaskCreate(nb_task, "nb_task", 8192, NULL, priority, NULL);
+  // xTaskCreate(nb_task, "nb_task", 8192, NULL, priority, NULL);
   // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
 }

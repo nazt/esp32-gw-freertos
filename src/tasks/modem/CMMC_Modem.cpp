@@ -109,6 +109,7 @@ void CMMC_Modem::setup() {
     delay(100);
     that->nb->createUdpSocket("128.199.205.93", 5683, UDPConfig::DISABLE_RECV);
     that->hwSerial->println("[2] createUdpSocket");
+    delay(100);
     that->isNbConnected = 1;
     that->_locked = false;
   });
@@ -136,18 +137,18 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
     this->hwSerial->println("NB IoT is not connected! skipped.");
     return;
   }
-  // this->_locked = true;
-  // int rt = 0;
-  // uint8_t buffer[buflen];
-  // memcpy(buffer, text, buflen);
-  // updateStatus("dispatching queue...");
-  // sendOverSocket(buffer, buflen,  0);
-  // // vTaskDelay(200 / portTICK_PERIOD_MS);
-  // delay(500);
-  // sendOverSocket(buffer, buflen, 1);
-  // updateStatus("send ok. [2]");
-  // delay(500);
-  // this->_locked = false;
+  this->_locked = true;
+  int rt = 0;
+  uint8_t buffer[buflen];
+  memcpy(buffer, text, buflen);
+  updateStatus("dispatching queue...");
+  sendOverSocket(buffer, buflen,  0);
+  // vTaskDelay(200 / portTICK_PERIOD_MS);
+  delay(500);
+  sendOverSocket(buffer, buflen, 1);
+  updateStatus("send ok. [2]");
+  delay(500);
+  this->_locked = false;
 }
 
 String CMMC_Modem::getStatus() {
