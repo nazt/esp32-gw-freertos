@@ -11,7 +11,6 @@
 
 
 #include "modules/ConfigModule.h"
-#include "modules/PowerModule.h"
 
 #include "tasks/lcd/CMMC_LCD.h"
 #include "utils.hpp"
@@ -30,7 +29,6 @@ CMMC_Legend *os;
 HardwareSerial SERIAL0(0);
 
 ConfigModule* configModule;
-PowerModule* powerModule;
 
 void hook_init_ap(char* name, IPAddress ip) {
   strcpy(ap_name, name);
@@ -121,12 +119,10 @@ void setup()
   };
 
   configModule = new ConfigModule();
-  powerModule = new PowerModule();
 
   xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 1, NULL);
 
   os->addModule(configModule);
-  os->addModule(powerModule);
   os->setup(&config);
 }
 
@@ -135,7 +131,6 @@ void hook_config_loaded() {
   strcpy(G_magel_token, configModule->magel_token);
   strcpy(G_device_name, configModule->device_name);
   G_modem_type = configModule->modem_type;
-  G_busvoltage = powerModule->busvoltage;
 }
 
 void hook_ready() {
@@ -152,11 +147,7 @@ uint32_t prev = 0;
 void loop()
 {
   os->run();
-  G_busvoltage = powerModule->busvoltage;
   if ( (millis() - prev) > 1*1000L) {
-    // SERIAL0.println(ESP.getFreeHeap());
     prev = millis();
-  //   // lcd->pm10 = millis()/1000;
-  //   lcd->loop();
   }
 }
