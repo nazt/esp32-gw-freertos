@@ -167,7 +167,7 @@ static void nb_task(void *parameter) {
             freshGps = 1;
           }
           // if (data.packet_type == TYPE_KEEP_ALIVE) {
-          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"loc\":\"%s\",\"reset\":%d,\"freshGps\":%d,\"uptime_s\":%lu,\"unixtime\":%lu,\"heap\":%lu,\"batt_volt\":%s,\"ct\":%lu,\"sleep\":%lu,\"payload\":\"%s\", \"modem_type\": %d}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(), data.latlngC, data.rebootCount, freshGps, data.uptime_s, data.unixtime,  ESP.getFreeHeap(), String(data.batt_volt).c_str(), data.ct++, 0, "X", modem->_modemType);
+          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"boot_count\":%d,\"uptime_s\":%lu,\"heap\":%lu,\"ct\":%lu, \"nickname\": \"%s\"}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(),  data.rebootCount, data.uptime_s,  ESP.getFreeHeap(), data.ct++, "NAT");
           SERIAL0.println(jsonBuffer);
 
           // Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);
