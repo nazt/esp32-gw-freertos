@@ -1,4 +1,4 @@
-  // #include "tasks/dust/CMMC_DustSensor.h"
+  #include "tasks/dust/CMMC_DustSensor.h"
 #include "tasks/lcd/CMMC_LCD.h"
 #include <TinyGPS++.h>
 
@@ -52,27 +52,22 @@ static CMMC_LCD *lcd = NULL;
 // #define RTC_MODULE 1
 // #define GPS_MODULE 1
 
-#include "modules/DustModule.h"
 static shared_pool p2 = pool;
 static void task_serial1(void *parameter) {
-  Serial1.begin(9600, SERIAL_8N1, 32 /*rx*/, 33 /* tx */);
-  DustModule *dustModule = new DustModule(&Serial1);
-  dustModule->setup();
-  // DustMo
   // SERIAL0.println("Initializing task_serial1.");
   // pool.pm10 = 0;
   // pool.pm2_5 = 0;
 
-  // SERIAL0.println("Initializing dust.");
-  // static CMMC_DustSensor *dustSensor = new CMMC_DustSensor(&Serial1);
-  // dustSensor->setup();
+  SERIAL0.println("Initializing dust.");
+  static CMMC_DustSensor *dustSensor = new CMMC_DustSensor(&Serial1);
+  dustSensor->setup();
 
   // #ifdef GPS_MODULE
   // SERIAL0.println("Initializing gps.");
   // static CMMC_GPS *gps = new CMMC_GPS(&Serial1);
   // gps->setup();
   // #endif
-
+  //
   // #ifdef RTC_MODULE
   // SERIAL0.println("Initializing rtc.");
   // static CMMC_RTC *rtc = new CMMC_RTC();
@@ -89,10 +84,10 @@ static void task_serial1(void *parameter) {
       continue;
     }
 
-    dustModule->loop();
+    dustSensor->loop();
 
-    // pool.pm10 = dustSensor->getPMValue(DustPM10);
-    // pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
+    pool.pm10 = dustSensor->getPMValue(DustPM10);
+    pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
 
     if (xQueueMain != NULL) {
         const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
@@ -208,8 +203,7 @@ static void nb_task(void *parameter) {
 static void tasks_init() {
   int priority = 1;
   xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
-  // xTaskCreate(dust_task, "dust_task", 8192, NULL, priority, NULL);
   // delay(1000);
-  // xTaskCreate(nb_task, "nb_task", 8192, NULL, priority, NULL);
+  xTaskCreate(nb_task, "nb_task", 8192, NULL, priority, NULL);
   // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
 }

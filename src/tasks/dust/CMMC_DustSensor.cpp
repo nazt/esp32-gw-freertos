@@ -1,6 +1,6 @@
 #include "CMMC_DustSensor.h"
 #include "utils.hpp"
-extern HardwareSerial SERIAL0;
+// extern HardwareSerial SERIAL0;
 CMMC_DustSensor::CMMC_DustSensor(HardwareSerial* s)   {
   this->_serial = s;
 }
@@ -27,8 +27,8 @@ float CMMC_DustSensor::getPMValue(dustType_t type) {
 void CMMC_DustSensor::setup() {
       // float pm25_array[MAX_ARRAY] = { 0.0 };
       // float pm10_array[MAX_ARRAY] = { 0.0 };
-    SERIAL0.println("initialize DustSensor");
-    SERIAL0.println("CLEARING ARRAY FOR CMMC_DUST");
+    // SERIAL0.println("initialize DustSensor");
+    // SERIAL0.println("CLEARING ARRAY FOR CMMC_DUST");
     String taskMessage = "[CMMC_DustSensor ] Task running on core ";
     taskMessage = taskMessage + xPortGetCoreID();
     // SERIAL0.println(taskMessage);
@@ -50,6 +50,8 @@ void CMMC_DustSensor::_calculateDustAverage() {
     dust_average10 = median(pm10_array, MAX_ARRAY);
   }
   // SERIAL0.printf(">> [avg] %f, %f\r\n", dust_average10, dust_average25);
+  // SERIAL0.print(dust_average25);
+  // SERIAL0.println(dust_average10);
 }
 struct pms5003data {
   uint16_t framelen;
@@ -63,46 +65,29 @@ struct pms5003data {
 struct pms5003data data;
 
 void CMMC_DustSensor::loop() {
-  SERIAL0.println("dust loop");
   this->_serial->begin(9600, SERIAL_8N1, 32 /*rx*/, 33 /* tx */);
-  SERIAL0.println("/dust loop");
   uint32_t ms = millis();
 
-  // while(this->_serial->peek() != 0x42) {
-  //   uint8_t c = this->_serial->read();
-  //   // SERIAL0.print(c, HEX);
-  //   if (millis() - ms > 1000) {
-  //     SERIAL0.println("WAITING.. DUST SENSOR TIMEOUT...");
-  //     break;
-  //   }
-  //   delay(1);
-  // }
-  // while(this->_serial->available()) {
-  //   SERIAL0.print(this->_serial->read(), HEX);
-  //   delay(1);
-  // }
-
-  // SERIAL0.println("Found 0x42");
-  // delay(1000);
-  // vTaskDelay(1000 / portTICK_PERIOD_MS);
-
-  SERIAL0.println();
-  SERIAL0.println("Reading Dust Sensor..");
-  SERIAL0.println(this->readDustSensor());
-  SERIAL0.println("/Reading Dust Sensor..");
-  // SERIAL0.print(dust_average25);
-  // SERIAL0.println(dust_average10);
-  // vTaskDelay(200 / portTICK_PERIOD_MS);
-
+  while(this->_serial->peek() != 0x42) {
+    this->_serial->read();
+    if (millis() - ms > 1000) {
+      // SERIAL0.println("WAITING.. DUST SENSOR TIMEOUT...");
+      break;
+    }
+  }
+  vTaskDelay(200 / portTICK_PERIOD_MS);
+  // SERIAL0.println();
+  // SERIAL0.println("Reading Dust Sensor..");
+  this->readDustSensor();
 }
 
-int CMMC_DustSensor::readDustSensor() {
+void CMMC_DustSensor::readDustSensor() {
   // Read a byte at a time until we get to the special '0x42' start-byte
 
   // Now read all 32 bytes
   if (this->_serial->available() < 32) {
-    // Serial.println(".......");
-    return 1;
+    // SERIAL0.println(".......");
+    return false;
   }
 
   uint8_t buffer[32];
@@ -129,10 +114,9 @@ int CMMC_DustSensor::readDustSensor() {
   memcpy((void *)&data, (void *)buffer_u16, 30);
 
   if (sum != data.checksum) {
-    SERIAL0.println("Checksum failure");
+    // SERIAL0.println("Checksum failure");
   }
   else {
-    // SERIAL0.println("Concentration Units (environmental)");
     // SERIAL0.println();
     // SERIAL0.println("---------------------------------------");
     // SERIAL0.println("Concentration Units (standard)");
@@ -147,6 +131,7 @@ int CMMC_DustSensor::readDustSensor() {
     _calculateDustAverage();
     dust_counter++;
     // SERIAL0.println("---------------------------------------");
+    // SERIAL0.println("Concentration Units (environmental)");
     // SERIAL0.print("PM 1.0: "); SERIAL0.print(data.pm10_env);
     // SERIAL0.print("\t\tPM 2.5: "); SERIAL0.print(data.pm25_env);
     // SERIAL0.print("\t\tPM 10: "); SERIAL0.println(data.pm100_env);
@@ -159,5 +144,4 @@ int CMMC_DustSensor::readDustSensor() {
     // SERIAL0.print("Particles > 10.0 um / 0.1L air:"); SERIAL0.println(data.particles_100um);
     // SERIAL0.println("---------------------------------------");
   }
-  return 2;
 }
