@@ -2,21 +2,21 @@
 
 // #define debugPrintLn(...) { Serial.println(__VA_ARGS__); }
 // #define debugPrint(...) { Serial.print(__VA_ARGS__); }
-#ifdef CMMC_DEBUG
-#warning "Debug mode is ON"
-#define debugPrintLn(...)
-#define debugPrint(...)
-
-  // #define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
-  // #define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
-#else
-#define debugPrintLn(...)
-#define debugPrint(...)
-#endif
+// #ifdef CMMC_DEBUG
+// #warning "Debug mode is ON"
+// #define debugPrintLn(...)
+// #define debugPrint(...)
+//
+  #define debugPrintLn(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->println(__VA_ARGS__); }
+  #define debugPrint(...) { if (!this->_disableDiag && this->_diagStream) this->_diagStream->print(__VA_ARGS__); }
+// #else
+// #define debugPrintLn(...)
+// #define debugPrint(...)
+// #endif
 
 #define TIMEOUT_5s 5
 #define TIMEOUT_10s 10
-#define SILENT 1
+#define SILENT 0
 
 void array_to_string(byte array[], unsigned int len, char buffer[])
 {

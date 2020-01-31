@@ -143,6 +143,7 @@ void hook_ready() {
   SERIAL0.println("[hook_ready]");
   SERIAL0.printf("free heap = %lu\r\n", ESP.getFreeHeap());
   SERIAL0.printf("free heap = %lu\r\n", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+  WiFi.mode(WIFI_OFF);
   tasks_init();
 }
 

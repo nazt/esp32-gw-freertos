@@ -1,6 +1,4 @@
-#include "tasks/dust/CMMC_DustSensor.h"
-#include "tasks/gps/CMMC_GPS.h"
-#include "tasks/rtc/CMMC_RTC.h"
+  // #include "tasks/dust/CMMC_DustSensor.h"
 #include "tasks/lcd/CMMC_LCD.h"
 #include <TinyGPS++.h>
 
@@ -35,7 +33,6 @@ typedef struct{
 struct shared_pool {
   float pm10;
   float pm2_5;
-  DateTime dt;
   String locationString;
 };
 
@@ -46,70 +43,51 @@ static struct shared_pool pool;
 static CMMC_LCD *lcd = NULL;
 // extern static QueueHandle_t xQueueMain;
 
-void showDate(const char* txt, const DateTime& dt) {
-  SERIAL0.print(txt);
-  SERIAL0.printf("%d/%d/%d %02d:%02d:%02d", dt.day(), dt.month(),
-    dt.year(), dt.hour(), dt.minute()%60, dt.second()%60);
-}
+// void showDate(const char* txt, const DateTime& dt) {
+//   SERIAL0.print(txt);
+//   SERIAL0.printf("%d/%d/%d %02d:%02d:%02d", dt.day(), dt.month(),
+//     dt.year(), dt.hour(), dt.minute()%60, dt.second()%60);
+// }
 
-#define RTC_MODULE 1
-#define GPS_MODULE 1
+// #define RTC_MODULE 1
+// #define GPS_MODULE 1
 
 static shared_pool p2 = pool;
 static void task_serial1(void *parameter) {
-  SERIAL0.println("Initializing task_serial1.");
-  pool.pm10 = 0;
-  pool.pm2_5 = 0;
+  // SERIAL0.println("Initializing task_serial1.");
+  // pool.pm10 = 0;
+  // pool.pm2_5 = 0;
 
-  SERIAL0.println("Initializing dust.");
-  static CMMC_DustSensor *dustSensor = new CMMC_DustSensor(&Serial1);
-  dustSensor->setup();
+  // SERIAL0.println("Initializing dust.");
+  // static CMMC_DustSensor *dustSensor = new CMMC_DustSensor(&Serial1);
+  // dustSensor->setup();
 
-  #ifdef GPS_MODULE
-  SERIAL0.println("Initializing gps.");
-  static CMMC_GPS *gps = new CMMC_GPS(&Serial1);
-  gps->setup();
-  #endif
+  // #ifdef GPS_MODULE
+  // SERIAL0.println("Initializing gps.");
+  // static CMMC_GPS *gps = new CMMC_GPS(&Serial1);
+  // gps->setup();
+  // #endif
 
-  #ifdef RTC_MODULE
-  SERIAL0.println("Initializing rtc.");
-  static CMMC_RTC *rtc = new CMMC_RTC();
-  rtc->setup();
-  #endif
+  // #ifdef RTC_MODULE
+  // SERIAL0.println("Initializing rtc.");
+  // static CMMC_RTC *rtc = new CMMC_RTC();
+  // rtc->setup();
+  // #endif
 
 
   while (1) {
     SERIAL0.println("looping..");
     vTaskDelay(200 / portTICK_PERIOD_MS);
     if (lcd != NULL) {
-      #ifdef RTC_MODULE
-      // (rtc->getDateTimeString().c_str());
-      // strcpy(lcd->dateTimeString, rtc->getDateTimeString().c_str());
-      #endif
     }
     if (xpage == LCD_CONFIG) {
       continue;
     }
 
-    dustSensor->loop();
-    #ifdef GPS_MODULE
-    gps->loop();
-    pool.locationString = gps->getLocationString();
-    #endif
+    // dustSensor->loop();
 
-    #ifdef RTC_MODULE
-    rtc->loop();
-    pool.dt = rtc->getDateTime();
-    #endif
-
-    pool.pm10 = dustSensor->getPMValue(DustPM10);
-    pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
-
-    if (gps->_lastSyncRtc > 0) {
-      rtc->adjust(gps->getDateTime());
-    }
-    else {
-    }
+    // pool.pm10 = dustSensor->getPMValue(DustPM10);
+    // pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
 
     if (xQueueMain != NULL) {
         const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
@@ -129,7 +107,8 @@ static void lcd_task(void *parameter) {
   lcd = new CMMC_LCD();
   lcd->setup();
   while (1) {
-    // SERIAL0.printf(">>%lu\n", millis());
+    SERIAL0.print(".");
+    // SERIAL0.printf(">>%lu\n", millis( ));
     lcd->pm10 = pool.pm10;
     lcd->pm2_5 = pool.pm2_5;
     lcd->loop();
@@ -151,10 +130,10 @@ static void nb_task(void *parameter) {
     HardwareSerial NBSerial(2);
     NBSerial.begin(9600, SERIAL_8N1, 26 /*rx*/, 27 /* tx */);
     NBSerial.setTimeout(4);
-    modem = new CMMC_Modem(&NBSerial, &SERIAL0, G_modem_type);
+    modem = new CMMC_Modem(&NBSerial, &SERIAL0, -1);
     modem->setup();
     while (1) {
-      SERIAL0.println("NB_STASKING...");
+      // SERIAL0.println("NB_STASKING...");
       vTaskDelay(1000 / portTICK_PERIOD_MS);
       modem->loop();
       nb_status_string = modem->status;
@@ -177,7 +156,7 @@ static void nb_task(void *parameter) {
           data.ct = ct++;
           data.modem_type = G_modem_type;
           data.uptime_s = millis() / 1000;
-          data.unixtime = pool.dt.unixtime();
+          // data.unixtime = pool.dt.unixtime();
           data.batt_volt = G_busvoltage;
           int freshGps = -1;
           strcpy(data.latlngC, pool.locationString.c_str());
@@ -223,8 +202,8 @@ static void nb_task(void *parameter) {
 
 static void tasks_init() {
   int priority = 1;
-  xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
-  delay(1000);
+  // xTaskCreate(task_serial1, "task_serial1", 8192, NULL, priority, NULL);
+  // delay(1000);
   xTaskCreate(nb_task, "nb_task", 8192, NULL, priority, NULL);
   // xTaskCreatePinnedToCore(task_serial1, "task_serial1", 2048, NULL, priority, NULL, 1);
 }

@@ -27,6 +27,9 @@ class CMMC_Modem: public CMMC_Module{
     void config(CMMC_System *os, AsyncWebServer* server) {} ;
     bool _locked = true;
 
+    int sendOverSocket(uint8_t *buffer, int buflen, int socketId);
+
+
   public:
     CMMC_Modem(Stream*, HardwareSerial*, MODEM_TYPE);
     void sendPacket(uint8_t *text, int buflen);

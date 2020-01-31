@@ -34,7 +34,7 @@ class CMMC_DustSensor: public CMMC_Module {
     void loop();
     void configLoop();
     void configSetup();
-    void readDustSensor();
+    int readDustSensor();
     float getPMValue(dustType_t);
 };
 

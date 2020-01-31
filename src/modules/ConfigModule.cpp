@@ -59,7 +59,7 @@ void ConfigModule::config(CMMC_System *os, AsyncWebServer *server)
       if (root->get<const char*>("modem_type") != NULL) {
         const char* modem_type = root->get<const char*>("modem_type");
         this->modem_type = atoi(modem_type);
-        SERIAL0.print("SO: ");
+        // SERIAL0.print("SO: ");
         SERIAL0.printf("modem_type LOADED = %d\r\n", this->modem_type);
       }
       else {

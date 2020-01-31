@@ -30,6 +30,7 @@ void CMMC_Modem::setup() {
   SERIAL0.println("setup modem..");
   // this->status = "Initializing Modem.";
   strcpy(this->status, "Initializing Modem.");
+  // this->_modemType = TYPE_TRUE_NB_IOT;
 
   if (this->_modemType == TYPE_AIS_NB_IOT) {
     pinMode(13, OUTPUT);
@@ -103,7 +104,11 @@ void CMMC_Modem::setup() {
     that->hwSerial->print("[user] NB-IoT Network connected at (");
     that->hwSerial->print(millis());
     that->hwSerial->println("ms)");
-    that->nb->createUdpSocket("103.20.205.85", 5683, UDPConfig::ENABLE_RECV);
+    that->hwSerial->println("[1] createUdpSocket");
+    that->nb->createUdpSocket("103.20.205.85", 5683, UDPConfig::DISABLE_RECV);
+    delay(100);
+    that->nb->createUdpSocket("128.199.205.93", 5683, UDPConfig::DISABLE_RECV);
+    that->hwSerial->println("[2] createUdpSocket");
     that->isNbConnected = 1;
     that->_locked = false;
   });
@@ -118,38 +123,31 @@ void CMMC_Modem::loop() {
   that = this;
 }
 
+int CMMC_Modem::sendOverSocket(uint8_t *buffer, int buflen, int socketId) {
+    if (nb->sendMessageHex(buffer, buflen, socketId)) {
+      lastSentOkMillis = millis();
+      updateStatus("send ok.");
+      delay(500);
+    }
+}
+
 void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
   if (!isNbConnected) {
     this->hwSerial->println("NB IoT is not connected! skipped.");
     return;
   }
-  this->_locked = true;
-  int rt = 0;
-  uint8_t buffer[buflen];
-  memcpy(buffer, text, buflen);
-  while (true) {
-    updateStatus("dispatching queue...");
-    if (nb->sendMessageHex(buffer, buflen, 0)) {
-      lastSentOkMillis = millis();
-      // vTaskDelay(500/portTICK_PERIOD_MS);
-      updateStatus("send ok.");
-      delay(500);
-      break;
-    }
-    else {
-      updateStatus(">> send failed.");
-      if (++rt > 5) {
-            ESP.deepSleep(1e6);
-            vTaskDelay(200/portTICK_PERIOD_MS);
-            ESP.restart();
-            delay(10);
-        break;
-      }
-    }
-    // vTaskDelay(200 / portTICK_PERIOD_MS);
-    delay(200);
-  }
-  this->_locked = false;
+  // this->_locked = true;
+  // int rt = 0;
+  // uint8_t buffer[buflen];
+  // memcpy(buffer, text, buflen);
+  // updateStatus("dispatching queue...");
+  // sendOverSocket(buffer, buflen,  0);
+  // // vTaskDelay(200 / portTICK_PERIOD_MS);
+  // delay(500);
+  // sendOverSocket(buffer, buflen, 1);
+  // updateStatus("send ok. [2]");
+  // delay(500);
+  // this->_locked = false;
 }
 
 String CMMC_Modem::getStatus() {

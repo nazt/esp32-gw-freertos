@@ -95,6 +95,8 @@ class CMMC_NB_IoT
         }
 
         bool send(uint8_t socketId, const char* host, uint16_t port, uint8_t *payload, uint16_t len) {
+          Serial.print("send socketId=");
+          Serial.println(socketId);
           char buffer[45];
           sprintf(buffer, "AT+NSOST=%d,%s,%u,%d,", socketId, host, port , len);
           this->_modemSerial->write((char*)buffer, strlen(buffer));
