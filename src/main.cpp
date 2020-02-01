@@ -72,6 +72,9 @@ QueueHandle_t xQueueMain;
 
 void setup()
 {
+  pinMode(14, OUTPUT); // sleep pin
+  digitalWrite(14, LOW);
+
   WiFi.mode(WIFI_AP_STA);
   strcpy(sta_mac, WiFi.macAddress().c_str());
   strcpy(softap_mac, WiFi.softAPmacAddress().c_str());

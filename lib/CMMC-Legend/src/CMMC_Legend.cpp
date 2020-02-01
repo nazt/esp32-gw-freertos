@@ -223,7 +223,7 @@ void CMMC_Legend::_init_ap() {
   IPAddress Ip(192, 168, 4, 1);
   IPAddress NMask(255, 255, 255, 0);
   WiFi.softAPConfig(Ip, Ip, NMask);
-  sprintf(&this->ap_ssid[5], "%08x", "ffffff");
+  sprintf(&this->ap_ssid[5], "%s", "12345678");
   WiFi.softAP(ap_ssid, &ap_ssid[5]);
   delay(20);
   IPAddress myIP = WiFi.softAPIP();
