@@ -1,4 +1,7 @@
   #include "tasks/dust/CMMC_DustSensor.h"
+  #include "modem/CMMC_Modem.h"
+  extern CMMC_Modem* modem;
+
 #include "tasks/lcd/CMMC_LCD.h"
 #include <TinyGPS++.h>
 
@@ -36,7 +39,12 @@ typedef struct{
 struct shared_pool {
   float pm10;
   float pm2_5;
+  int signal;
+  int rssi;
+  int csq;
   String locationString;
+  String IMEI;
+  String IMSI;
 };
 
 String nb_status_string = "...";
@@ -93,6 +101,21 @@ static void task_serial1(void *parameter) {
 
     pool.pm10 = dustSensor->getPMValue(DustPM10);
     pool.pm2_5 = dustSensor->getPMValue(DustPM2_5);
+    if (modem != NULL) {
+      pool.csq = modem->csq;
+      pool.signal = modem->signal;
+      pool.rssi = modem->rssi;
+      //
+      pool.IMEI = modem->IMEI;
+      pool.IMSI = modem->IMSI;
+
+      // pool.IMEI = String("IMEI");
+      // pool.IMSI = String("IMSI");
+
+      pool.IMEI.replace("OK", "");
+      pool.IMEI.replace("+CGSN:", "");
+      pool.IMSI.replace("OK", "");
+    }
 
     if (xQueueMain != NULL) {
         const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
@@ -171,7 +194,12 @@ static void nb_task(void *parameter) {
             freshGps = 1;
           }
           // if (data.packet_type == TYPE_KEEP_ALIVE) {
-          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"boot_count\":%d,\"uptime_s\":%lu,\"heap\":%lu,\"ct\":%lu, \"nickname\": \"%s\"}", softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(),  data.rebootCount, data.uptime_s,  ESP.getFreeHeap(), data.ct++, G_device_name);
+          // int csq;
+          // int rssi;
+          // int signal;
+          // if ()
+          sprintf(jsonBuffer, "{\"ap\": \"%s\", \"pm10\":%s,\"pm2_5\":%s,\"boot_count\":%d,\"uptime_s\":%lu,\"heap\":%lu,\"ct\":%lu, \"nickname\": \"%s\", \"csq\": %d, \"rssi\": %d, \"signal_percent\":%d, \"IMEI\": \"%s\", \"IMSI\": \"%s\" }",
+            softap_mac, String(data.pm10).c_str(), String(data.pm2_5).c_str(),  data.rebootCount, data.uptime_s,  ESP.getFreeHeap(), data.ct++, G_device_name, pool.csq, pool.rssi, pool.signal, pool.IMEI.c_str(), pool.IMSI.c_str());
           SERIAL0.println(jsonBuffer);
 
           // Serial.printf("jsonBuffer= %s\r\n", jsonBuffer);

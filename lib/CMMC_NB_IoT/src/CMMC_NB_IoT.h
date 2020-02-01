@@ -31,6 +31,7 @@ class CMMC_NB_IoT
       char firmware[180];
       char imei[60];
       char imsi[60];
+      int csq;
     } DeviceInfo;
 
     void setDebugStream(Stream* stream);

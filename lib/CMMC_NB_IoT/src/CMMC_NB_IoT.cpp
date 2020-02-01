@@ -123,8 +123,12 @@ void CMMC_NB_IoT::setDebugStream(Stream *stream) {
 
 void CMMC_NB_IoT::queryDeviceInfo() {
   while (!callCommand(F("AT+CGSN=1"), TIMEOUT_5s, 5, this->deviceInfo.imei));
-  while (!callCommand(F("AT+CGMR"), TIMEOUT_5s, 5, this->deviceInfo.firmware));
+  strcpy(this->deviceInfo.firmware, "default");
+  // while (!callCommand(F("AT+CGSN=1"), TIMEOUT_5s, 5, this->deviceInfo.imei));
+  // while (!callCommand(F("AT+CGMR"), TIMEOUT_5s, 5, this->deviceInfo.firmware));
   while (!callCommand(F("AT+CIMI"), TIMEOUT_5s, 5, this->deviceInfo.imsi));
+  // while (!callCommand(F("AT+C"), TIMEOUT_5s, 5, this->deviceInfo.imsi));
+  this->deviceInfo.csq = getSignal();
   this->_user_onDeviceInfo_cb(this->deviceInfo);
 }
 

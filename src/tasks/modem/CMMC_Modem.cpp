@@ -30,23 +30,23 @@ void CMMC_Modem::setup() {
   SERIAL0.println("setup modem..");
   // this->status = "Initializing Modem.";
   strcpy(this->status, "Initializing Modem.");
-  // this->_modemType = TYPE_TRUE_NB_IOT;
-
-  if (this->_modemType == TYPE_AIS_NB_IOT) {
-    pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);
+  // // this->_modemType = TYPE_TRUE_NB_IOT;
+  //
+  // if (this->_modemType == TYPE_AIS_NB_IOT) {
+  //   pinMode(13, OUTPUT);
+  //   digitalWrite(13, HIGH);
+  //   delay(1);
+  //   digitalWrite(13, LOW);
+  // }
+  // else if (this->_modemType == TYPE_TRUE_NB_IOT) {
+  // }
+  // else {
+  //   this->hwSerial->printf("[type=%d] INVALID MODEM TYPE CONFIG.", this->_modemType);
+  // }
+    pinMode(12, OUTPUT);
+    digitalWrite(12, LOW);
     delay(1);
-    digitalWrite(13, LOW);
-  }
-  else if (this->_modemType == TYPE_TRUE_NB_IOT) {
-    pinMode(13, OUTPUT);
-    digitalWrite(13, LOW);
-    delay(1);
-    digitalWrite(13, HIGH);
-  }
-  else {
-    this->hwSerial->printf("[type=%d] INVALID MODEM TYPE CONFIG.", this->_modemType);
-  }
+    digitalWrite(12, HIGH);
 
   SERIAL0.println("Initializing CMMC NB-IoT");
   nb = new CMMC_NB_IoT(this->_modemSerial);
@@ -69,6 +69,24 @@ void CMMC_Modem::setup() {
     that->hwSerial->println(device.firmware);
     that->hwSerial->print(F("# IMSI SIM-->  "));
     that->hwSerial->println(device.imsi);
+    that->IMEI = (String(device.imei));
+    that->IMSI = (String(device.imsi));
+    that->csq = device.csq;
+    int n = that->csq;
+    int8_t r;
+    if (n == 0) r = -113;
+    if (n == 1) r = -111;
+    if (n == 31) r = -52;
+    if ((n >= 2) && (n <= 30)) {
+      r = map(n, 2, 30, -109, -53);
+    }
+    if (n > 30) {
+      r = -115;
+    }
+
+    int x = map(r, -115, -53, 0, 100);
+    that->rssi= r;
+    that->signal = x;
   });
 
   nb->onMessageArrived([](char *text, size_t len, uint8_t socketId, char* ip, uint16_t port) {
@@ -110,6 +128,24 @@ void CMMC_Modem::setup() {
     that->nb->createUdpSocket("128.199.205.93", 5683, UDPConfig::DISABLE_RECV);
     that->hwSerial->println("[2] createUdpSocket");
     delay(100);
+    // that->csq = that->nb->getSignal();
+    // int n = that->csq;
+    // int8_t r;
+    // if (n == 0) r = -113;
+    // if (n == 1) r = -111;
+    // if (n == 31) r = -52;
+    // if ((n >= 2) && (n <= 30)) {
+    //   r = map(n, 2, 30, -109, -53);
+    // }
+    // if (n > 30) {
+    //   r = -115;
+    // }
+    //
+    // int x = map(r, -115, -53, 0, 100);
+    // that->rssi= r;
+    // that->signal = x;
+
+
     that->isNbConnected = 1;
     that->_locked = false;
   });
@@ -143,8 +179,8 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
   }
 
   this->_locked = true;
-  this->raw_csq = nb->getSignal();
-  int n = this->raw_csq;
+  this->csq = nb->getSignal();
+  int n = this->csq;
   int8_t r;
   if (n == 0) r = -113;
   if (n == 1) r = -111;

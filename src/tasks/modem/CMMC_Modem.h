@@ -42,11 +42,14 @@ class CMMC_Modem: public CMMC_Module{
     bool isLocked();
     String getStatus();
     uint32_t lastSentOkMillis = 0;
-    int raw_csq = -1;
-    int signal = -1;
-    int rssi = -1;
+    int csq = 0;
+    int signal = 0;
+    int rssi = 0;
     char status[100];
     MODEM_TYPE _modemType;
+    
+    String IMEI;
+    String IMSI;
 };
 
 #endif
