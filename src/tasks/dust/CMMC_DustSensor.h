@@ -4,7 +4,6 @@
 #include <Arduino.h>
 #include <CMMC_Module.h>
 
-#define MAX_ARRAY 20
 typedef enum {
   DustPM10, DustPM2_5
 }  dustType_t;
@@ -19,11 +18,8 @@ class CMMC_DustSensor: public CMMC_Module {
     float dust_average10 = 0; //เก็บค่าเฉลี่ยฝุ่น pm10
     float temperature_c,  humidity_percent_rh = 0;
     int dustIdx = 0;
-    float pm25_array[MAX_ARRAY] = { 0.0 };
-    float pm10_array[MAX_ARRAY] = { 0.0 };
-    unsigned int dust_counter = 0;
     void config(CMMC_System *os, AsyncWebServer* server) {};
-    void _calculateDustAverage();
+    // void _calculateDustAverage();
     const char* name() {
       return "CMMC_DustSensor";
     }
