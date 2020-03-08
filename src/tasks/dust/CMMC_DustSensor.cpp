@@ -68,6 +68,16 @@ void CMMC_DustSensor::loop() {
   this->_serial->begin(9600, SERIAL_8N1, 32 /*rx*/, 33 /* tx */);
   uint32_t ms = millis();
 
+  // vTaskDelay(50 / portTICK_PERIOD_MS);
+  // uint8_t command2[] = { 0x42, 0x4D, 0xE4, 0x00, 0x01, 0x01, 0x74 };
+  // this->_serial->write(command2, sizeof(command2));
+  //
+  // vTaskDelay(50 / portTICK_PERIOD_MS);
+  // uint8_t command[] = { 0x42, 0x4D, 0xE1, 0x00, 0x00, 0x01, 0x70 };
+  // this->_serial->write(command, sizeof(command));
+
+  vTaskDelay(50 / portTICK_PERIOD_MS);
+
   while(this->_serial->peek() != 0x42) {
     this->_serial->read();
     if (millis() - ms > 1000) {

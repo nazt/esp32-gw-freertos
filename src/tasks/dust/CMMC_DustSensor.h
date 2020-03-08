@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <CMMC_Module.h>
 
-#define MAX_ARRAY 120
+#define MAX_ARRAY 20
 typedef enum {
   DustPM10, DustPM2_5
 }  dustType_t;
