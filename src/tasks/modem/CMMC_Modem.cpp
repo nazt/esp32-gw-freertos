@@ -43,10 +43,16 @@ void CMMC_Modem::setup() {
   // else {
   //   this->hwSerial->printf("[type=%d] INVALID MODEM TYPE CONFIG.", this->_modemType);
   // }
-    pinMode(12, OUTPUT);
-    digitalWrite(12, LOW);
-    delay(1);
-    digitalWrite(12, HIGH);
+
+    //reset Modem
+      pinMode(13, OUTPUT); // LED
+      pinMode(17, OUTPUT); // RESET NB
+      digitalWrite(13, HIGH);
+      digitalWrite(17, HIGH);
+      delay(10);
+
+      digitalWrite(13, LOW);
+      digitalWrite(17, LOW);
 
   SERIAL0.println("Initializing CMMC NB-IoT");
   nb = new CMMC_NB_IoT(this->_modemSerial);
@@ -195,6 +201,16 @@ void CMMC_Modem::sendPacket(uint8_t *text, int buflen) {
   int x = map(r, -115, -53, 0, 100);
   this->rssi= r;
   this->signal = x;
+
+  if (this->signal <= 0) {
+    // ESP.deepSleep(10);
+    digitalWrite(13, HIGH);
+    digitalWrite(17, HIGH);
+    delay(10);
+
+    digitalWrite(13, LOW);
+    digitalWrite(17, LOW);
+  }
   // this->hwSerial->print("Signal = ");
   // this->hwSerial->println(nb->getSignal());
   // updateStatus(String("Signal = ") +  nb->getSignal());

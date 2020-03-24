@@ -47,7 +47,7 @@ struct shared_pool {
   String IMSI;
 };
 
-String nb_status_string = "...";
+String nb_status_string = "....";
 static uint32_t ct = 0;
 
 static struct shared_pool pool;
@@ -117,19 +117,19 @@ static void task_serial1(void *parameter) {
       pool.IMSI.replace("OK", "");
     }
 
-    if (xQueueMain != NULL) {
-        const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
-        BaseType_t xStatus = xQueueSendToBack(xQueueMain, &p2, xTicksToWait);
-        if ( xStatus == pdPASS ) {
-          // if (!modem->isLocked())
-            // SERIAL0.printf("[ENQUEU!!] queue size = %lu \r\n", uxQueueMessagesWaiting(xQueueMain));
-        }
-        else {
-          // if (!modem->isLocked())
-          //   SERIAL0.println("FAIL TO ENQUEUE.");
-        }
-      }
-      vTaskDelay(4000 / portTICK_PERIOD_MS);
+    // if (xQueueMain != NULL) {
+    //     const TickType_t xTicksToWait = pdMS_TO_TICKS(1000);
+    //     BaseType_t xStatus = xQueueSendToBack(xQueueMain, &p2, xTicksToWait);
+    //     if ( xStatus == pdPASS ) {
+    //       // if (!modem->isLocked())
+    //         // SERIAL0.printf("[ENQUEU!!] queue size = %lu \r\n", uxQueueMessagesWaiting(xQueueMain));
+    //     }
+    //     else {
+    //       // if (!modem->isLocked())
+    //       //   SERIAL0.println("FAIL TO ENQUEUE.");
+    //     }
+    // }
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 }
 
@@ -161,7 +161,6 @@ static void nb_task(void *parameter) {
     modem->setup();
     while (1) {
       // SERIAL0.println("NB_STASKING...");
-      vTaskDelay(1000 / portTICK_PERIOD_MS);
       modem->loop();
       nb_status_string = modem->status;
       SERIAL0.printf("status=%s\r\n", nb_status_string.c_str());
@@ -169,11 +168,11 @@ static void nb_task(void *parameter) {
         SERIAL0.println("NB-IoT LOCKED.");
         continue;
       }
-      if (xQueueMain != NULL) {
-        const TickType_t xTicksToWait = pdMS_TO_TICKS(10);
-        BaseType_t xStatus;
-        xStatus = xQueueReceive(xQueueMain, &p, xTicksToWait);
-        if (xStatus == pdPASS) {
+      // if (xQueueMain != NULL) {
+        // const TickType_t xTicksToWait = pdMS_TO_TICKS(10);
+        // BaseType_t xStatus;
+        // xStatus = xQueueReceive(xQueueMain, &p, xTicksToWait);
+        // if (xStatus == pdPASS) {
           SERIAL0.println("[X-TASK] QUEUE RECV...");
           SERIAL0.println(p.pm10);
           SERIAL0.println(p.pm2_5);
@@ -223,11 +222,12 @@ static void nb_task(void *parameter) {
           modem->sendPacket((uint8_t*)_buffer, buflen);
           nb_status_string = "sent.";
           G_sent++;
-        }
-        else {
-          // SERIAL0.println("FAILED TO RECV Q.");
-        }
-      }
+        // }
+        // else {
+        //   // SERIAL0.println("FAILED TO RECV Q.");
+        // }
+      // }
+      vTaskDelay(20*1000 / portTICK_PERIOD_MS);
     }
     SERIAL0.println("Ending task 2");
     vTaskDelete( NULL );
