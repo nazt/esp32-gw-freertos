@@ -47,7 +47,7 @@ struct shared_pool {
   String IMSI;
 };
 
-String nb_status_string = "....";
+String nb_status_string = "...  .";
 static uint32_t ct = 0;
 
 static struct shared_pool pool;
@@ -69,7 +69,7 @@ CMMC_Modem *modem;
 
 static shared_pool p2 = pool;
 static void task_serial1(void *parameter) {
-  // SERIAL0.println("Initializing task_serial1.");
+  // SERIAL0.println("Initializing tas  k_serial1.");
   // pool.pm10 = 0;
   // pool.pm2_5 = 0;
 
@@ -227,7 +227,7 @@ static void nb_task(void *parameter) {
         //   // SERIAL0.println("FAILED TO RECV Q.");
         // }
       // }
-      vTaskDelay(20*1000 / portTICK_PERIOD_MS);
+      vTaskDelay(5*1000 / portTICK_PERIOD_MS);
     }
     SERIAL0.println("Ending task 2");
     vTaskDelete( NULL );

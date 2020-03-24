@@ -148,10 +148,18 @@ void hook_ready() {
 
 uint32_t prev = 0;
 
+uint32_t counter = 0;
+
 void loop()
 {
   os->run();
   if ( (millis() - prev) > 1*1000L) {
+    Serial.print("Counter = ");
+    Serial.println(millis());
+    counter++;
     prev = millis();
+    if (counter > 900) {
+      ESP.deepSleep(10);
+    }
   }
 }
