@@ -77,6 +77,10 @@ void setup()
   digitalWrite(14, LOW);
 
   pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);
+  delay(10);
+  digitalWrite(4, HIGH);
+
 
   WiFi.mode(WIFI_AP_STA);
   strcpy(sta_mac, WiFi.macAddress().c_str());
