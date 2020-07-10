@@ -1,0 +1,22 @@
+name: ESP32 Arduino CI
+
+on:
+  push:
+    branches:
+    - master
+    - release/* 
+
+jobs: 
+  # PlatformIO on Windows, Ubuntu and Mac
+  build-pio:
+    name: PlatformIO for ${{ matrix.board }} on ${{ matrix.os }}
+    # if: "contains(github.event.head_commit.message, '[build]')"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macOS-latest]
+        board: [esp32]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build Tests
+      run: bash ./.github/scripts/on-push.sh ${{ matrix.board }} 1 1 
