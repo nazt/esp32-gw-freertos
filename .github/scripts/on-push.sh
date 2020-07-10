@@ -27,6 +27,6 @@ else
 	# mkdir -p $HOME/ibeacon-scanner
 	# platformio ci --lib="beacon32/lib/*"  --build-dir="$HOME/beacon32" --keep-build-dir  --project-conf=./beacon32/platformio.ini beacon32
 	# platformio ci --lib="ibeacon-scanner/lib/*"  --build-dir="$HOME/ibeacon-scanner" --keep-build-dir  --project-conf=./ibeacon-scanner/platformio.ini  ibeacon-scanner
-	# cp -Rv /Users/runner/beacon32/.pio/build/esp32dev/firmware.bin "$HOME/fw.bin"
+	cp -Rv /Users/runner/beacon32/.pio/build/esp32dev/firmware.bin "$HOME/fw.bin"
 	# cp -Rv /Users/runner/ibeacon-scanner/.pio/build/esp32dev/firmware.bin "$HOME/ibeacon-scanner.bin" 
 fi
