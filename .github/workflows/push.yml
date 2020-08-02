@@ -1,4 +1,4 @@
-name: Release Corgi85 CI
+name: Release ESP32 CI
 
 on:
   push:
